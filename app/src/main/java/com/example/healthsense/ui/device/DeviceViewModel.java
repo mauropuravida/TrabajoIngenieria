@@ -1,16 +1,16 @@
-package com.example.healthsense.ui.tools;
+package com.example.healthsense.ui.device;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class ToolsViewModel extends ViewModel {
+public class DeviceViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public ToolsViewModel() {
+    public DeviceViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is tools fragment");
+        mText.setValue("This is share fragment");
     }
 
     public LiveData<String> getText() {

@@ -1,4 +1,4 @@
-package com.example.healthsense.ui.share;
+package com.example.healthsense.ui.traininghistory;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.healthsense.R;
 
-public class ShareFragment extends Fragment {
+public class TrainingHistoryFragment extends Fragment {
 
-    private ShareViewModel shareViewModel;
+    private TrainingHistoryViewModel toolsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        shareViewModel =
-                ViewModelProviders.of(this).get(ShareViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_share, container, false);
-        final TextView textView = root.findViewById(R.id.text_share);
-        shareViewModel.getText().observe(this, new Observer<String>() {
+        toolsViewModel =
+                ViewModelProviders.of(this).get(TrainingHistoryViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_training_history, container, false);
+        final TextView textView = root.findViewById(R.id.text_tools);
+        toolsViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
