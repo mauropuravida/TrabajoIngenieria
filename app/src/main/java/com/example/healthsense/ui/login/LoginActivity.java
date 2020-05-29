@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         String user = preferencesEditor.getString("User", "");
         String pass = preferencesEditor.getString("Pass", "");
-        
+
         JSONObject js = new JSONObject();
         try {
             js.put("email", user);
