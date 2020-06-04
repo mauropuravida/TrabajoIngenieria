@@ -60,5 +60,12 @@
     <string name="city">City</string>
 
 
+    <!-- String profile -->
+    <string name="profile_info">PROFILE INFO</string>
+    <string name="language">Languages</string>
+    <string name="available">Available</string>
+    <string name="not_available">Not Available</string>
+
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

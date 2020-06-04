@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Background"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/profile_info"
+        android:textAllCaps="true"
+        android:textColor="@color/DarkGrayText"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/medical_staff"
+        android:textAllCaps="true"
+        android:textColor="@color/DarkerButton"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:hint="@string/name"
+            android:inputType="textPersonName"
+            android:paddingLeft="20dp" />
+
+        <EditText
+            android:id="@+id/lastname"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:hint="@string/lastname"
+            android:inputType="textPersonName"
+            android:paddingLeft="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/credential"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_white_form"
+                android:backgroundTint="@color/White"
+                android:ems="10"
+                android:hint="@string/credential_id"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/credential_type"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:backgroundTint="@color/DarkGrayText"
+                android:hapticFeedbackEnabled="false"
+                android:pointerIcon="arrow" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/birth_date"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:hint="@string/birthday_date"
+            android:inputType="textPersonName"
+            android:paddingLeft="20dp"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/interal_medicine"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/DarkGrayText" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="20dp"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/adress"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:hint="@string/address"
+            android:imeOptions="actionDone"
+            android:paddingLeft="20dp"
+            android:selectAllOnFocus="true" />
+
+        <Spinner
+            android:id="@+id/city"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/DarkGrayText"
+            android:paddingLeft="10dp" />
+
+        <Spinner
+            android:id="@+id/language"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/DarkGrayText" />
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="20dp"
+            android:text="@string/not_available"
+            android:textColor="@color/DarkGrayText"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/register"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:background="@color/Button"
+        android:text="@string/action_sign_up_short"
+        android:textColor="@color/GrayText"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

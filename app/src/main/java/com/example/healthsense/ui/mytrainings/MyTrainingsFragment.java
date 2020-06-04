@@ -20,6 +20,7 @@ public class MyTrainingsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_my_trainings, container, false);
 
 
+
         //----programación de formato de la lista de trainings
 
         Space s0 = new Space(root.getContext());

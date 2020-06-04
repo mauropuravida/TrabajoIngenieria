@@ -28,12 +28,12 @@ public class SignUpUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_user);
 
-        Spinner spinner = findViewById(R.id.credential_type);
-        String[] superHero = new String[]{"DNI", "OTRO"};
+        Spinner credentialType = findViewById(R.id.credential_type);
+        String[] credentialTypes = new String[]{"DNI", "OTRO"};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,
-                R.layout.spinner_color, superHero);
+                R.layout.spinner_color, credentialTypes);
         arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
-        spinner.setAdapter(arrayAdapter);
+        credentialType.setAdapter(arrayAdapter);
 
 
         TextView birthDate = findViewById(R.id.birth_date);
