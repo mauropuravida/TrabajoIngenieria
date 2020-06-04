@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.*;
+import com.example.healthsense.ui.register.ChoiseProfile;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -60,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         );
 
         final Button loginButton = findViewById(R.id.login);
+        final Button registerButton = findViewById(R.id.register);
 
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
@@ -146,6 +149,16 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         });
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  Intent intent;
+                  intent = new Intent(getApplicationContext(), ChoiseProfile.class);
+                  startActivity(intent);
+              }
+          }
+        );
     }
 
     private Call isLoged() {
@@ -213,5 +226,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed(){
+        //no hacer nada si se está en login.
     }
 }
