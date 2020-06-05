@@ -1,6 +1,7 @@
 package com.example.healthsense.ui.profile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.example.healthsense.data.PikerDate;
 
 import java.util.ArrayList;
 
+import static com.example.healthsense.MainActivity.PREFS_FILENAME;
+
 public class ProfileFragment extends Fragment {
 
     private Context cont;
@@ -24,7 +27,10 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_profile_medical, container, false);
+        SharedPreferences preferencesEditor = this.getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+        int profile = preferencesEditor.getInt("profileType", R.layout.fragment_profile_medical);
+
+        View root = inflater.inflate(profile, container, false);
 
         Spinner credentialType = root.findViewById(R.id.credential_type);
         String[] credentialTypes = new String[]{"DNI", "OTRO"};
@@ -32,13 +38,6 @@ public class ProfileFragment extends Fragment {
                 R.layout.spinner_color, credentialTypes);
         arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
         credentialType.setAdapter(arrayAdapter);
-
-        Spinner interarlMedicine = root.findViewById(R.id.interal_medicine);
-        String[] interarlMedicines = new String[]{"Traumatologo", "Clínico", "Cardioaco", "Respiratorio", "Kinesiologo"};
-        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(root.getContext(),
-                R.layout.spinner_color, interarlMedicines);
-        arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
-        interarlMedicine.setAdapter(arrayAdapter2);
 
         Spinner city = root.findViewById(R.id.city);
         String[] cities = new String[]{"Tandil", "Necochea", "Azul", "Mal del plata", "Miramar"};
@@ -80,8 +79,25 @@ public class ProfileFragment extends Fragment {
                 listVOs);
         spinner.setAdapter(myAdapter);
 
-
+        if (profile == R.layout.fragment_profile_medical) {
+            inicMedicalUser(root);
+        } else {
+            inicUser(root);
+        }
 
         return root;
+    }
+
+    private void inicUser(View root){
+
+    }
+
+    private void inicMedicalUser(View root){
+        Spinner interarlMedicine = root.findViewById(R.id.interal_medicine);
+        String[] interarlMedicines = new String[]{"Traumatologo", "Clínico", "Cardioaco", "Respiratorio", "Kinesiologo"};
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(root.getContext(),
+                R.layout.spinner_color, interarlMedicines);
+        arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
+        interarlMedicine.setAdapter(arrayAdapter2);
     }
 }

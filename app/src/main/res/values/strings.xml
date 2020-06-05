@@ -12,7 +12,7 @@
     <string name="menu_my_trainings">My Trainings</string>
     <string name="menu_training_history">Training History</string>
     <string name="menu_device">Device</string>
-    <string name="menu_change_pasword">Change Pasword</string>
+    <string name="menu_change_pasword">Change Password</string>
 
     <string name="close_session">Close Session</string>
 
@@ -59,6 +59,8 @@
     <string name="insurance_id">Insurance ID</string>
     <string name="city">City</string>
 
+    <string name="password_fields">Password fields do not match.</string>
+
 
     <!-- String profile -->
     <string name="profile_info">PROFILE INFO</string>
@@ -66,6 +68,22 @@
     <string name="available">Available</string>
     <string name="not_available">Not Available</string>
 
+    <!-- String change password -->
+    <string name="new_password">New Password</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="code">Code</string>
+    <string name="change_your_password">Change your password</string>
+    <string name="description_pass">We have sent you an email with a code. Check your mailbox and write the code bellow.</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- String errors -->
+    <string name="unknow_error">An error has occurred. Please try again.</string>
+    <string name="user_not_exist">Username does not exist.</string>
+    <string name="date_format_error">The date format is wrong</string>
+    <string name="email_format_error">The email format is wrong</string>
+    <string name="empty_fields_error">Fill in the empty fields</string>
+    
+
 </resources>

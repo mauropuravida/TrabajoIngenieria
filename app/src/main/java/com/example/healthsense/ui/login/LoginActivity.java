@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.*;
+import com.example.healthsense.ui.password.Password;
 import com.example.healthsense.ui.register.ChoiseProfile;
 
 import org.json.JSONException;
@@ -159,6 +160,15 @@ public class LoginActivity extends AppCompatActivity {
               }
           }
         );
+
+        findViewById(R.id.forgot_pass).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(getApplicationContext(), Password.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private Call isLoged() {
@@ -211,7 +221,6 @@ public class LoginActivity extends AppCompatActivity {
     private void loginAcepted(){
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 

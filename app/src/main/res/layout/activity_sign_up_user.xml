@@ -157,7 +157,7 @@ tools:context=".ui.register.SignUpUser">
             android:backgroundTint="@color/White"
             android:ems="10"
             android:hint="@string/confirm_password"
-            android:inputType="textPersonName"
+            android:inputType="textPassword"
             android:paddingLeft="20dp" />
     </LinearLayout>
 
