@@ -58,6 +58,7 @@ tools:context=".ui.register.SignUpUser">
             android:backgroundTint="@color/White"
             android:ems="10"
             android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp"
             android:hint="@string/name" />
 
@@ -70,6 +71,7 @@ tools:context=".ui.register.SignUpUser">
             android:backgroundTint="@color/White"
             android:ems="10"
             android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp"
             android:hint="@string/lastname" />
 
@@ -88,7 +90,7 @@ tools:context=".ui.register.SignUpUser">
                 android:backgroundTint="@color/White"
                 android:ems="10"
                 android:hint="@string/credential_id"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:paddingLeft="20dp" />
 
             <Space
@@ -145,6 +147,7 @@ tools:context=".ui.register.SignUpUser">
             android:imeActionLabel="@string/action_sign_in_short"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp"
             android:selectAllOnFocus="true" />
 
@@ -158,6 +161,7 @@ tools:context=".ui.register.SignUpUser">
             android:ems="10"
             android:hint="@string/confirm_password"
             android:inputType="textPassword"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp" />
     </LinearLayout>
 

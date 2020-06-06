@@ -79,11 +79,23 @@
 
 
     <!-- String errors -->
-    <string name="unknow_error">An error has occurred. Please try again.</string>
-    <string name="user_not_exist">Username does not exist.</string>
-    <string name="date_format_error">The date format is wrong</string>
-    <string name="email_format_error">The email format is wrong</string>
-    <string name="empty_fields_error">Fill in the empty fields</string>
+    <string name="e401">Did not enter any token.</string>
+    <string name="e402">The token does not match with any user.</string>
+    <string name="e403">The user does not have permits on that route.</string>
+    <string name="e404">Non-existing endpoint.</string>
+    <string name="e405">Invalid token.</string>
+    <string name="e406">Username does not exist.</string>
+    <string name="e407">Invalid password.</string>
+    <string name="e410">Missing parameter on the route.</string>
+    <string name="e411">Fill in the empty fields.</string>
+    <string name="e412">The datetime format is wrong.</string>
+    <string name="e413">The date format is wrong.</string>
+    <string name="e414">The time format is wrong.</string>
+    <string name="e415">The email format is wrong.</string>
+    <string name="e416">The FK is wrong.</string>
+    <string name="e417">The email is already associated with another user.</string>
+    <string name="e500">Server error. An error has occurred. Please try again.</string>
+    <string name="eGeneric">Unknow error</string>
     
 
 </resources>

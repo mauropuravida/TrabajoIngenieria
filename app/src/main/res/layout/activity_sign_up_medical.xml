@@ -30,7 +30,7 @@ tools:context=".ui.register.SignUpMedical">
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="3dp"
         android:text="@string/medical_staff"
         android:textAllCaps="true"
         android:textColor="@color/DarkerButton"
@@ -41,132 +41,136 @@ tools:context=".ui.register.SignUpMedical">
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="60dp"
-    android:orientation="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent">
-
-    <EditText
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:paddingLeft="20dp"
-        android:hint="@string/name" />
-
-    <EditText
-        android:id="@+id/lastname"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:paddingLeft="20dp"
-        android:hint="@string/lastname" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
-            android:id="@+id/credential"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_weight="1"
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
             android:ems="10"
-            android:hint="@string/credential_id"
+            android:hint="@string/name"
             android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp" />
 
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/lastname"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:hint="@string/lastname"
+            android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
+            android:paddingLeft="20dp" />
 
-        <Spinner
-            android:id="@+id/credential_type"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:backgroundTint="@color/DarkGrayText"
-            android:hapticFeedbackEnabled="false"
-            android:pointerIcon="arrow" />
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
+            <EditText
+                android:id="@+id/credential"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_white_form"
+                android:backgroundTint="@color/White"
+                android:ems="10"
+                android:hint="@string/credential_id"
+                android:inputType="number"
+                android:paddingLeft="20dp" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/credential_type"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:backgroundTint="@color/DarkGrayText"
+                android:hapticFeedbackEnabled="false"
+                android:pointerIcon="arrow" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/birth_date"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:hint="@string/birthday_date"
+            android:inputType="textPersonName"
+            android:paddingLeft="20dp"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/interal_medicine"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/DarkGrayText" />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="20dp"
+            android:selectAllOnFocus="true" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:hint="@string/prompt_password"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
+            android:paddingLeft="20dp"
+            android:selectAllOnFocus="true" />
+
+        <EditText
+            android:id="@+id/confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_white_form"
+            android:backgroundTint="@color/White"
+            android:ems="10"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
+            android:paddingLeft="20dp" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/birth_date"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:ems="10"
-        android:gravity="center_vertical"
-        android:hint="@string/birthday_date"
-        android:inputType="textPersonName"
-        android:paddingLeft="20dp"
-        android:textSize="18sp" />
-
-    <Spinner
-        android:id="@+id/interal_medicine"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/DarkGrayText" />
-
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-
-        android:layout_marginTop="10dp"
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:hint="@string/prompt_email"
-        android:inputType="textEmailAddress"
-        android:paddingLeft="20dp"
-        android:selectAllOnFocus="true" />
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:hint="@string/prompt_password"
-        android:imeActionLabel="@string/action_sign_in_short"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        android:paddingLeft="20dp"
-        android:selectAllOnFocus="true" />
-
-    <EditText
-        android:id="@+id/confirm_password"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/background_white_form"
-        android:backgroundTint="@color/White"
-        android:ems="10"
-        android:hint="@string/confirm_password"
-        android:inputType="textPersonName"
-        android:paddingLeft="20dp" />
-</LinearLayout>
 
 <LinearLayout
     android:id="@+id/linearLayout3"

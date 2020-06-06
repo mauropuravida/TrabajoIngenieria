@@ -11,7 +11,7 @@ class PikerDate(context :Context) {
 
     companion object{
         fun toDateFormat(fecha : String?): String?{
-            return formatoFecha(fecha, "dd/MM/yyyy", "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+            return formatoFecha(fecha, "dd/MM/yyyy", "yyyy-MM-dd")
         }
 
         private fun formatoFecha(fecha: String?, patronEntrada: String, patronSalida: String): String?{

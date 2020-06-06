@@ -186,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String conexion = "https://mauropuravida.000webhostapp.com";
+        String conexion = "https://healthsenseapi.herokuapp.com/signin/";
 
         return request.POST(conexion, js,  new Callback() {
 
@@ -197,20 +197,16 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) {
-                String responseData = null;
                 try {
-                    responseData = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
+                    String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
+                    MainActivity.TOKEN = json.getString("token");
+                    loginAcepted();
 
                     MainActivity.TOKEN = json.getString("token");
                     loginAcepted();
-                    finish();
-
+                } catch (IOException e) {
+                    e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -221,7 +217,9 @@ public class LoginActivity extends AppCompatActivity {
     private void loginAcepted(){
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
@@ -240,5 +238,46 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed(){
         //no hacer nada si se está en login.
+    }
+
+    public static String error(Context v,int code){
+        switch(code) {
+            case 200:
+                return "";
+            case 401:
+                return v.getString(R.string.e401);
+            case 402:
+                return v.getString(R.string.e402);
+            case 403:
+                return v.getString(R.string.e403);
+            case 404:
+                return v.getString(R.string.e404);
+            case 405:
+                return v.getString(R.string.e405);
+            case 406:
+                return v.getString(R.string.e406);
+            case 407:
+                return v.getString(R.string.e407);
+            case 410:
+                return v.getString(R.string.e410);
+            case 411:
+                return v.getString(R.string.e411);
+            case 412:
+                return v.getString(R.string.e412);
+            case 413:
+                return v.getString(R.string.e413);
+            case 414:
+                return v.getString(R.string.e414);
+            case 415:
+                return v.getString(R.string.e415);
+            case 416:
+                return v.getString(R.string.e416);
+            case 417:
+                return v.getString(R.string.e417);
+            case 500:
+                return v.getString(R.string.e500);
+            default:
+                return v.getString(R.string.eGeneric);
+        }
     }
 }
