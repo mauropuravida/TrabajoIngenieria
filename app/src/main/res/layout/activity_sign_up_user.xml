@@ -102,7 +102,7 @@ tools:context=".ui.register.SignUpUser">
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"
-                android:backgroundTint="@color/DarkGrayText"
+                android:background="@drawable/bg_spinner"
                 android:hapticFeedbackEnabled="false"
                 android:pointerIcon="arrow" />
 

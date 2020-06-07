@@ -60,6 +60,7 @@
             android:ems="10"
             android:hint="@string/name"
             android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp" />
 
         <EditText
@@ -72,6 +73,7 @@
             android:ems="10"
             android:hint="@string/lastname"
             android:inputType="textPersonName"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp" />
 
         <LinearLayout
@@ -89,7 +91,7 @@
                 android:backgroundTint="@color/White"
                 android:ems="10"
                 android:hint="@string/credential_id"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:paddingLeft="20dp" />
 
             <Space
@@ -147,6 +149,7 @@
             android:hint="@string/address"
             android:imeOptions="actionDone"
             android:paddingLeft="20dp"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:selectAllOnFocus="true" />
 
         <EditText
@@ -158,7 +161,7 @@
             android:backgroundTint="@color/White"
             android:ems="10"
             android:hint="@string/Weight"
-            android:inputType="textPersonName"
+            android:inputType="numberDecimal"
             android:paddingLeft="20dp" />
 
         <EditText
@@ -170,7 +173,7 @@
             android:backgroundTint="@color/White"
             android:ems="10"
             android:hint="@string/height"
-            android:inputType="textPersonName"
+            android:inputType="numberDecimal"
             android:paddingLeft="20dp" />
 
         <LinearLayout
@@ -188,7 +191,7 @@
                 android:backgroundTint="@color/White"
                 android:ems="10"
                 android:hint="@string/insurance_number"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:paddingLeft="20dp" />
 
             <Space
@@ -227,7 +230,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:background="@color/Button"
-        android:text="@string/action_sign_up_short"
+        android:text="@string/save_info"
         android:textColor="@color/GrayText"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"

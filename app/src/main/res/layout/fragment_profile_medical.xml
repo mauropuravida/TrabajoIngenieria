@@ -51,28 +51,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <EditText
-            android:id="@+id/name"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@drawable/background_white_form"
-            android:backgroundTint="@color/White"
-            android:ems="10"
-            android:hint="@string/name"
-            android:inputType="textPersonName"
-            android:paddingLeft="20dp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/lastname"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/background_white_form"
-            android:backgroundTint="@color/White"
-            android:ems="10"
-            android:hint="@string/lastname"
-            android:inputType="textPersonName"
-            android:paddingLeft="20dp" />
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/DarkerButton"
+                android:clickable="false"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="center_vertical"
+                android:hint="@string/name"
+                android:paddingLeft="20dp" />
+
+            <EditText
+                android:id="@+id/lastname"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/DarkerButton"
+                android:enabled="false"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:hint="@string/lastname"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,59 +90,55 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/credential"
+                android:id="@+id/credential_type"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_white_form"
-                android:backgroundTint="@color/White"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:backgroundTint="@color/DarkerButton"
+                android:enabled="false"
                 android:ems="10"
-                android:hint="@string/credential_id"
-                android:inputType="textPersonName"
-                android:paddingLeft="20dp" />
+                android:inputType="textPersonName" />
 
             <Space
                 android:layout_width="10dp"
                 android:layout_height="wrap_content" />
 
-            <Spinner
-                android:id="@+id/credential_type"
+            <EditText
+                android:id="@+id/credential"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5"
-                android:backgroundTint="@color/DarkGrayText"
-                android:hapticFeedbackEnabled="false"
-                android:pointerIcon="arrow" />
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/DarkerButton"
+                android:enabled="false"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:hint="@string/credential_id"
+                android:inputType="number"
+                android:paddingLeft="20dp" />
 
         </LinearLayout>
 
-        <TextView
+        <EditText
             android:id="@+id/birth_date"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/background_white_form"
-            android:backgroundTint="@color/White"
             android:ems="10"
             android:gravity="center_vertical"
             android:hint="@string/birthday_date"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
+            android:backgroundTint="@color/DarkerButton"
+            android:enabled="false"
             android:textSize="18sp" />
 
-        <Spinner
-            android:id="@+id/interal_medicine"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/DarkGrayText" />
-
-        <TextView
+        <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-
             android:layout_marginTop="10dp"
+            android:backgroundTint="@color/DarkerButton"
+            android:enabled="false"
             android:gravity="center_vertical"
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
@@ -143,6 +148,48 @@
             android:textColorHint="@color/DarkGrayText"
             android:textSize="18sp" />
 
+        <Spinner
+            android:id="@+id/interal_medicine"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_spinner" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/country"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/bg_spinner"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/state"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner"/>
+
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/city"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_spinner"
+            android:paddingLeft="10dp" />
+
         <EditText
             android:id="@+id/adress"
             android:layout_width="match_parent"
@@ -151,18 +198,11 @@
 
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:hint="@string/address"
             android:imeOptions="actionDone"
             android:paddingLeft="20dp"
             android:selectAllOnFocus="true" />
-
-        <Spinner
-            android:id="@+id/city"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/DarkGrayText"
-            android:paddingLeft="10dp" />
 
         <Spinner
             android:id="@+id/language"
@@ -190,7 +230,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:background="@color/Button"
-        android:text="@string/action_sign_up_short"
+        android:text="@string/save_info"
         android:textColor="@color/GrayText"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
