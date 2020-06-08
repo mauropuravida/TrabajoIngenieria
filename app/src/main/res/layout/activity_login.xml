@@ -29,7 +29,8 @@
         android:textColorHint="@color/DarkGrayText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loading" />
+        app:layout_constraintTop_toBottomOf="@+id/loading"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/password"
@@ -49,7 +50,8 @@
         android:textColorHint="@color/DarkGrayText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username" />
+        app:layout_constraintTop_toBottomOf="@+id/username"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/login"
@@ -103,13 +105,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.26999998" />
 
     <CheckBox
         android:id="@+id/rememberme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="32dp"
         android:buttonTint="@color/LightButton"
         android:drawableTint="@color/colorPrimary"
         android:text="@string/remember_me"
@@ -121,13 +123,13 @@
         app:layout_constraintBottom_toTopOf="@+id/login"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.14" />
+        app:layout_constraintVertical_bias="0.333" />
 
     <TextView
         android:id="@+id/forgot_pass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="24dp"
         android:allowUndo="false"
         android:clickable="true"
         android:linksClickable="true"
@@ -139,21 +141,23 @@
         app:layout_constraintBottom_toTopOf="@+id/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.285" />
+        app:layout_constraintVertical_bias="0.35000002"
+        android:focusable="true" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="121dp"
-        android:layout_height="133dp"
+        android:layout_width="325dp"
+        android:layout_height="253dp"
         android:layout_marginBottom="22dp"
-        android:src="@mipmap/ic_login_round"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="2dp"
+        android:src="@mipmap/ic_healthsense_logo_foreground"
+        app:civ_border_color="#00000000"
+        app:civ_border_width="1dp"
         app:layout_constraintBottom_toTopOf="@+id/username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.465"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintVertical_bias="0.385" />
 
     <TextView
         android:id="@+id/textView3"
@@ -163,7 +167,7 @@
         android:text="@string/action_sign_in_short"
         android:textAllCaps="true"
         android:textColor="@color/DarkGrayText"
-        android:textSize="30sp"
+        android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -188,8 +192,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/healthsense"
-        android:textColor="@color/DarkerButton"
-        android:textSize="30sp"
+        android:textColor="@color/Button"
+        android:textSize="36sp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

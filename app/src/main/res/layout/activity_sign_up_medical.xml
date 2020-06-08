@@ -56,11 +56,13 @@ tools:context=".ui.register.SignUpMedical">
             android:layout_height="40dp"
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:ems="10"
             android:hint="@string/name"
             android:inputType="textPersonName"
-            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
-            android:paddingLeft="20dp" />
+            android:paddingLeft="20dp"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText" />
 
         <EditText
             android:id="@+id/lastname"
@@ -69,11 +71,13 @@ tools:context=".ui.register.SignUpMedical">
             android:layout_marginTop="10dp"
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:ems="10"
             android:hint="@string/lastname"
             android:inputType="textPersonName"
-            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
-            android:paddingLeft="20dp" />
+            android:paddingLeft="20dp"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,7 +95,9 @@ tools:context=".ui.register.SignUpMedical">
                 android:ems="10"
                 android:hint="@string/credential_id"
                 android:inputType="number"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
 
             <Space
                 android:layout_width="10dp"
@@ -120,6 +126,9 @@ tools:context=".ui.register.SignUpMedical">
             android:hint="@string/birthday_date"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHighlight="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText"
             android:textSize="18sp" />
 
         <Spinner
@@ -140,7 +149,9 @@ tools:context=".ui.register.SignUpMedical">
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
             android:paddingLeft="20dp"
-            android:selectAllOnFocus="true" />
+            android:selectAllOnFocus="true"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText" />
 
         <EditText
             android:id="@+id/password"
@@ -150,13 +161,15 @@ tools:context=".ui.register.SignUpMedical">
 
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:hint="@string/prompt_password"
             android:imeActionLabel="@string/action_sign_in_short"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
-            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:paddingLeft="20dp"
-            android:selectAllOnFocus="true" />
+            android:selectAllOnFocus="true"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText" />
 
         <EditText
             android:id="@+id/confirm_password"
@@ -165,11 +178,13 @@ tools:context=".ui.register.SignUpMedical">
             android:layout_marginTop="10dp"
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:ems="10"
             android:hint="@string/confirm_password"
             android:inputType="textPassword"
-            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
-            android:paddingLeft="20dp" />
+            android:paddingLeft="20dp"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText" />
     </LinearLayout>
 
 <LinearLayout
@@ -194,6 +209,7 @@ tools:context=".ui.register.SignUpMedical">
             android:layout_height="wrap_content"
             android:text="@string/already_have_an_account"
             android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText"
             android:textSize="20sp" />
 
         <TextView
@@ -203,6 +219,7 @@ tools:context=".ui.register.SignUpMedical">
             android:clickable="true"
             android:text="@string/action_sign_in_short"
             android:textColor="@color/DarkerButton"
+            android:textColorHint="@color/DarkGrayText"
             android:textSize="20sp" />
     </LinearLayout>
 
