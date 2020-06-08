@@ -67,7 +67,9 @@
                 android:enabled="false"
                 android:gravity="center_vertical"
                 android:hint="@string/name"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
 
             <EditText
                 android:id="@+id/lastname"
@@ -75,12 +77,14 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/DarkerButton"
-                android:enabled="false"
                 android:ems="10"
+                android:enabled="false"
                 android:gravity="center_vertical"
                 android:hint="@string/lastname"
                 android:inputType="textPersonName"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
         </LinearLayout>
 
         <LinearLayout
@@ -109,12 +113,14 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/DarkerButton"
-                android:enabled="false"
                 android:ems="10"
+                android:enabled="false"
                 android:gravity="center_vertical"
                 android:hint="@string/credential_id"
                 android:inputType="number"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
 
         </LinearLayout>
 
@@ -123,13 +129,15 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@color/DarkerButton"
             android:ems="10"
+            android:enabled="false"
             android:gravity="center_vertical"
             android:hint="@string/birthday_date"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
-            android:backgroundTint="@color/DarkerButton"
-            android:enabled="false"
+            android:textColor="@color/DarkGrayText"
+            android:textColorHint="@color/DarkGrayText"
             android:textSize="18sp" />
 
         <EditText

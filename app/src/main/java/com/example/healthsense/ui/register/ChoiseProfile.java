@@ -13,7 +13,7 @@ public class ChoiseProfile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choise_profile);
+        setContentView(R.layout.activity_choose_profile);
 
         final Button userButton = findViewById(R.id.userButton);
         final Button medicalButton = findViewById(R.id.medicalButton);

@@ -14,7 +14,7 @@
     <string name="menu_device">Device</string>
     <string name="menu_change_pasword">Change Password</string>
 
-    <string name="close_session">Close Session</string>
+    <string name="close_session">Log out</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -29,10 +29,10 @@
     <string name="login_failed">"Login failed"</string>
     <string name="remember_me">"Remember me"</string>
     <string name="forgot_password"><u>Forgot Password</u></string>
-    <string name="welcome_to_the">"Welcome to the"</string>
-    <string name="healthsense">"HealtSense"</string>
+    <string name="welcome_to_the">"Welcome to"</string>
+    <string name="healthsense">"HealthSense"</string>
     <string name="choose_your">CHOOSE YOUR</string>
-    <string name="profile">Profile</string>
+    <string name="profile">profile</string>
     <string name="user">User</string>
     <string name="medical_staff"> Medical Staff </string>
 
@@ -70,7 +70,7 @@
 
     <!-- String change password -->
     <string name="new_password">New Password</string>
-    <string name="repeat_password">Repeat Password</string>
+    <string name="repeat_password">Confirm Password</string>
     <string name="code">Code</string>
     <string name="change_your_password">Change your password</string>
     <string name="description_pass">We have sent you an email with a code. Check your mailbox and write the code bellow.</string>
