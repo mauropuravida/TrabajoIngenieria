@@ -44,6 +44,7 @@ import okhttp3.Response;
 // Obtener lista Exercises /exercise/:id -> id es cada uno de los ids de Workouts_exercises.
 
 public class MyTrainingsFragment extends Fragment {
+    private int user_id;
     private  ArrayList<LinearLayout> listll;
     private ArrayList<JSONObject> workouts, exercises;
     private HashMap<Integer,Integer> workoutExercises;
@@ -72,16 +73,21 @@ public class MyTrainingsFragment extends Fragment {
 
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento OkHttp
+            getExercises();
+            createExercises(root,mListener);
         } else {
             // No hay conexión a Internet en este momento Room
         }
 
-        getExercises();
-        for ( int i = 0; i<16 ; i++) {
-            newTraining(root,i, mListener);
-        }
-
         return root;
+    }
+
+    private void createExercises(View root, View.OnClickListener mListener){
+        //Logica para obtener datos necesarios
+
+        for ( int i = 0; i<16 ; i++) { // desde i hasta cant workouts
+            newTraining(root,i, mListener); // ver que datos enviar
+        }
     }
 
     private void getExercises(){
@@ -89,12 +95,35 @@ public class MyTrainingsFragment extends Fragment {
                 new Runnable() {
                     @Override
                     public void run() {
-                        obtainUserId();
+                        String path = "deviceUser/user_id&"; // obtengo el user_id
+                        getBackendResponse(path,0,null,null);
+                        path = "workout/device_user_id&"; // obtengo workouts del user_id.
+                        getBackendResponse(path, user_id,workouts,null);
+                        path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
+                        for (JSONObject o : workouts){
+                            try {
+                                getBackendResponse(path,o.getInt("id"),null,workoutExercises);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        path = "exercise/"; // obtengo por cada par work_id|exercice_id, la info del exercise
+                        String finalPath = path;
+                        workoutExercises.forEach((k, v) -> {
+                            getBackendResponse(finalPath,v,exercises,null);
+                        });
+
                     }
                 }
         );
 
     }
+
+    // Enviar URL, y lista o hashmap donde almacenar.
+    //         String url = URL_BASE + "deviceUser/" + "user_id&" + id  ; JSONObject
+    //         String url = URL_BASE + "workout/" + "device_user_id&" + id; JSONArray
+    //         String url = URL_BASE + "workoutExercise/" + "workout_id&" + id; JSONObject
+    //         String url = URL_BASE + "exercise/" + id; JSONObject
 
     private void newTraining(View root, int i, View.OnClickListener mListener){
         //----programación de formato de la lista de trainings
@@ -156,6 +185,44 @@ public class MyTrainingsFragment extends Fragment {
         listll.get(listll.size() -1).setOnClickListener(mListener);
         //------fin de programación del formato
     }
+
+    private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer,Integer> hashObj){
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String url = URL_BASE + path + id;
+
+        return request.GET(url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Toast.makeText(getActivity(),
+                        "Failed to obtain information from " + url , Toast.LENGTH_LONG)
+                        .show();            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseData = null;
+                try {
+                    responseData = response.body().string();
+                    JSONArray json = new JSONArray(responseData);
+                    if (listObj == null && hashObj == null)
+                        user_id = json.getJSONObject(0).getInt("id");
+                    for (int i = 0; i < json.length(); i++) {
+                        if (hashObj == null) {
+                            listObj.add(json.getJSONObject(i));
+                        }
+                        else
+                            hashObj.put(id, json.getJSONObject(i).getInt("exercise_id"));
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    // IMPLEMENTAR LOGICA EN OBJETOS.
+
+
+/*
 
     private Call obtainUserId(){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
@@ -272,5 +339,5 @@ public class MyTrainingsFragment extends Fragment {
             }
         });
     }
-
+*/
 }
