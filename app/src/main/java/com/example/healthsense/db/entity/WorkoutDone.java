@@ -47,6 +47,14 @@ public class WorkoutDone implements Comparable<WorkoutDone> {
         return "description";
     }
 
+    public int getWorkoutId(){
+        return this.workout.getId_wk();
+    }
+
+    public int getReportId(){
+        return workoutReport.getId_wkr();
+    }
+
     @Override
     public int compareTo(WorkoutDone workoutDone) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
