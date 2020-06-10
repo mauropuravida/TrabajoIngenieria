@@ -16,6 +16,10 @@
 
     <string name="close_session">Cerrar Sesión</string>
 
+    <string name="cbu">CBU</string>
+    <string name="alias">ALIAS</string>
+    <string name="cuil_cuit">CUIL/CUIT</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Contraseña</string>
@@ -73,7 +77,7 @@
     <string name="repeat_password">Confirmar Contraseña</string>
     <string name="code">Código</string>
     <string name="change_your_password">Cambiar contraseña</string>
-    <string name="description_pass">Te enviamos un mail con un código. Escribelo aqui abajo.</string>
+    <string name="description_pass">Te enviamos un mail con una nueva contraseña. Cambiala al ingresar.</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

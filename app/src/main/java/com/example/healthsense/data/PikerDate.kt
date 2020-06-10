@@ -14,6 +14,10 @@ class PikerDate(context :Context) {
             return formatoFecha(fecha, "dd/MM/yyyy", "yyyy-MM-dd")
         }
 
+        fun toDateFormatV(fecha : String?): String?{
+            return formatoFecha(fecha, "yyyy-MM-dd", "dd/MM/yyyy")
+        }
+
         fun toDateFormatView(fecha : String): String?{
             return formatoFecha(fecha, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "dd/MM/yyyy")
         }

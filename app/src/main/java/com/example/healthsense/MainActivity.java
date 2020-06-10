@@ -11,7 +11,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.entity.Workout;
-import com.example.healthsense.db.entity.WorkoutDone;
 import com.example.healthsense.db.entity.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -20,11 +19,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.Menu;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 

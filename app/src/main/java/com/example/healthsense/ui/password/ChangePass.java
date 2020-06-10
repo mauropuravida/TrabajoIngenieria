@@ -1,24 +1,20 @@
 package com.example.healthsense.ui.password;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
+import com.example.healthsense.R;
 
 public class ChangePass extends Fragment {
 
-    public ChangePass() {
-        // Required empty public constructor
-    }
-
-    public static ChangePass newInstance(String param1, String param2) {
-        ChangePass fragment = new ChangePass();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
+        View root = inflater.inflate(R.layout.fragment_change_pass, container, false);
+
+        return root;
     }
 }

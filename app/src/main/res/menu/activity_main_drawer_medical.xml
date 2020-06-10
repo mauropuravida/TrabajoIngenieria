@@ -12,24 +12,11 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_action_profile"
             android:title="@string/menu_profile"/>
-        <item
-            android:id="@+id/nav_my_trainings"
-            android:icon="@android:drawable/star_big_off"
-            android:title="@string/menu_my_trainings" />
-        <item
-            android:id="@+id/nav_training_history"
-            android:icon="@drawable/ic_action_history"
-            android:title="@string/menu_training_history" />
 
         <item
             android:id="@+id/nav_my_suscribers"
             android:icon="@drawable/ic_action_suscriptions"
             android:title="@string/menu_my_Suscribers" />
-
-        <item
-            android:id="@+id/nav_device"
-            android:icon="@drawable/ic_action_device"
-            android:title="@string/menu_device" />
 
         <item
             android:id="@+id/nav_payment_methods"
