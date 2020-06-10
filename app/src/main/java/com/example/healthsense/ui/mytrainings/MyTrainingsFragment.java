@@ -190,7 +190,7 @@ public class MyTrainingsFragment extends Fragment {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + path + id;
 
-        return request.GET(url, new Callback() {
+        return request.GET(url, new JSONArray(),new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
