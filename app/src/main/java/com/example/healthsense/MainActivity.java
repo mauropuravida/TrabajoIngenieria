@@ -2,18 +2,30 @@ package com.example.healthsense;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import com.example.healthsense.db.AppDatabase;
+import com.example.healthsense.db.entity.Workout;
+import com.example.healthsense.db.entity.WorkoutDone;
+import com.example.healthsense.db.entity.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
         String user = preferencesEditor.getString(email, "");
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+
+
+        //-----------------------------
+
+        //testing data on local db
+        new TaskInsertWorkouts().execute();
+
     }
 
     @Override
@@ -74,6 +94,51 @@ public class MainActivity extends AppCompatActivity {
 
         if(!isTaskRoot()){
             super.onBackPressed();
+        }
+    }
+
+
+
+    //test inserts history
+    private class TaskInsertWorkouts extends AsyncTask<Void, Void, Void> {
+
+        private static final String TAG = "TaskInsertWorkouts";
+
+        List<Workout> wk = new ArrayList<>();
+        List<WorkoutReport> wkr = new ArrayList<>();
+
+        public TaskInsertWorkouts(){
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
+
+            wk.add(new Workout(1, "Workout 1", "2020-04-11", 2, 0, 1, 0));
+            wk.add(new Workout(2, "Workout 2", "2020-04-11", 1, 0, 1, 0));
+            wk.add(new Workout(3, "Workout 3", "2020-04-11", 4, 0, 1, 0));
+            wk.add(new Workout(4, "Workout 4", "2020-04-11", 5, 0, 1, 0));
+            wk.add(new Workout(5, "Workout 5", "2020-04-11", 5, 0, 1, 0));
+
+            wkr.add(new WorkoutReport(1, 1, "2020-05-11"));
+            wkr.add(new WorkoutReport(2, 2, "2020-05-15"));
+            wkr.add(new WorkoutReport(3, 1, "2020-05-21"));
+            wkr.add(new WorkoutReport(4, 3, "2020-05-29"));
+            wkr.add(new WorkoutReport(5, 5, "2020-04-28"));
+            wkr.add(new WorkoutReport(6, 5, "2020-06-02"));
+
+            appDatabase.workoutDAO().insertAll(wk);
+            appDatabase.workoutReportDAO().insertAll(wkr);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(TAG, "doInBackground: data added");
+            //Toast.makeText(getBaseContext(), "datos cargados", Toast.LENGTH_LONG).show();
         }
     }
 
