@@ -14,9 +14,12 @@ class PikerDate(context :Context) {
             return formatoFecha(fecha, "dd/MM/yyyy", "yyyy-MM-dd")
         }
 
+        fun toDateFormatView(fecha : String): String?{
+            return formatoFecha(fecha, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "dd/MM/yyyy")
+        }
+
         private fun formatoFecha(fecha: String?, patronEntrada: String, patronSalida: String): String?{
             if (fecha == null) return null
-
             val pos = ParsePosition(0)
             var simpledateformat = SimpleDateFormat(patronEntrada)
             val date = simpledateformat.parse(fecha, pos) //Hacer un Date con la fecha recibido

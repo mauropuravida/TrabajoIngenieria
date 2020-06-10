@@ -99,9 +99,11 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"
                 android:backgroundTint="@color/DarkerButton"
-                android:enabled="false"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:enabled="false"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText" />
 
             <Space
                 android:layout_width="10dp"
@@ -124,21 +126,39 @@
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/birth_date"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/DarkerButton"
-            android:ems="10"
-            android:enabled="false"
-            android:gravity="center_vertical"
-            android:hint="@string/birthday_date"
-            android:inputType="textPersonName"
-            android:paddingLeft="20dp"
-            android:textColor="@color/DarkGrayText"
-            android:textColorHint="@color/DarkGrayText"
-            android:textSize="18sp" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/birth_date"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/DarkerButton"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="center_vertical"
+                android:hint="@string/birthday_date"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_spinner" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/email"
@@ -199,7 +219,7 @@
             android:paddingLeft="10dp" />
 
         <EditText
-            android:id="@+id/adress"
+            android:id="@+id/address"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
@@ -218,16 +238,6 @@
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/DarkGrayText" />
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:paddingLeft="20dp"
-            android:text="@string/not_available"
-            android:textColor="@color/DarkGrayText"
-            android:textSize="18sp" />
 
     </LinearLayout>
 

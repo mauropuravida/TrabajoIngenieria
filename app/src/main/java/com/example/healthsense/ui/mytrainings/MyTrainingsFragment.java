@@ -161,7 +161,7 @@ public class MyTrainingsFragment extends Fragment {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + "deviceUser/" + "user_id&0"  ;
 
-        return request.GET(url, new Callback() {
+        return request.GET(url, new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
@@ -194,7 +194,7 @@ public class MyTrainingsFragment extends Fragment {
     private Call obtainWorkOuts(int id){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + "workout/" + "device_user_id&" + id;
-        return  request.GET(url, new Callback() {
+        return  request.GET(url,new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
@@ -223,7 +223,7 @@ public class MyTrainingsFragment extends Fragment {
     private Call obtainWorkoutsExercises(int id){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + "workoutExercise/" + "workout_id&" + id;
-        return  request.GET(url, new Callback() {
+        return  request.GET(url,new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
@@ -250,7 +250,7 @@ public class MyTrainingsFragment extends Fragment {
     private Call obtainExcersise(int id){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + "exercise/" + id;
-        return request.GET(url,new Callback(){
+        return request.GET(url,new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),

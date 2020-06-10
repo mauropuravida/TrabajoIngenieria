@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -101,12 +102,9 @@ public class SignUpMedical extends AppCompatActivity {
                         js.put("name", ((EditText) findViewById(R.id.name)).getText().toString());
                         js.put("last_name", ((EditText) findViewById(R.id.lastname)).getText().toString());
                         js.put("birth_date", PikerDate.Companion.toDateFormat(((TextView) findViewById(R.id.birth_date)).getText().toString()));
-                        js.put("gender", "m");
                         js.put("document_number", ((EditText) findViewById(R.id.credential)).getText().toString());
                         js.put("email", ((EditText) findViewById(R.id.email)).getText().toString());
                         js.put("password", ((EditText) findViewById(R.id.password)).getText().toString());
-                        js.put("address", "m");
-                        js.put("city_id", "1");
                         js.put("document_type", (((Spinner) findViewById(R.id.credential_type)).getSelectedItemId()+1)+"");
                         js.put("medical_speciality", (((Spinner) findViewById(R.id.interal_medicine)).getSelectedItemId()+1)+"");
                         request.POST(conexion, js, new Callback() {
@@ -150,13 +148,14 @@ public class SignUpMedical extends AppCompatActivity {
     private void loginAcepted(){
         //guardar preferencia de tipo de cuenta, medico o paciente
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        preferencesEditor.edit().putInt("profileType", R.layout.fragment_profile_medical).apply();
-        preferencesEditor.edit().putString("nameUser", ((EditText) findViewById(R.id.name)).getText().toString()).apply();
+        preferencesEditor.edit().putString(((EditText) findViewById(R.id.email)).getText().toString(), ((EditText) findViewById(R.id.name)).getText().toString()).apply();
+        preferencesEditor.edit().putInt(((EditText) findViewById(R.id.email)).getText().toString()+"profile", R.layout.fragment_profile_medical).apply();
 
         //iniciar login
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("user",((EditText) findViewById(R.id.email)).getText().toString());
         startActivity(intent);
         finish();
     }
@@ -165,7 +164,7 @@ public class SignUpMedical extends AppCompatActivity {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = "https://healthsenseapi.herokuapp.com/documenttype/";
 
-        request.GET(conexion, new Callback(){
+        request.GET(conexion,new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
@@ -225,7 +224,7 @@ public class SignUpMedical extends AppCompatActivity {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = "https://healthsenseapi.herokuapp.com/medicalspeciality/";
 
-        request.GET(conexion, new Callback(){
+        request.GET(conexion,new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();

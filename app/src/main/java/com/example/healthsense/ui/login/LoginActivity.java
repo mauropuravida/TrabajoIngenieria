@@ -202,9 +202,6 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject json = new JSONObject(responseData);
                     MainActivity.TOKEN = json.getString("token");
                     loginAcepted();
-
-                    MainActivity.TOKEN = json.getString("token");
-                    loginAcepted();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -215,9 +212,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginAcepted(){
+        SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("user",((EditText) findViewById(R.id.username)).getText().toString());
         startActivity(intent);
         finish();
     }

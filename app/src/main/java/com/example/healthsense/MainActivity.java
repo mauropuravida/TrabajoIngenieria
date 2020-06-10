@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     //nombre de archivo de preferencias
     public static final String PREFS_FILENAME = "data.prefs";
+    public static String email;
     public static String TOKEN = "";
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -26,7 +28,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+        int layoutProfile = preferencesEditor.getInt(getIntent().getExtras().getString("user")+"profile", R.layout.fragment_profile_medical);
+
+        setContentView((layoutProfile == R.layout.fragment_profile_medical) ? R.layout.activity_main_medical : R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -36,15 +42,16 @@ public class MainActivity extends AppCompatActivity {
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_profile, R.id.nav_my_trainings,
-                R.id.nav_training_history, R.id.nav_device, R.id.nav_close_session)
+                R.id.nav_training_history, R.id.nav_my_suscribers, R.id.nav_my_suscriptions, R.id.nav_payment_methods,
+                R.id.nav_device,R.id.nav_change_pass, R.id.nav_close_session)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        String user = preferencesEditor.getString("nameUser", "");
+        email = getIntent().getExtras().getString("user");
+        String user = preferencesEditor.getString(email, "");
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }

@@ -137,13 +137,14 @@ public class SignUpUser extends AppCompatActivity {
     private void loginAcepted(){
         //guardar preferencia de tipo de cuenta, medico o paciente
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        preferencesEditor.edit().putInt("profileType", R.layout.fragment_profile_user).apply();
-        preferencesEditor.edit().putString("nameUser", ((EditText) findViewById(R.id.name)).getText().toString()).apply();
+        preferencesEditor.edit().putString(((EditText) findViewById(R.id.email)).getText().toString(), ((EditText) findViewById(R.id.name)).getText().toString()).apply();
+        preferencesEditor.edit().putInt(((EditText) findViewById(R.id.email)).getText().toString()+"profile", R.layout.fragment_profile_user).apply();
 
         //iniciar login
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("user",((EditText) findViewById(R.id.email)).getText().toString());
         startActivity(intent);
         finish();
     }
@@ -152,11 +153,9 @@ public class SignUpUser extends AppCompatActivity {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = "https://healthsenseapi.herokuapp.com/documenttype/";
 
-        request.GET(conexion, new Callback(){
+        request.GET(conexion,new JSONArray(), new Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-            }
+            public void onFailure(Call call, IOException e) {}
 
             @Override
             public void onResponse(Call call, Response response) {

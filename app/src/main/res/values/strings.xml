@@ -13,6 +13,9 @@
     <string name="menu_training_history">Training History</string>
     <string name="menu_device">Device</string>
     <string name="menu_change_pasword">Change Password</string>
+    <string name="menu_payment_methods">Payment methods</string>
+    <string name="menu_my_Suscribers">My Suscribers</string>
+    <string name="menu_my_Suscriptions">My Suscriptions</string>
 
     <string name="close_session">Log out</string>
 
@@ -96,6 +99,6 @@
     <string name="e417">The email is already associated with another user.</string>
     <string name="e500">Server error. An error has occurred. Please try again.</string>
     <string name="eGeneric">Unknow error</string>
-    
+
 
 </resources>
