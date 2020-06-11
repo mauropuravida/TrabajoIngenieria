@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     //test inserts history
     private class TaskInsertWorkouts extends AsyncTask<Void, Void, Void> {
 
+        private static final String TAG = "TaskInsertWorkouts";
+
         List<Workout> wk = new ArrayList<>();
         List<WorkoutReport> wkr = new ArrayList<>();
 
@@ -89,19 +91,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            wk.add(new Workout(1, "Workout 1", "2020-05-11", 2, 0, 1, 0));
-            wk.add(new Workout(2, "Workout 2", "2020-05-11", 1, 0, 1, 0));
-            wk.add(new Workout(3, "Workout 3", "2020-05-11", 4, 0, 1, 0));
-            wk.add(new Workout(4, "Workout 4", "2020-05-11", 2, 0, 0, 0));
+            AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
+
+            wk.add(new Workout(1, "Workout 1", "2020-04-11", 2, 0, 1, 0));
+            wk.add(new Workout(2, "Workout 2", "2020-04-11", 1, 0, 1, 0));
+            wk.add(new Workout(3, "Workout 3", "2020-04-11", 4, 0, 1, 0));
+            wk.add(new Workout(4, "Workout 4", "2020-04-11", 5, 0, 1, 0));
+            wk.add(new Workout(5, "Workout 5", "2020-04-11", 5, 0, 1, 0));
 
             wkr.add(new WorkoutReport(1, 1, "2020-05-11"));
             wkr.add(new WorkoutReport(2, 2, "2020-05-15"));
             wkr.add(new WorkoutReport(3, 1, "2020-05-21"));
             wkr.add(new WorkoutReport(4, 3, "2020-05-29"));
-
-            AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
-
-            Log.d("asynctask", "doInBackground: ");
+            wkr.add(new WorkoutReport(5, 5, "2020-04-28"));
+            wkr.add(new WorkoutReport(6, 5, "2020-06-02"));
 
             appDatabase.workoutDAO().insertAll(wk);
             appDatabase.workoutReportDAO().insertAll(wkr);
@@ -112,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(getBaseContext(), "datos cargados", Toast.LENGTH_LONG);
+            Log.d(TAG, "doInBackground: data added");
+            //Toast.makeText(getBaseContext(), "datos cargados", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -50,16 +50,15 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
-        adapter = new TrainingHistoryAdapter();
-
         workoutscompleted = root.findViewById(R.id.workouts_completed);
+
+        adapter = new TrainingHistoryAdapter();
 
         recyclerView = root.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
         new TaskGetWorkoutReports(this).execute();
-
 
         return root;
     }
@@ -90,7 +89,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
         protected void onPostExecute(List<WorkoutDone> workoutsDone) {
             super.onPostExecute(workoutsDone);
             listener.setWorkoutReportsFromDB(workoutsDone);
-            Log.d(TAG, "onPostExecute: " + workoutsDone.size() );
+            Log.d(TAG, "onPostExecute: workouts: " + workoutsDone.size() );
         }
     }
 
