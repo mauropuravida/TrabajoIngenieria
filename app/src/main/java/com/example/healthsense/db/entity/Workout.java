@@ -14,13 +14,15 @@ import java.util.Date;
 public class Workout {
 
     @PrimaryKey
-    private int id_wk;
+    private int id;
 
-//    @ForeignKey(entity = DeviceUser.class, parentColumns = "id", childColumns = "device_user_id")
-//    private int device_user_id;
-//
-//    @ForeignKey(entity = MedicalPersonnel.class, parentColumns = "id", childColumns = "medical_personnel_id")
-//    private int medical_personnel_id;
+    @ForeignKey(entity = DeviceUser.class, parentColumns = "id", childColumns = "device_user_id",
+                onDelete = ForeignKey.RESTRICT, onUpdate = ForeignKey.CASCADE)
+    private int device_user_id;
+
+    @ForeignKey(entity = MedicalPersonnel.class, parentColumns = "id", childColumns = "medical_personnel_id",
+                onDelete = ForeignKey.RESTRICT, onUpdate = ForeignKey.CASCADE)
+    private int medical_personnel_id;
 
     @ColumnInfo(name = "name")
     private String name;
@@ -41,7 +43,7 @@ public class Workout {
     private int rating;
 
     public Workout(int id_wk, String name, String creation_date, int difficulty, float price, int done, int rating) {
-        this.id_wk = id_wk;
+        this.id = id_wk;
         this.name = name;
         this.creation_date = creation_date;
         this.difficulty = difficulty;
@@ -51,11 +53,11 @@ public class Workout {
     }
 
     public int getId_wk() {
-        return id_wk;
+        return id;
     }
 
     public void setId_wk(int id_wk) {
-        this.id_wk = id_wk;
+        this.id = id_wk;
     }
 
     //    public int getDevice_user_id() {
