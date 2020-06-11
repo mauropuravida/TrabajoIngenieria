@@ -12,9 +12,27 @@
     <string name="menu_my_trainings">My Trainings</string>
     <string name="menu_training_history">Training History</string>
     <string name="menu_device">Device</string>
-    <string name="menu_change_pasword">Change Pasword</string>
+    <string name="menu_change_pasword">Change Password</string>
+    <string name="menu_payment_methods">Payment methods</string>
+    <string name="menu_my_Suscribers">My Suscribers</string>
+    <string name="menu_my_Suscriptions">My Suscriptions</string>
+    <string name="cbu">CBU</string>
+    <string name="alias">ALIAS</string>
+    <string name="cuil_cuit">CUIL/CUIT</string>
+    <string name="info_payment">Add the necessary data so that we can deposit your money.</string>
+    <string name="resquest_password">Request password</string>
+    <string name="text_change_new_pass">Write your new password that will be used for your next login</string>
+    <string name="set_price">SET PRICE</string>
+    <string name="price">Price</string>
+    <string name="waiting_for_the_cost">Waiting for the cost</string>
+    <string name="waiting_for_training">Waiting for training</string>
+    <string name="assigned">Assigned</string>
+    <string name="add_training">ADD TRAINING</string>
+    <string name="edit">EDIT</string>
 
-    <string name="close_session">Close Session</string>
+
+
+    <string name="close_session">Log out</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -29,10 +47,10 @@
     <string name="login_failed">"Login failed"</string>
     <string name="remember_me">"Remember me"</string>
     <string name="forgot_password"><u>Forgot Password</u></string>
-    <string name="welcome_to_the">"Welcome to the"</string>
-    <string name="healthsense">"HealtSense"</string>
+    <string name="welcome_to_the">"Welcome to"</string>
+    <string name="healthsense">"HealthSense"</string>
     <string name="choose_your">CHOOSE YOUR</string>
-    <string name="profile">Profile</string>
+    <string name="profile">profile</string>
     <string name="user">User</string>
     <string name="medical_staff"> Medical Staff </string>
 
@@ -59,6 +77,8 @@
     <string name="insurance_id">Insurance ID</string>
     <string name="city">City</string>
 
+    <string name="password_fields">Password fields do not match.</string>
+
 
     <!-- String profile -->
     <string name="profile_info">PROFILE INFO</string>
@@ -66,6 +86,34 @@
     <string name="available">Available</string>
     <string name="not_available">Not Available</string>
 
+    <!-- String change password -->
+    <string name="new_password">New Password</string>
+    <string name="repeat_password">Confirm Password</string>
+    <string name="code">Code</string>
+    <string name="change_your_password">Change your password</string>
+    <string name="description_pass">We have sent you an email with a new password. Change it when you enter.</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- String errors -->
+    <string name="e401">Did not enter any token.</string>
+    <string name="e402">The token does not match with any user.</string>
+    <string name="e403">The user does not have permits on that route.</string>
+    <string name="e404">Non-existing endpoint.</string>
+    <string name="e405">Invalid token.</string>
+    <string name="e406">Username does not exist.</string>
+    <string name="e407">Invalid password.</string>
+    <string name="e410">Missing parameter on the route.</string>
+    <string name="e411">Fill in the empty fields.</string>
+    <string name="e412">The datetime format is wrong.</string>
+    <string name="e413">The date format is wrong.</string>
+    <string name="e414">The time format is wrong.</string>
+    <string name="e415">The email format is wrong.</string>
+    <string name="e416">The FK is wrong.</string>
+    <string name="e417">The email is already associated with another user.</string>
+    <string name="e500">Server error. An error has occurred. Please try again.</string>
+    <string name="eGeneric">Unknow error</string>
+
+
 </resources>

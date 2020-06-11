@@ -22,6 +22,11 @@
             android:title="@string/menu_training_history" />
 
         <item
+            android:id="@+id/nav_my_suscriptions"
+            android:icon="@drawable/ic_action_suscriptions"
+            android:title="@string/menu_my_Suscriptions" />
+
+        <item
             android:id="@+id/nav_device"
             android:icon="@drawable/ic_action_device"
             android:title="@string/menu_device" />
@@ -30,6 +35,11 @@
 
     <item android:title="">
         <menu>
+            <item
+                android:id="@+id/nav_change_pass"
+                android:icon="@android:drawable/ic_lock_idle_lock"
+                android:title="@string/menu_change_pasword" />
+
             <item
                 android:id="@+id/nav_close_session"
                 android:icon="@android:drawable/ic_lock_power_off"

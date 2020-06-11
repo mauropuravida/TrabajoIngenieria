@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_action_home"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_action_profile"
+            android:title="@string/menu_profile"/>
+
+        <item
+            android:id="@+id/nav_my_suscribers"
+            android:icon="@drawable/ic_action_suscriptions"
+            android:title="@string/menu_my_Suscribers" />
+
+        <item
+            android:id="@+id/nav_payment_methods"
+            android:icon="@drawable/ic_action_payment"
+            android:title="@string/menu_payment_methods" />
+
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_change_pass"
+                android:icon="@android:drawable/ic_lock_idle_lock"
+                android:title="@string/menu_change_pasword" />
+
+            <item
+                android:id="@+id/nav_close_session"
+                android:icon="@android:drawable/ic_lock_power_off"
+                android:title="@string/close_session"/>
+        </menu>
+    </item>
+
+</menu>
