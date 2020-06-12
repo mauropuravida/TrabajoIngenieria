@@ -29,7 +29,14 @@
     <string name="assigned">Assigned</string>
     <string name="add_training">ADD TRAINING</string>
     <string name="edit">EDIT</string>
-
+    <string name="difficulty">Difficulty</string>
+    <string name="url">URL</string>
+    <string name="time">Time</string>
+    <string name="instructions">Instructions:</string>
+    <string name="save">Save</string>
+    <string name="remove">Remove:</string>
+    <string name="exercise_add_info">The exercise has been successfully added</string>
+    <string name="exercise_remove_info">The exercise has been successfully deleted</string>
 
 
     <string name="close_session">Log out</string>
