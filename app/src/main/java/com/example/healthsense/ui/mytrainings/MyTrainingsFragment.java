@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
@@ -28,8 +27,13 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,10 +51,11 @@ import okhttp3.Response;
 // Obtener lista Exercises /exercise/:id -> id es cada uno de los ids de Workouts_exercises.
 
 public class MyTrainingsFragment extends Fragment {
-    private  ArrayList<LinearLayout> listll;
+    private ArrayList<LinearLayout> listll;
     private ArrayList<JSONObject> workouts, exercises;
-    private HashMap<Integer,ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
+    private HashMap<Integer, ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
     private final String URL_BASE = "https://healthsenseapi.herokuapp.com/";
+    private JSONArray token;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,11 +65,15 @@ public class MyTrainingsFragment extends Fragment {
         exercises = new ArrayList<>();
         workoutExercises = new HashMap<>();
 
+        Toast.makeText(getActivity(),
+                "LOADING TRAININGS" , Toast.LENGTH_LONG)
+                .show();
+
         View.OnClickListener mListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(),
-                        "Click ListItem Number " + v.getTag() , Toast.LENGTH_LONG)
+                        "Click Workout Number " + v.getTag() , Toast.LENGTH_LONG)
                         .show();
                 // nuevo intent con la info del layout seleccionado.
             }
@@ -75,74 +84,107 @@ public class MyTrainingsFragment extends Fragment {
 
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento OkHttp
-           // getExercises();
-            createExercises(root,mListener);
             doAsync.execute(new Runnable() {
                 @Override
                 public void run() {
-                    String path = "exercise/"; // obtengo por cada par work_id|exercice_id, la info del exercise
-                    // Podria optimizarse obteniendo todos los exercices para realizar muchos menos llamados.
-                    // Pero si la cantidad de exercises es muy grande no conviene.
-                    String finalPath = path;
-                    getBackendResponse(finalPath,1,exercises,null);
-                    System.out.println("TAMAÑO DE EXERCISE : " +exercises.size());
+                    getWorkouts(root, mListener);
                 }
             });
-            System.out.println("TAMAÑO DE EXERCISE : " +exercises.size());
         } else {
             // No hay conexión a Internet en este momento Room
         }
-
         return root;
     }
 
-    private void createExercises(View root, View.OnClickListener mListener){
+    private void createExercises(View root, View.OnClickListener mListener) {
         //Logica para obtener datos necesarios
-
-        for ( int i = 0; i<16 ; i++) { // desde i hasta cant workouts
-            newTraining(root,i, mListener); // ver que datos enviar
+        for (int i = 0; i < workouts.size(); i++) { // desde i hasta cant workouts
+            newTraining(root, i, mListener); // ver que datos enviar
         }
     }
 
-    private void getExercises(){
-        doAsync.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        String path = "workout/device_user_id&"; // obtengo workouts del user_id.
-                        getBackendResponse(path, 0,workouts,null);
-                        path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
-                        for (JSONObject o : workouts){
-                            try {
-                                getBackendResponse(path,o.getInt("id"),null,workoutExercises);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        path = "exercise/"; // obtengo por cada par work_id|exercice_id, la info del exercise
-                        // Podria optimizarse obteniendo todos los exercices para realizar muchos menos llamados.
-                        // Pero si la cantidad de exercises es muy grande no conviene.
-                        String finalPath = path;
-                        workoutExercises.forEach((k, v) -> {
-                            for(Integer values: v)
-                                getBackendResponse(finalPath,values.intValue(),exercises,null);
-                        });
-
-                    }
-                }
-        );
-
+    private void getExercisesWorkout(View root, View.OnClickListener mListener) {
+        String path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
+        token = new JSONArray();
+        int i = 0;
+        for (JSONObject o : workouts) {
+            try {
+                i++;
+                getBackendResponse(path, o.getInt("id"), null, workoutExercises, root, mListener, i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    // Enviar URL, y lista o hashmap donde almacenar.
-    //         String url = URL_BASE + "deviceUser/" + "user_id&" + id  ; JSONObject -> DEPRECATED.
-    //         String url = URL_BASE + "workout/" + "device_user_id&" + id; JSONArray
-    //         String url = URL_BASE + "workoutExercise/" + "workout_id&" + id; JSONObject
-    //         String url = URL_BASE + "exercise/" + id; JSONObject
+    private void getExercises(View root, View.OnClickListener mListener, HashMap<Integer, ArrayList<Integer>> hashObj, int cant) {
+        String path = "exercise/"; // obtengo por cada par work_id|exercice_id, la info del exercise
+        // Podria optimizarse obteniendo todos los exercices para realizar muchos menos llamados.
+        // Pero si la cantidad de exercises es muy grande no conviene.
+        String finalPath = path;
+        Iterator it = hashObj.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            ArrayList<Integer> values = (ArrayList<Integer>) pair.getValue();
+            for (int i = 0; i < values.size(); i++) {
+                if (!it.hasNext() && (i == values.size() - 1) && cant == workouts.size()) {
+                    getLastResponse(finalPath, values.get(i).intValue(), exercises, null, root, mListener);
+                } else {
+                    getBackendResponse(finalPath, values.get(i).intValue(), exercises, null, root, mListener, 0);
+                }
+            }
+        }
+    }
 
-    private void newTraining(View root, int i, View.OnClickListener mListener){
+    private void getWorkouts(View root, View.OnClickListener mListener) {
+        String path = "workout/device_user_id&"; // obtengo workouts del user_id. REEMPLAZAR TOKEN por MAINACTIVITY.TOKEN
+        JSONObject ob = new JSONObject();
+        try {
+            ob.put("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE");
+            token = new JSONArray();
+            token.put(ob);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        getBackendResponse(path, 0, workouts, null, root, mListener, 0);
+    }
+
+    private String formatDate(String date) throws ParseException {
+        Date d= new SimpleDateFormat("dd-MM-yyyy").parse(date);
+        String formatDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(d);
+        return formatDate.substring(0,9);
+    }
+
+    private void newTraining(View root, int i, View.OnClickListener mListener) {
         //----programación de formato de la lista de trainings
 
+        JSONObject workout = workouts.get(i);
+        JSONObject exercise = new JSONObject();
+        String description = "No description";
+        String date = "";
+        int difficulty = 1;
+        try {
+            ArrayList<Integer> values = workoutExercises.get(new Integer(workout.getInt("id")));
+            if ( values != null &&  values.size() > 0) {
+                System.out.println("VALUES " + values.size());
+                int x = 0;
+                int k = 0;
+                boolean encontrado = false;
+                while (exercise.length() < x && !encontrado){
+                    while (k < values.size()){
+                        if (exercises.get(i).getInt("id") != values.get(x).intValue())
+                            k++;
+                        else
+                            encontrado = true;
+                    }
+                    x++;
+                }
+                exercise = exercises.get(k);
+                description =  exercise.getString("description");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Space s0 = new Space(root.getContext());
         s0.setMinimumHeight(30);
 
@@ -151,11 +193,16 @@ public class MyTrainingsFragment extends Fragment {
         ll.setGravity(Gravity.CENTER_VERTICAL);
 
         TextView tv1 = new TextView(root.getContext());
-        tv1.setText(Html.fromHtml("<b>Christian Bale Training</b><br><br> " +
-                "Squats, Calisthenics, Weights and Cardio. Cardio: Complete 30-45 minutes of cardio from the selection below: High Incline Walk."));
+        try {
+            date = formatDate(workout.getString("creation_date"));
+            difficulty = workout.getInt("difficulty");
+            tv1.setText(Html.fromHtml("<b>"+ workout.getString("name") + "</b>" +"<br><br>" + description));
+        } catch (JSONException | ParseException e) {
+            e.printStackTrace();
+        }
         //tv1.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 30);
         tv1.setTextColor(root.getResources().getColor(R.color.GrayText));
-        tv1.setPadding(30,30,30,30);
+        tv1.setPadding(30, 30, 30, 30);
 
         ll.addView(tv1);
 
@@ -163,22 +210,21 @@ public class MyTrainingsFragment extends Fragment {
         ll1.setOrientation(LinearLayout.HORIZONTAL);
         ll1.setGravity(Gravity.CENTER_VERTICAL);
 
+        System.out.println("DATE " + date);
         TextView tv3 = new TextView(root.getContext());
-        tv3.setText(Html.fromHtml("<b>CREATED:</b> 10/1/2025&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>DIFFICULTY:</b> "));
+        tv3.setText(Html.fromHtml("<b>CREATED:</b>" + date + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>DIFFICULTY:</b> "));
         tv3.setTextColor(root.getResources().getColor(R.color.GrayText));
-        tv3.setPadding(30,30,30,30);
-
-        TextView tv4 = new TextView(root.getContext());
-        tv4.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
-        tv4.setPadding(0,20,0,20);
-
-        TextView tv5 = new TextView(root.getContext());
-        tv5.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
-        tv5.setPadding(0,20,0,20);
+        tv3.setPadding(30, 30, 30, 30);
 
         ll1.addView(tv3);
-        ll1.addView(tv4);
-        ll1.addView(tv5);
+
+
+        for(int j=0; j<difficulty;j++){
+            TextView tv4 = new TextView(root.getContext());
+            tv4.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
+            tv4.setPadding(0, 20, 0, 20);
+            ll1.addView(tv4);
+        }
 
 
         LinearLayout ll3 = new LinearLayout(root.getContext());
@@ -196,21 +242,25 @@ public class MyTrainingsFragment extends Fragment {
         lista.addView(ll3);
         // set an id and listener for each layout.
         listll.add(ll3);
-        listll.get(listll.size() -1).setTag(i);
-        listll.get(listll.size() -1).setOnClickListener(mListener);
+        try {
+            listll.get(listll.size() - 1).setTag(workout.getInt("id"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        listll.get(listll.size() - 1).setOnClickListener(mListener);
         //------fin de programación del formato
     }
 
-    private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer,ArrayList<Integer>> hashObj){
+    private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener, int cant) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = URL_BASE + path + id;
-        
-        return request.GET(url, new Callback() {
+        return request.GET(url, token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
-                        "Failed to obtain information from " + url , Toast.LENGTH_LONG)
-                        .show();            }
+                        "Failed to obtain information from " + url, Toast.LENGTH_LONG)
+                        .show();
+            }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -219,110 +269,63 @@ public class MyTrainingsFragment extends Fragment {
                     ArrayList<Integer> values = new ArrayList<>();
                     responseData = response.body().string();
                     Object jsonType = new JSONTokener(responseData).nextValue();
-                    System.out.println("ENTRO AL RESPONSE");
-                    if (jsonType instanceof JSONObject){
+                    if (jsonType instanceof JSONObject) { //Si es JSONOBject -> exercices
                         JSONObject json = new JSONObject((responseData));
                         exercises.add(json);
-                        System.out.println("ENTRO AL JSONOBJECT");
-
-                    } else if (jsonType instanceof JSONArray){
-                        System.out.println("ENTRO AL JSONARRAY");
+                    } else if (jsonType instanceof JSONArray) {// Si es JSONArray -> workoust/workout_exercise
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {
                             if (hashObj == null) {
                                 listObj.add(json.getJSONObject(i));
-                            }
-                            else {
+                            } else {
                                 values.add(json.getJSONObject(i).getInt("exercise_id"));
                             }
                         }
-                        if (hashObj == null)
-                            hashObj.put(id, values);
-                    }
-
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    // IMPLEMENTAR LOGICA EN OBJETOS.
-
-
-/*
-
-    private Call obtainUserId(){
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + "deviceUser/" + "user_id&0"  ;
-
-        return request.GET(url, new JSONArray(), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(),
-                        "Failed to obtain user_id " , Toast.LENGTH_LONG)
-                        .show();            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseData = null;
-                try {
-                    responseData = response.body().string();
-                    JSONObject json = new JSONObject(responseData);
-                    int device_id = json.getInt("id");
-                    doAsync.execute(
-                            new Runnable() {
+                        if (hashObj != null) {
+                            if (json.length() != 0)
+                                hashObj.put(id, values);
+                            getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    obtainWorkOuts(device_id);
+                                    doAsync.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getExercises(root, mListener, new HashMap<>(hashObj), cant);
+                                        }
+                                    });
                                 }
-                            }
-                    );
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-    }
-
-    private Call obtainWorkOuts(int id){
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + "workout/" + "device_user_id&" + id;
-        return  request.GET(url,new JSONArray(), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(),
-                        "Failed to obtain workouts " , Toast.LENGTH_LONG)
-                        .show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseData = null;
-                try {
-                    responseData = response.body().string();
-                    JSONArray json = new JSONArray(responseData); // Ojo que es una lista de workouts JSONArray
-                    for (int i = 0; i < json.length(); i++) {
-                        workouts.add(json.getJSONObject(i));
+                            });
+                        } else
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    workouts = listObj;
+                                    doAsync.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getExercisesWorkout(root, mListener);
+                                        }
+                                    });
+                                }
+                            });
                     }
-                    // Guardar lista workouts para tratar y manipular como objetos
-                    //for con cada uno de los workouts_id llamando a obtainWorkoutExercises.
                 } catch (IOException | JSONException e) {
-                    e.printStackTrace();
+                    Toast.makeText(getActivity(),
+                            "Failed to obtain information from " + url, Toast.LENGTH_LONG)
+                            .show();                    e.printStackTrace();
                 }
             }
         });
     }
 
-    private Call obtainWorkoutsExercises(int id){
+    private Call getLastResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + "workoutExercise/" + "workout_id&" + id;
-        return  request.GET(url,new JSONArray(), new Callback() {
+        String url = URL_BASE + path + id;
+        return request.GET(url, token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(getActivity(),
-                        "Failed to obtain workoutsExercises " , Toast.LENGTH_LONG)
+                        "Failed to obtain information from " + url, Toast.LENGTH_LONG)
                         .show();
             }
 
@@ -330,42 +333,24 @@ public class MyTrainingsFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseData = null;
                 try {
+                    ArrayList<Integer> values = new ArrayList<>();
                     responseData = response.body().string();
-                    JSONObject json = new JSONObject(responseData); // Obtengo el WorkoutExercises correspondiente.
-                    workoutExercises.put(id,json.getInt("exercise_id"));
-                    // Guardar excersise con el workout al que pertenece
-                    // pedir informacion del excersise ese.
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private Call obtainExcersise(int id){
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + "exercise/" + id;
-        return request.GET(url,new JSONArray(), new Callback(){
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(),
-                        "Failed to obtain Exercise " , Toast.LENGTH_LONG)
-                        .show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseData = null;
-                try {
-                    responseData = response.body().string();
-                    JSONObject json = new JSONObject(responseData); // Obtengo el exercises correspondiente.
+                    JSONObject json = new JSONObject((responseData));
                     exercises.add(json);
-                    // Guardar informacion del excersise.
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            createExercises(root, mListener);
+                        }
+                    });
+
                 } catch (IOException | JSONException e) {
+                    Toast.makeText(getActivity(),
+                            "Failed to obtain information from " + url, Toast.LENGTH_LONG)
+                            .show();                    e.printStackTrace();
                     e.printStackTrace();
                 }
             }
         });
     }
-*/
 }
