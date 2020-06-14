@@ -1,6 +1,8 @@
 package com.example.healthsense.data;
 
+import com.example.healthsense.R;
 import com.example.healthsense.data.model.LoggedInUser;
+import com.example.healthsense.ui.login.LoginActivity;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -43,12 +45,9 @@ public class LoginRepository {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result<LoggedInUser> login(String username, String password) {
+    public void login(String username, String password, LoginActivity la) {
         // handle login
-        Result<LoggedInUser> result = dataSource.login(username, password);
-        if (result instanceof Result.Success) {
-            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
-        }
-        return result;
+        dataSource.login(username, password, la);
+
     }
 }

@@ -6,6 +6,7 @@ import org.json.JSONObject
 
 
 class OkHttpRequest(client: OkHttpClient) {
+
     internal var client = OkHttpClient()
 
     init {
@@ -39,7 +40,8 @@ class OkHttpRequest(client: OkHttpClient) {
                 }
             }
 
-        val call = client.newCall(request.build())
+        val call  = client.newCall(request.build())
+
         call.enqueue(callback)
         return call
     }

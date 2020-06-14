@@ -1,6 +1,5 @@
 package com.example.healthsense.ui.login;
 
-import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -13,6 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -24,23 +24,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
-import com.example.healthsense.Resquest.*;
 import com.example.healthsense.ui.password.Password;
 import com.example.healthsense.ui.register.ChoiseProfile;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    private LoginActivity act;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,14 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
 
-        doAsync.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        isLoged();
-                    }
-                }
-        );
+        act = this;
+        isLoged();
 
         final Button loginButton = findViewById(R.id.login);
         final Button registerButton = findViewById(R.id.register);
@@ -80,34 +67,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(loginFormState.getPasswordError()));
                 }
-            }
-        });
-
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
-
-                CheckBox cb = findViewById(R.id.rememberme);
-                if (cb.isChecked()) {
-                    SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-                    //Guardar datos de logeo, primera vez que se logea
-                    preferencesEditor.edit().putString("User", usernameEditText.getText().toString()).apply();
-                    preferencesEditor.edit().putString("Pass", passwordEditText.getText().toString()).apply();
-                }
-
-                //Terminar activity de login.
-                finish();
             }
         });
 
@@ -136,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                            passwordEditText.getText().toString(), act);
                 }
                 return false;
             }
@@ -145,9 +104,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginButton.setEnabled(false);
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                        passwordEditText.getText().toString(),act);
             }
         });
 
@@ -171,63 +131,61 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private Call isLoged() {
-
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+    private void isLoged() {
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         String user = preferencesEditor.getString("User", "");
         String pass = preferencesEditor.getString("Pass", "");
 
-        JSONObject js = new JSONObject();
-        try {
-            js.put("email", user);
-            js.put("password", pass);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Log.d(user,pass);
+        if (!user.equals("")) {
+            findViewById(R.id.loading).setVisibility(View.VISIBLE);
+            loginViewModel.login(user, pass, act);
         }
-
-        String conexion = "https://healthsenseapi.herokuapp.com/signin/";
-
-        return request.POST(conexion, js,  new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) {
-                try {
-                    String responseData = response.body().string();
-                    JSONObject json = new JSONObject(responseData);
-                    MainActivity.TOKEN = json.getString("token");
-                    loginAcepted();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
-    private void loginAcepted(){
+    public void loginAcepted(){
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+        CheckBox cb = findViewById(R.id.rememberme);
+        if (cb.isChecked()) {
+            if (!((EditText)findViewById(R.id.username)).getText().toString().equals("")) {
+                //Guardar datos de logeo, primera vez que se logea
+                preferencesEditor.edit().putString("User", ((EditText) findViewById(R.id.username)).getText().toString()).apply();
+                preferencesEditor.edit().putString("Pass", ((EditText) findViewById(R.id.password)).getText().toString()).apply();
+            }
+        }
+
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.login).setEnabled(true);
+                }
+            }
+        );
+
+        String user = (preferencesEditor.getString("User","").equals("")) ? ((EditText) findViewById(R.id.username)).getText().toString() : preferencesEditor.getString("User","");
+
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("user",((EditText) findViewById(R.id.username)).getText().toString());
+        intent.putExtra("user", user);
         startActivity(intent);
+        //Terminar activity de login.
         finish();
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        //Redireccionar a home
-        loginAcepted();
-    }
+    public void showLoginFailed(@StringRes Integer errorString) {
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+                    findViewById(R.id.login).setEnabled(true);
+                    findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+                }
+            }
+        );
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
     @Override

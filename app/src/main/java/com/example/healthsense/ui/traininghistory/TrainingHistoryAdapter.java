@@ -112,6 +112,7 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
             intent.getIntExtra("workout id", this.workout_id);
             intent.getIntExtra("report id", this.report_id);
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
+            TrainingInformation.fg = TrainingHistoryFragment.fg;
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
 
 //            getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();

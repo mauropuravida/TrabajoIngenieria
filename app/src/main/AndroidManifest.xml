@@ -12,7 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_healthsense_logo_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:hardwareAccelerated="true">
         <activity android:name=".ui.password.Password"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.register.SignUpMedical"

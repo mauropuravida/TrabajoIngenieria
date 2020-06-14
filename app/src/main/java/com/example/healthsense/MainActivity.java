@@ -16,11 +16,8 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
-
 
         //-----------------------------
 

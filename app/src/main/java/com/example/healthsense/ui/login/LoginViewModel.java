@@ -3,12 +3,10 @@ package com.example.healthsense.ui.login;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import android.util.Patterns;
 
+import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.LoginRepository;
-import com.example.healthsense.data.Result;
-import com.example.healthsense.data.model.LoggedInUser;
 import com.example.healthsense.R;
 
 public class LoginViewModel extends ViewModel {
@@ -29,16 +27,15 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+    public void login(String username, String password, LoginActivity la) {
+        doAsync.execute(new Runnable() {
+            @Override
+            public void run() {
+                // can be launched in a separate asynchronous job
+                loginRepository.login(username, password, la);
 
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+            }
+        });
     }
 
     public void loginDataChanged(String username, String password) {
