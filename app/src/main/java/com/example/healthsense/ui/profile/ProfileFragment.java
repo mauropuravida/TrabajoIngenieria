@@ -164,10 +164,15 @@ public class ProfileFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
 
+                    if(getActivity() == null)
+                        return;
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                if(getActivity() == null)
+                                    return;
                                 ((TextView)root.findViewById(R.id.name)).setText(json.getString("name"));
                                 ((TextView)root.findViewById(R.id.lastname)).setText(json.getString("last_name"));
                                 ((TextView)root.findViewById(R.id.email)).setText(json.getString("email"));
@@ -179,6 +184,10 @@ public class ProfileFragment extends Fragment {
 
                                 ((Spinner) root.findViewById(R.id.gender)).setSelection((json.getString("gender").equals("null")) ? 0 :
                                         ((json.getString("gender").equals("Male")) ? 1 : 2));
+
+                                if (profile == R.layout.fragment_profile_medical){
+                                    ((Spinner) root.findViewById(R.id.interal_medicine)).setSelection(Integer.parseInt(json.getString("medical_speciality_id"))-1);
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -189,11 +198,6 @@ public class ProfileFragment extends Fragment {
 
                     getFK(root,"https://healthsenseapi.herokuapp.com/city/"+ct,"state_id");
                     getDocumentTypes(json.getString("document_type_id"));
-
-                    if (profile == R.layout.fragment_profile_medical){
-                        ((Spinner) root.findViewById(R.id.interal_medicine)).setSelection(Integer.parseInt(json.getString("medical_speciality_id"))-1);
-                    }
-
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -236,11 +240,14 @@ public class ProfileFragment extends Fragment {
                     }
                     else {
                         countryId = json.getString(fk);
+                        if(getActivity() == null)
+                            return;
 
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
+                                if(getActivity() == null)
+                                    return;
                                 //consulta la lista de paises
                                 inicSpinner(R.id.country,root,"https://healthsenseapi.herokuapp.com/country/",idsCountries = new ArrayList<>());
                             }
@@ -297,10 +304,16 @@ public class ProfileFragment extends Fragment {
                     for (int i=0;i< jsonArray.length(); i++){
 
                         JSONObject json = new JSONObject(jsonArray.get(i).toString());
+
+                        if(getActivity() == null)
+                            return;
+
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
+                                    if(getActivity() == null)
+                                        return;
                                     values.add(json.getString("name"));
                                     if (arr != null){
                                         arr.add(json.getString("id"));
@@ -312,9 +325,14 @@ public class ProfileFragment extends Fragment {
                         });
                     }
 
+                    if(getActivity() == null)
+                        return;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            if(getActivity() == null)
+                                return;
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(root.getContext(),
                                     R.layout.spinner_color, values);
                             arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
@@ -364,10 +382,16 @@ public class ProfileFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
 
+                    if(getActivity() == null)
+                        return;
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                if(getActivity() == null)
+                                    return;
+
                                 ((TextView)getActivity().findViewById(R.id.credential_type)).setText(json.getString("name"));
                             } catch (JSONException e) {
                                 e.printStackTrace();

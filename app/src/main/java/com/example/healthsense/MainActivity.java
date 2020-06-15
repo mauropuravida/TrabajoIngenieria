@@ -18,9 +18,9 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.Menu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     //nombre de archivo de preferencias
     public static final String PREFS_FILENAME = "data.prefs";
     public static String email;
+    public static String user;
     public static String TOKEN = "";
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         email = getIntent().getExtras().getString("user");
-        String user = preferencesEditor.getString(email, "");
+        user = preferencesEditor.getString(email, "");
+
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
@@ -78,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        ((TextView)findViewById(R.id.nameMenu)).setText(user);
+        ((TextView)findViewById(R.id.emailMenu)).setText(email);
         return true;
     }
 
@@ -87,15 +91,6 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-    @Override
-    public void onBackPressed() {
-
-        if (!isTaskRoot()) {
-            super.onBackPressed();
-        }
-    }
-
 
     //test inserts history
     private class TaskInsertWorkouts extends AsyncTask<Void, Void, Void> {

@@ -2,6 +2,7 @@ package com.example.healthsense.ui.mytrainings;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -16,11 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
+import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +62,8 @@ public class MyTrainingsFragment extends Fragment {
     private JSONArray token;
     private ProgressDialog mProgressDialog;
 
+    public static Fragment fg;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_my_trainings, container, false);
@@ -67,6 +72,8 @@ public class MyTrainingsFragment extends Fragment {
         exercises = new ArrayList<>();
         workoutExercises = new HashMap<>();
 
+        fg = this;
+
         View.OnClickListener mListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +81,8 @@ public class MyTrainingsFragment extends Fragment {
                         "Click Workout Number " + v.getTag() , Toast.LENGTH_LONG)
                         .show();
                 // nuevo intent con la info del layout seleccionado.
+                TrainingInformation.fg = fg;
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
             }
         };
 

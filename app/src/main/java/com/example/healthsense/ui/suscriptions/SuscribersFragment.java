@@ -1,9 +1,12 @@
 package com.example.healthsense.ui.suscriptions;
 
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.healthsense.R;
 import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.ui.traininginformation.CreateTraining;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +33,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class SuscribersFragment extends Fragment {
+
+    public static Fragment fg;
+
     private ArrayList<LinearLayout> listll;
 
 
@@ -60,10 +67,10 @@ public class SuscribersFragment extends Fragment {
            }
         );
 
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit),View.GONE);
+        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
 
         ((TextView)root.findViewById(R.id.count1)).setText("4");
 
@@ -80,9 +87,9 @@ public class SuscribersFragment extends Fragment {
            }
         );
 
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training),View.GONE);
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training),View.GONE);
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training),View.GONE);
+        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
+        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
+        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
 
         ((TextView)root.findViewById(R.id.count2)).setText("3");
 
@@ -98,15 +105,24 @@ public class SuscribersFragment extends Fragment {
                }
            }
         );
+        fg = this;
 
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
 
         ((TextView)root.findViewById(R.id.count3)).setText("6");
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fg).addToBackStack(null).commit();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         return root;
     }
@@ -206,12 +222,30 @@ public class SuscribersFragment extends Fragment {
         //------fin de programación del formato
     }
 
-    private Button createButton(View root, int text){
+    private Button createButton(View root, int text , Fragment fragment){
         Button bt = new Button(root.getContext());
         bt.setText(text);
         bt.setBackground(getResources().getDrawable(R.drawable.background_model_training));
         bt.setTextColor(getResources().getColor(android.R.color.white));
+        bt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (fragment == null){
+                        setPriceWorkout();
+                    }else {
+                        Intent intent = new Intent();
+                        AppCompatActivity activity = (AppCompatActivity) root.getContext();
+                        //intent.putExtra("complexObject", fg);
+                        activity.getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack(null).commit();
+                    }
+                }
+            }
+        );
         return bt;
+    }
+
+    private void setPriceWorkout(){
+        //TODO , hay que ver como se implementa, se puede mostrar un mensaje cuando se ejecuta
     }
 
 }
