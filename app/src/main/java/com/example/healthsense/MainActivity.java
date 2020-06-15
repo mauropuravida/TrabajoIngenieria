@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -13,6 +14,7 @@ import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.entity.Workout;
 import com.example.healthsense.db.entity.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        int layoutProfile = preferencesEditor.getInt(getIntent().getExtras().getString("user")+"profile", R.layout.fragment_profile_medical);
+        int layoutProfile = preferencesEditor.getInt(getIntent().getExtras().getString("user") + "profile", R.layout.fragment_profile_medical);
 
         setContentView((layoutProfile == R.layout.fragment_profile_medical) ? R.layout.activity_main_medical : R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_profile, R.id.nav_my_trainings,
                 R.id.nav_training_history, R.id.nav_my_suscribers, R.id.nav_my_suscriptions, R.id.nav_payment_methods,
-                R.id.nav_device,R.id.nav_change_pass, R.id.nav_close_session)
+                R.id.nav_device, R.id.nav_change_pass, R.id.nav_close_session)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -63,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         String user = preferencesEditor.getString(email, "");
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
 
 
         //-----------------------------
@@ -86,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
     @Override
     public void onBackPressed() {
 
-        if(!isTaskRoot()){
+        if (!isTaskRoot()) {
             super.onBackPressed();
         }
     }
-
 
 
     //test inserts history
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         List<Workout> wk = new ArrayList<>();
         List<WorkoutReport> wkr = new ArrayList<>();
 
-        public TaskInsertWorkouts(){
+        public TaskInsertWorkouts() {
         }
 
         @Override
@@ -112,18 +113,17 @@ public class MainActivity extends AppCompatActivity {
 
             AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
 
-            wk.add(new Workout(1, "Workout 1", "2020-04-11", 2, 0, 1, 0));
-            wk.add(new Workout(2, "Workout 2", "2020-04-11", 1, 0, 1, 0));
-            wk.add(new Workout(3, "Workout 3", "2020-04-11", 4, 0, 1, 0));
-            wk.add(new Workout(4, "Workout 4", "2020-04-11", 5, 0, 1, 0));
-            wk.add(new Workout(5, "Workout 5", "2020-04-11", 5, 0, 1, 0));
+            appDatabase.workoutDAO().deleteAll();
+            appDatabase.workoutReportDAO().deleteAll();
 
-            wkr.add(new WorkoutReport(1, 1, "2020-05-11"));
-            wkr.add(new WorkoutReport(2, 2, "2020-05-15"));
-            wkr.add(new WorkoutReport(3, 1, "2020-05-21"));
+            wk.add(new Workout(4, "Workout 4", "2020-04-11", 5, 0, 1));
+            wk.add(new Workout(5, "Workout 5", "2020-04-11", 2, 0, 1));
+            wk.add(new Workout(6, "Workout 6", "2020-04-11", 4, 0, 1));
+
             wkr.add(new WorkoutReport(4, 3, "2020-05-29"));
             wkr.add(new WorkoutReport(5, 5, "2020-04-28"));
-            wkr.add(new WorkoutReport(6, 5, "2020-06-02"));
+            wkr.add(new WorkoutReport(6, 4, "2020-06-02"));
+            wkr.add(new WorkoutReport(7, 6, "2020-06-12"));
 
             appDatabase.workoutDAO().insertAll(wk);
             appDatabase.workoutReportDAO().insertAll(wkr);
