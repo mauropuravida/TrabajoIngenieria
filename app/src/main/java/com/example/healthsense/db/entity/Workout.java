@@ -16,12 +16,6 @@ public class Workout {
     @PrimaryKey
     private int id_wk;
 
-//    @ForeignKey(entity = DeviceUser.class, parentColumns = "id", childColumns = "device_user_id")
-//    private int device_user_id;
-//
-//    @ForeignKey(entity = MedicalPersonnel.class, parentColumns = "id", childColumns = "medical_personnel_id")
-//    private int medical_personnel_id;
-
     @ColumnInfo(name = "name")
     private String name;
 
@@ -32,7 +26,7 @@ public class Workout {
     private int difficulty;
 
     @ColumnInfo(name = "price")
-    private float price;
+    private double price;
 
     @ColumnInfo(name = "done")
     private int done;
@@ -40,14 +34,23 @@ public class Workout {
     @ColumnInfo(name = "rating")
     private int rating;
 
-    public Workout(int id_wk, String name, String creation_date, int difficulty, float price, int done, int rating) {
+//    public Workout(int id_wk, String name, String creation_date, int difficulty, double price, int done, int rating) {
+//        this.id_wk = id_wk;
+//        this.name = name;
+//        this.creation_date = creation_date;
+//        this.difficulty = difficulty;
+//        this.price = price;
+//        this.done = done;
+//        this.rating = rating;
+//    }
+
+    public Workout(int id_wk, String name, String creation_date, int difficulty, double price, int done) {
         this.id_wk = id_wk;
         this.name = name;
         this.creation_date = creation_date;
         this.difficulty = difficulty;
         this.price = price;
         this.done = done;
-        this.rating = rating;
     }
 
     public int getId_wk() {
@@ -57,22 +60,6 @@ public class Workout {
     public void setId_wk(int id_wk) {
         this.id_wk = id_wk;
     }
-
-    //    public int getDevice_user_id() {
-//        return device_user_id;
-//    }
-//
-//    public void setDevice_user_id(int device_user_id) {
-//        this.device_user_id = device_user_id;
-//    }
-//
-//    public int getMedical_personnel_id() {
-//        return medical_personnel_id;
-//    }
-//
-//    public void setMedical_personnel_id(int medical_personnel_id) {
-//        this.medical_personnel_id = medical_personnel_id;
-//    }
 
     public String getName() {
         return name;
@@ -98,11 +85,11 @@ public class Workout {
         this.difficulty = difficulty;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

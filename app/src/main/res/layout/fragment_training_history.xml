@@ -18,27 +18,56 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
 
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:text="@string/workouts_completed"
-                android:textColor="@color/YellowText"
-                android:textStyle="bold" />
+                android:layout_weight="80"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="32dp"
+                android:paddingBottom="24dp">
 
-            <TextView
-                android:id="@+id/workouts_completed"
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/workouts_completed"
+                    android:textColor="@color/YellowText"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/workouts_completed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="2dp"
+                    android:textColor="@color/GrayText"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/GrayText"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/reload_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:clickable="true"
+                    app:backgroundTint="@color/Button"
+                    app:srcCompat="@android:drawable/stat_notify_sync" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -48,9 +77,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="No data available"
+            android:textColor="@color/GrayText"
+            android:visibility="gone" />
+
 
     </LinearLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

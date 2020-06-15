@@ -1,5 +1,7 @@
 package com.example.healthsense.db.dao;
 
+import android.app.admin.SecurityLog;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -31,4 +33,7 @@ public interface WorkoutReportDAO {
 
     @Query("DELETE FROM WorkoutReports")
     void deleteAll();
+
+    @Query("SELECT COUNT(*) FROM WorkoutReports")
+    int getSize();
 }

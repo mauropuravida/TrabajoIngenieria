@@ -53,12 +53,14 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: workout" + position);
         WorkoutDone workout = dataset.get(position);
+
         holder.name.setText(workout.getName());
         holder.description.setText(workout.getDescription());
         holder.date.setText(Html.fromHtml("<b>DATE:</b> " + String.valueOf(workout.getDate())));
+
         holder.difficulty.setText(Html.fromHtml("<b>DIFFICULTY:</b>"));
+
         for (int i = 0; i < workout.getDifficulty(); i++) {
             TextView tv = new TextView(holder.getContext());
             tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
@@ -98,7 +100,7 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
             this.report_id = -1;
         }
 
-        public Context getContext(){
+        public Context getContext() {
             return itemView.getContext();
         }
 
@@ -108,14 +110,14 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
             Toast.makeText(view.getContext(),
                     "Click on workout: " + String.valueOf(this.workout_id) + " - report: " + String.valueOf(this.report_id),
                     Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent();
-            intent.getIntExtra("workout id", this.workout_id);
-            intent.getIntExtra("report id", this.report_id);
+
+//            Intent intent = new Intent();
+//            intent.getIntExtra("workout id", this.workout_id);
+//            intent.getIntExtra("report id", this.report_id);
+
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             TrainingInformation.fg = TrainingHistoryFragment.fg;
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
-
-//            getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
 
         }
     }
