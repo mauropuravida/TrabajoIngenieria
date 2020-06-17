@@ -15,85 +15,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.healthsense.R;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.UUID;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class DeviceFragment extends Fragment implements AdapterView.OnItemClickListener{
 
-    private DeviceViewModel shareViewModel;
     private static final String TAG = "DeviceActivity";
     BluetoothAdapter nBluetoothAdapter;
-    Button btnVisibilidad;
     Button btnONOFF;
     public ArrayList<BluetoothDevice> nBTDevices = new ArrayList<>();
     public DeviceListAdapter nDeviceListAdapter;
     ListView lvNewDevices;
     Button btnDescubrir;
-    Button btnPlay;
-    Button btnSpeed;
-    Button btnReady;
-    Switch switchOnOff;
     TextView incomingMessage;
     StringBuilder messages;
     Button btnStartConnection;
-    EditText editTextSpeed;
     BluetoothConnectionService mBluetoothConnection;
     private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
     BluetoothDevice mBTDevice;
-    Button btnStop;
-    Button btnJson;
-    EditText editTextPulso;
     private View root;
     public ArrayList<JSONObject> arrayJson=new ArrayList<JSONObject>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        shareViewModel =
-                ViewModelProviders.of(this).get(DeviceViewModel.class);
+
         root = inflater.inflate(R.layout.fragment_device, container, false);
 
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_devices);
         btnONOFF = (Button) root.findViewById(R.id.btnONOFF);
-        // btnVisibilidad = (Button) findViewById(R.id.btnVisibilidad);
         lvNewDevices=(ListView) root.findViewById(R.id.lvNewDevices);
         nBTDevices = new ArrayList<>();
         btnDescubrir = (Button) root.findViewById(R.id.btnFindUnpairedDevices);
         nBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        // editTextSpeed = (EditText) findViewById(R.id.editTextSpeed);
 
-        //  final Switch switchOnOff=(Switch) findViewById(R.id.switchOnOff);
         btnStartConnection = (Button) root.findViewById(R.id.btnStartConnection);
         btnStartConnection.setEnabled(false);
-      //  btnPlay = (Button) root.findViewById(R.id.btnPlay);
-        // btnSpeed = (Button) findViewById(R.id.btnSpeed);
-        //btnReady = (Button) root.findViewById(R.id.btnReady);
-//        incomingMessage=(TextView)root.findViewById(R.id.MensajeEntrante);
         messages = new StringBuilder();
         LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(mReceiver,  new IntentFilter("MensajeEntrante"));
 
@@ -117,22 +81,6 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                 root.getContext().registerReceiver(nBroadcastReceiver2, intentFilter);
             }
         });
-
-        //VISIBILIDAD
-      /*  btnVisibilidad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "btnVisibilidad: Haciendo el dispositivo visible pr 300 segundos");
-                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                startActivity(discoverableIntent);
-
-                IntentFilter intentFilter = new IntentFilter(nBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-                registerReceiver(nBroadcastReceiver2, intentFilter);
-            }
-
-        });*/
-
 
         // Descubrir
         btnDescubrir.setOnClickListener(new View.OnClickListener() {
@@ -158,8 +106,6 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                     root.getContext().registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
                 }
             }
-
-
         });
 
         btnStartConnection.setOnClickListener(new View.OnClickListener() {
@@ -168,69 +114,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
             }
         });
 
-/*        btnPlay.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String play="play";
-                byte[] bytes = play.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnReady.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String ready="ready";
-                byte[] bytes = ready.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnSpeed.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                byte[] bytes = editTextSpeed.getText().toString().getBytes(Charset.defaultCharset());
-                Log.d(TAG,"speed:"+ editTextSpeed.getText());
-                mBluetoothConnection.write(bytes);
-                //editTextSpeed.setText(0);
-            }
-        });
-        switchOnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(switchOnOff.isChecked()){
-                    String on="on";
-                    byte[] bytes = on.getBytes(Charset.defaultCharset());
-                    mBluetoothConnection.write(bytes);
-                }
-                else{
-                    String off="off";
-                    byte[] bytes = off.getBytes(Charset.defaultCharset());
-                    mBluetoothConnection.write(bytes);
-                }
-            }
-        });
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String mensaje="Stop";
-                byte [] bytes = mensaje.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnJson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                JSONObject js= new JSONObject();
-                try{
-                    js.put("Pulso",editTextPulso.getText());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                byte[] bytes= js.toString().getBytes();
-                mBluetoothConnection.write(bytes);
-                editTextPulso.setText("");
-            }
-        });*/
-
         return root;
-
     }
 
     //Crear BroadcasteReceiver
@@ -255,7 +139,6 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                         Log.d(TAG,"nBroadcastReceiver1: PRENDIENDO");
                         break;
                 }
-
             }
         }
     };
@@ -351,162 +234,6 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
         }
     };
 
-
-   /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_devices);
-        btnONOFF = (Button) findViewById(root.id.btnONOFF);
-        // btnVisibilidad = (Button) findViewById(R.id.btnVisibilidad);
-        lvNewDevices=(ListView) findViewById(R.id.lvNewDevices);
-        nBTDevices = new ArrayList<>();
-        btnDescubrir = (Button) findViewById(R.id.btnFindUnpairedDevices);
-        nBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        // editTextSpeed = (EditText) findViewById(R.id.editTextSpeed);
-
-        //  final Switch switchOnOff=(Switch) findViewById(R.id.switchOnOff);
-        btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
-        btnPlay = (Button) findViewById(R.id.btnPlay);
-        // btnSpeed = (Button) findViewById(R.id.btnSpeed);
-        btnReady = (Button) findViewById(R.id.btnReady);
-        incomingMessage=(TextView)findViewById(R.id.MensajeEntrante);
-        messages = new StringBuilder();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,  new IntentFilter("MensajeEntrante"));
-
-        //cuando el bond realice cambios
-        IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        registerReceiver(nBroadcastReceiver4,filter);
-        lvNewDevices.setOnItemClickListener(DeviceActivity.this);
-        //PRENDER-APAGAR BLUETOOTH
-        btnONOFF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onCLick: prendidendo/apagando");
-                enableDisableBT();
-                /////
-                Log.d(TAG, "btnVisibilidad: Haciendo el dispositivo visible pr 300 segundos");
-                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                startActivity(discoverableIntent);
-
-                IntentFilter intentFilter = new IntentFilter(nBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-                registerReceiver(nBroadcastReceiver2, intentFilter);
-            }
-        });
-
-        //VISIBILIDAD
-      /*  btnVisibilidad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "btnVisibilidad: Haciendo el dispositivo visible pr 300 segundos");
-                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                startActivity(discoverableIntent);
-
-                IntentFilter intentFilter = new IntentFilter(nBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-                registerReceiver(nBroadcastReceiver2, intentFilter);
-            }
-
-        });
-
-
-        // Descubrir
-        btnDescubrir.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.Q)
-
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "btnDescubrir:mirar distintos dispositivos");
-
-                if (nBluetoothAdapter.isDiscovering()) {
-                    nBluetoothAdapter.cancelDiscovery();
-                    Log.d(TAG, "btnDescubrir: cancelar descubrimiento");
-                    //chequeo permisos en el manifest
-                    checkBTPermissions();
-                    nBluetoothAdapter.startDiscovery();
-                    IntentFilter descubrirDispositivosIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
-                }
-                if (!nBluetoothAdapter.isDiscovering()) {
-                    checkBTPermissions();
-                    nBluetoothAdapter.startDiscovery();
-                    IntentFilter descubrirDispositivosIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
-                }
-            }
-
-
-        });
-
-        btnStartConnection.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                StartConnection();
-            }
-        });
-
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String play="play";
-                byte[] bytes = play.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnReady.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String ready="ready";
-                byte[] bytes = ready.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnSpeed.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                byte[] bytes = editTextSpeed.getText().toString().getBytes(Charset.defaultCharset());
-                Log.d(TAG,"speed:"+ editTextSpeed.getText());
-                mBluetoothConnection.write(bytes);
-                //editTextSpeed.setText(0);
-            }
-        });
-        switchOnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(switchOnOff.isChecked()){
-                    String on="on";
-                    byte[] bytes = on.getBytes(Charset.defaultCharset());
-                    mBluetoothConnection.write(bytes);
-                }
-                else{
-                    String off="off";
-                    byte[] bytes = off.getBytes(Charset.defaultCharset());
-                    mBluetoothConnection.write(bytes);
-                }
-            }
-        });
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String mensaje="Stop";
-                byte [] bytes = mensaje.getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-            }
-        });
-        btnJson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                JSONObject js= new JSONObject();
-                try{
-                    js.put("Pulso",editTextPulso.getText());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                byte[] bytes= js.toString().getBytes();
-                mBluetoothConnection.write(bytes);
-                editTextPulso.setText("");
-            }
-        });
-
-    }*/
-
     public void StartConnection() {
         StartBTConnection(mBTDevice,MY_UUID_INSECURE);
     }
@@ -580,8 +307,6 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     } // chekea version de android con permisos
-
-
 }
 
 
