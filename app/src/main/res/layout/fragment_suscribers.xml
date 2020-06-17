@@ -38,8 +38,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/assigned"
                     android:textAllCaps="true"
-                    android:textColor="@color/DarkGrayText"
-                    android:textSize="20dp" />
+                    android:textColor="@color/GrayText"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/count1"
@@ -74,8 +75,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/waiting_for_training"
                     android:textAllCaps="true"
-                    android:textColor="@color/DarkGrayText"
-                    android:textSize="20dp" />
+                    android:textColor="@color/GrayText"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/count2"
@@ -110,8 +112,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/waiting_for_the_cost"
                     android:textAllCaps="true"
-                    android:textColor="@color/DarkGrayText"
-                    android:textSize="20dp" />
+                    android:textColor="@color/GrayText"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/count3"

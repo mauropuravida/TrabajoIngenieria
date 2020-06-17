@@ -20,7 +20,7 @@ tools:context=".ui.register.ChoiseProfile">
         android:layout_marginBottom="88dp"
         android:text="@string/register"
         android:textAllCaps="true"
-        android:textColor="@color/DarkGrayText"
+        android:textColor="@color/GrayText"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView4"
@@ -139,7 +139,8 @@ tools:context=".ui.register.ChoiseProfile">
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_model_training"
                 android:text="@string/user"
-                android:textColor="@color/DarkGrayText" />
+                android:textColor="@color/GrayText"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -160,7 +161,8 @@ tools:context=".ui.register.ChoiseProfile">
                 android:text="@string/medical_staff"
                 android:textAlignment="viewStart"
                 android:textAllCaps="true"
-                android:textColor="@color/DarkGrayText" />
+                android:textColor="@color/GrayText"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

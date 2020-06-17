@@ -19,7 +19,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/action_sign_in_short"
         android:textAllCaps="true"
-        android:textColor="@color/DarkGrayText"
+        android:textColor="@color/GrayText"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -145,8 +145,9 @@
             android:linksClickable="true"
             android:singleLine="false"
             android:text="@string/forgot_password"
+            android:textAlignment="center"
             android:textAllCaps="false"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/Button"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -180,6 +181,7 @@
         android:textAllCaps="false"
         android:textColor="@color/GrayText"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

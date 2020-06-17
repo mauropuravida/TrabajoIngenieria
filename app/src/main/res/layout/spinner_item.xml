@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:textAlignment="gravity"
-        android:textColor="@color/DarkGrayText"
+        android:textColor="@color/GrayText"
         android:textSize="18sp" />
 
     <CheckBox

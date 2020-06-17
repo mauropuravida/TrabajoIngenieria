@@ -39,8 +39,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/accepted"
                     android:textAllCaps="true"
-                    android:textColor="@color/DarkGrayText"
-                    android:textSize="20dp" />
+                    android:textColor="@color/GrayText"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/count1"
@@ -75,8 +76,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/medical_staff"
                     android:textAllCaps="true"
-                    android:textColor="@color/DarkGrayText"
-                    android:textSize="20dp" />
+                    android:textColor="@color/GrayText"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/count2"

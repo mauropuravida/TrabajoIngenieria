@@ -28,9 +28,10 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password, LoginActivity la) {
-        doAsync.execute(new Runnable() {
+            doAsync.execute(new Runnable() {
             @Override
             public void run() {
+
                 // can be launched in a separate asynchronous job
                 loginRepository.login(username, password, la);
 
