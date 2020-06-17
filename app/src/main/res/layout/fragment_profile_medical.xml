@@ -230,7 +230,8 @@
             android:hint="@string/address"
             android:imeOptions="actionDone"
             android:paddingLeft="20dp"
-            android:selectAllOnFocus="true" />
+            android:selectAllOnFocus="true"
+            android:textColor="@color/TextGray" />
 
         <Spinner
             android:id="@+id/language"
@@ -247,12 +248,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
+        android:layout_marginBottom="24dp"
         android:background="@color/Button"
         android:text="@string/save_info"
         android:textColor="@color/GrayText"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.843"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

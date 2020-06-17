@@ -19,7 +19,7 @@ tools:context=".ui.register.SignUpUser">
         android:layout_marginTop="30dp"
         android:text="@string/action_sign_up_short"
         android:textAllCaps="true"
-        android:textColor="@color/DarkGrayText"
+        android:textColor="@color/GrayText"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +33,7 @@ tools:context=".ui.register.SignUpUser">
         android:layout_marginTop="8dp"
         android:text="@string/user"
         android:textAllCaps="true"
-        android:textColor="@color/DarkerButton"
+        android:textColor="@color/Button"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +61,7 @@ tools:context=".ui.register.SignUpUser">
             android:hint="@string/name"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText" />
 
         <EditText
@@ -76,7 +76,7 @@ tools:context=".ui.register.SignUpUser">
             android:hint="@string/lastname"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText" />
 
         <LinearLayout
@@ -96,7 +96,7 @@ tools:context=".ui.register.SignUpUser">
                 android:hint="@string/credential_id"
                 android:inputType="number"
                 android:paddingLeft="20dp"
-                android:textColor="@color/DarkGrayText"
+                android:textColor="@color/TextGray"
                 android:textColorHint="@color/DarkGrayText" />
 
             <Space
@@ -126,7 +126,7 @@ tools:context=".ui.register.SignUpUser">
             android:hint="@string/birthday_date"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText"
             android:textSize="18sp" />
 
@@ -142,7 +142,7 @@ tools:context=".ui.register.SignUpUser">
             android:inputType="textEmailAddress"
             android:paddingLeft="20dp"
             android:selectAllOnFocus="true"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText" />
 
         <EditText
@@ -160,7 +160,7 @@ tools:context=".ui.register.SignUpUser">
             android:inputType="textPassword"
             android:paddingLeft="20dp"
             android:selectAllOnFocus="true"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText" />
 
         <EditText
@@ -175,7 +175,7 @@ tools:context=".ui.register.SignUpUser">
             android:hint="@string/confirm_password"
             android:inputType="textPassword"
             android:paddingLeft="20dp"
-            android:textColor="@color/DarkGrayText"
+            android:textColor="@color/TextGray"
             android:textColorHint="@color/DarkGrayText" />
     </LinearLayout>
 
@@ -200,8 +200,12 @@ tools:context=".ui.register.SignUpUser">
                 android:layout_width="243dp"
                 android:layout_height="wrap_content"
                 android:text="@string/already_have_an_account"
-                android:textColor="@color/DarkGrayText"
+                android:textColor="@color/GrayText"
                 android:textSize="20sp" />
+
+            <Space
+                android:layout_width="2dp"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/sign_button"
@@ -209,7 +213,7 @@ tools:context=".ui.register.SignUpUser">
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:text="@string/action_sign_in_short"
-                android:textColor="@color/DarkerButton"
+                android:textColor="@color/Button"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -224,7 +228,8 @@ tools:context=".ui.register.SignUpUser">
         android:background="@color/Button"
         android:text="@string/action_sign_up_short"
         android:textColor="@color/GrayText"
-        android:textSize="24sp"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.906"

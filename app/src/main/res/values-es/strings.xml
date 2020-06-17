@@ -81,6 +81,12 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- String devices -->
+    <string name="on_off">ON/OFF</string>
+    <string name="visibility">Visibilidad</string>
+    <string name="discover">Descubrir</string>
+    <string name="connect">Iniciar conexión</string>
+    <string name="incoming_message">Mensaje entrante</string>
 
     <!-- String errors -->
     <string name="e401">Did not enter any token.</string>

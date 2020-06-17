@@ -15,4 +15,5 @@
     <color name="YellowText">#ffd900</color>
     <color name="LightGreen">#95db9e</color>
     <color name="RedTarget">#D05F52</color>
+    <color name="TextGray">#48494B</color>
 </resources>

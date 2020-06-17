@@ -393,6 +393,7 @@ public class ProfileFragment extends Fragment {
                                     return;
 
                                 ((TextView)getActivity().findViewById(R.id.credential_type)).setText(json.getString("name"));
+                                //((TextView)getActivity().findViewById(R.id.credential_type)).setTextColor(getResources().getColor(R.color.Button));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
