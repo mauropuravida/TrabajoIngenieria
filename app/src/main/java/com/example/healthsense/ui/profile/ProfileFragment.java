@@ -1,7 +1,7 @@
 package com.example.healthsense.ui.profile;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -10,52 +10,73 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
+import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.ui.login.LoginActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
-import static com.example.healthsense.MainActivity.PREFS_FILENAME;
-
 public class ProfileFragment extends Fragment {
 
     private Context cont;
-    private ArrayList<String> idsCountries;
-    private ArrayList<String> idsStates;
+    private ArrayList<String> idsCountries= new ArrayList<>();
+    private ArrayList<String> idsStates= new ArrayList<>();
+    private ArrayList<String> idsCities= new ArrayList<>();
 
-    private String stateId = "-1";
-    private String countryId = "-1";
-    private int profile;
+    private ArrayList<String> valuesCity = new ArrayList<>();
+    private ArrayList<String> valuesState = new ArrayList<>();
+    private ArrayList<String> valuesCountry = new ArrayList<>();
+    private ArrayList<String> valuesSpeciality;
+
+    private int stateId = -1;
+    private int countryId = -1;
+    private boolean first=true;
+    private ProgressDialog mProgressDialog;
+    private View root;
+
+    //variables para valores de las vistas
+    private String name = "-1";
+    private String lastname;
+    private String email;
+    private String document;
+    private String docType;
+    private String birtdate;
+    private int medSpeciality;
+    private int gdr;
+    private String w="";
+    private String h="";
+    private int ct;
+    private String ddrss="";
+    private String nsrnc;
+    private LinkedList lnggs = new LinkedList();
+    // fin valores de variables
+
+    private ArrayList<Integer> calls = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        SharedPreferences preferencesEditor = this.getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        profile = preferencesEditor.getInt(MainActivity.email+"profile", R.layout.fragment_profile_medical);
-
-        View root = inflater.inflate(profile, container, false);
+        root = inflater.inflate((MainActivity.PROFILETYPE.equals("d"))?  R.layout.fragment_profile_user : R.layout.fragment_profile_medical, container, false);
         cont = root.getContext();
+
+        mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
 
         Spinner spGender = root.findViewById(R.id.gender);
         ArrayList<String> values = new ArrayList();
@@ -67,15 +88,28 @@ public class ProfileFragment extends Fragment {
         arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
         spGender.setAdapter(arrayAdapter2);
 
-        //consulta información de usuario
-        getInfoUser(root);
+        inicSpinnerView(R.id.country);
+        inicSpinnerView(R.id.state);
+        inicSpinnerView(R.id.city);
+
+        doAsync.execute(new Runnable() {
+            @Override
+            public void run() {
+                //consulta información de usuario
+                getInfoUser(root);
+            }
+        });
+
 
         //consulta la lista de provincias para el pais seleccionado
         Spinner sp = root.findViewById(R.id.country);
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                inicSpinner(R.id.state, root, "https://healthsenseapi.herokuapp.com/state/country_id&" + idsCountries.get((int) sp.getSelectedItemId()), idsStates = new ArrayList<>());
+                if (!first) {
+                    mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
+                    inicSpinner(root, MainActivity.PATH+"state/country_id&" + idsCountries.get((int) sp.getSelectedItemId()), idsStates, valuesCountry);
+                }
             }
 
             @Override
@@ -87,13 +121,15 @@ public class ProfileFragment extends Fragment {
         spState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                inicSpinner(R.id.city, root, "https://healthsenseapi.herokuapp.com/city/state_id&" + idsStates.get((int) spState.getSelectedItemId()), null);
+                if (!first) {
+                    mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
+                    inicSpinner(root, MainActivity.PATH+"city/state_id&" + idsStates.get((int) spState.getSelectedItemId()), null, valuesState);
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-
 
         final String[] select_qualification = {
                 "Languages","Spanish", "Italian", "English", "Turkish"};
@@ -111,8 +147,8 @@ public class ProfileFragment extends Fragment {
                 listVOs);
         spinner.setAdapter(myAdapter);
 
-        if (profile == R.layout.fragment_profile_medical) {
-            inicSpinner(R.id.interal_medicine,root,"https://healthsenseapi.herokuapp.com/medicalspeciality/", null);
+        if (MainActivity.PROFILETYPE.equals("m")) {
+            inicSpinner(root,MainActivity.PATH+"medicalspeciality/", null, valuesSpeciality = new ArrayList<>());
         } else {
             inicUser(root);
         }
@@ -128,9 +164,15 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
-    private int getIndex(String index, ArrayList<String> arr){
+    private synchronized int addCall(){
+        calls.add(new Integer(1));
+        Log.d("CALLS",calls.size()+"");
+        return calls.size()-1;
+    }
+
+    private int getIndex(int index, ArrayList<String> arr){
         for (int i=0 ;i<arr.size();i++){
-            if (arr.get(i).equals(index))
+            if (arr.get(i).equals(index+""))
                 return i;
         }
         return 0;
@@ -138,7 +180,7 @@ public class ProfileFragment extends Fragment {
 
     private void getInfoUser(View root){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = (profile != R.layout.fragment_profile_medical) ? "https://healthsenseapi.herokuapp.com/userinfo/" : "https://healthsenseapi.herokuapp.com/medicalinfo/";
+        String conexion = (MainActivity.PROFILETYPE.equals("d")) ? MainActivity.PATH+"userinfo/" : MainActivity.PATH+"medicalinfo/";
 
         JSONArray jarr = new JSONArray();
         try {
@@ -151,10 +193,13 @@ public class ProfileFragment extends Fragment {
 
         Log.d("TOKEN ", MainActivity.TOKEN);
 
+        int numCall = addCall();
+
         request.GET(conexion,jarr, new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 //Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                finishCall(numCall);
             }
 
             @Override
@@ -164,39 +209,34 @@ public class ProfileFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
 
-                    if(getActivity() == null)
-                        return;
+                    name = json.getString("name");
+                    lastname = json.getString("last_name");
+                    email = json.getString("email");
+                    document = json.getString("document_number");
+                    birtdate = PikerDate.Companion.toDateFormatView(json.getString("birth_date"));
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if(getActivity() == null)
-                                    return;
-                                ((TextView)root.findViewById(R.id.name)).setText(json.getString("name"));
-                                ((TextView)root.findViewById(R.id.lastname)).setText(json.getString("last_name"));
-                                ((TextView)root.findViewById(R.id.email)).setText(json.getString("email"));
-                                ((TextView)root.findViewById(R.id.credential)).setText(json.getString("document_number"));
-                                ((TextView)root.findViewById(R.id.birth_date)).setText(PikerDate.Companion.toDateFormatView(json.getString("birth_date")));
+                    if (!json.getString("address").equals("null"))
+                        ddrss = json.getString("address");
 
-                                if (!json.getString("address").equals("null"))
-                                    ((TextView)root.findViewById(R.id.address)).setText(json.getString("address"));
+                    if (!json.getString("weight").equals("null"))
+                        w = json.getString("weight");
 
-                                ((Spinner) root.findViewById(R.id.gender)).setSelection((json.getString("gender").equals("null")) ? 0 :
-                                        ((json.getString("gender").equals("Male")) ? 1 : 2));
+                    if (!json.getString("height").equals("null"))
+                        h = json.getString("height");
 
-                                if (profile == R.layout.fragment_profile_medical){
-                                    ((Spinner) root.findViewById(R.id.interal_medicine)).setSelection(Integer.parseInt(json.getString("medical_speciality_id"))-1);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    gdr = (json.getString("gender").equals("null")) ? 0 : ((json.getString("gender").equals("M")) ? 1 : 2);
 
-                    String ct = (json.getString("city_id").equals("null")) ? "1" : json.getString("city_id");
+                    if (MainActivity.PROFILETYPE.equals("m")){
+                        medSpeciality = Integer.parseInt(json.getString("medical_speciality_id"))-1;
+                    }
 
-                    getFK(root,"https://healthsenseapi.herokuapp.com/city/"+ct,"state_id");
+                    if (!json.getString("insurance_number").equals("null"))
+                        nsrnc = json.getString("insurance_number");
+
+                    ct = Integer.parseInt((json.getString("city_id").equals("null")) ? "1" : json.getString("city_id"));
+
+                    getFK(root,MainActivity.PATH+"city/"+ct,"state_id");
+
                     getDocumentTypes(json.getString("document_type_id"));
 
                 } catch (IOException e) {
@@ -209,22 +249,32 @@ public class ProfileFragment extends Fragment {
                     Looper.prepare();
                     Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
                     Looper.loop();
+                }finally {
+                    finishCall(numCall);
                 }
             }
         });
     }
 
+    private void finishCall(int i){
+        calls.set(i,0);
+        for (int j = 0; j< calls.size();j++) {
+            if (calls.get(j) == 1)
+                return;
+        }
+        loadProfile();
+    }
 
     private void getFK(View root, String url, String fk){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = url;
-
-        final String[] value = {"-1"};
+        int numCall = addCall();
 
         request.GET(conexion, new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                finishCall(numCall);
             }
 
             @Override
@@ -235,24 +285,14 @@ public class ProfileFragment extends Fragment {
                     JSONObject json = new JSONObject(responseData);
 
                     if (fk.equals("state_id")) {
-                        stateId = json.getString(fk);
-                        getFK(root,"https://healthsenseapi.herokuapp.com/state/"+stateId,"country_id");
+                        stateId = Integer.parseInt(json.getString(fk));
+                        inicSpinner(root,MainActivity.PATH+"city/state_id&"+stateId,idsCities, valuesCity);
+                        getFK(root,MainActivity.PATH+"state/"+stateId,"country_id");
                     }
                     else {
-                        countryId = json.getString(fk);
-                        if(getActivity() == null)
-                            return;
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(getActivity() == null)
-                                    return;
-                                //consulta la lista de paises
-                                inicSpinner(R.id.country,root,"https://healthsenseapi.herokuapp.com/country/",idsCountries = new ArrayList<>());
-                            }
-                        });
-
+                        countryId = Integer.parseInt(json.getString(fk));
+                        inicSpinner(root,MainActivity.PATH+"country/",idsCountries, valuesCountry);
+                        inicSpinner(root,MainActivity.PATH+"state/country_id&"+countryId,idsStates, valuesState);
                     }
 
                 } catch (IOException e) {
@@ -265,6 +305,8 @@ public class ProfileFragment extends Fragment {
                     Looper.prepare();
                     Toast.makeText(root.getContext(), LoginActivity.error(cont, response.code()), Toast.LENGTH_SHORT).show();
                     Looper.loop();
+                }finally {
+                    finishCall(numCall);
                 }
             }
         });
@@ -274,21 +316,26 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void inicSpinner(int resourse ,View root, String path, ArrayList arr){
+    private void inicSpinnerView(int resourse){
         Spinner sp = root.findViewById(resourse);
         ArrayList<String> values = new ArrayList();
         ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(root.getContext(),
                 R.layout.spinner_color, values);
         arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
         sp.setAdapter(arrayAdapter2);
+    }
+
+    private void inicSpinner(View root, String path, ArrayList arr, ArrayList<String> values){
 
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = path;
+        int numCall = addCall();
 
         request.GET(conexion, new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                finishCall(numCall);
             }
 
             @Override
@@ -298,59 +345,18 @@ public class ProfileFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONArray jsonArray = new JSONArray(responseData);
 
-                    Spinner sp = root.findViewById(resourse);
-                    ArrayList<String> values = new ArrayList();
-
                     for (int i=0;i< jsonArray.length(); i++){
 
                         JSONObject json = new JSONObject(jsonArray.get(i).toString());
 
-                        if(getActivity() == null)
-                            return;
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    if(getActivity() == null)
-                                        return;
-                                    values.add(json.getString("name"));
-                                    if (arr != null){
-                                        arr.add(json.getString("id"));
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-
-                    if(getActivity() == null)
-                        return;
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            if(getActivity() == null)
-                                return;
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(root.getContext(),
-                                    R.layout.spinner_color, values);
-                            arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
-                            sp.setAdapter(arrayAdapter);
-                            if (!countryId.equals("-1")) {
-                                ((Spinner) root.findViewById(R.id.country)).setSelection((Integer.parseInt(countryId) - 1));
-                                countryId = "-1";
-                            }
-                            if (!stateId.equals("-1")&& resourse == R.id.state){
-                                ((Spinner)root.findViewById(R.id.state)).setSelection(getIndex(stateId,idsStates));
-                                stateId = "-1";
-                            }
-                            if (countryId.equals("-1")&& resourse == R.id.city){
-                                ((Spinner)root.findViewById(R.id.city)).setSelection(getIndex(stateId,idsStates));
-                                stateId = "-1";
-                            }
+                        values.add(json.getString("name"));
+                        if (arr != null){
+                            arr.add(json.getString("id"));
                         }
-                    });
+                        //Log.d("SALIDAVARIABLE",json.getString("name"));
+                        //Log.d("SALIDAARREGLO",values.get(values.size()-1));
+
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -363,17 +369,23 @@ public class ProfileFragment extends Fragment {
                     Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
                     Looper.loop();
                 }
+                finally {
+                    finishCall(numCall);
+                }
             }
         });
     }
 
     private void getDocumentTypes(String index){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = "https://healthsenseapi.herokuapp.com/documenttype/"+index;
+        String conexion = MainActivity.PATH+"documenttype/"+index;
 
+        int numCall = addCall();
         request.GET(conexion,new JSONArray(), new Callback(){
             @Override
-            public void onFailure(Call call, IOException e) {}
+            public void onFailure(Call call, IOException e) {
+                finishCall(numCall);
+            }
 
             @Override
             public void onResponse(Call call, Response response) {
@@ -382,22 +394,7 @@ public class ProfileFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
 
-                    if(getActivity() == null)
-                        return;
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if(getActivity() == null)
-                                    return;
-
-                                ((TextView)getActivity().findViewById(R.id.credential_type)).setText(json.getString("name"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    docType = json.getString("name");
 
                 } catch (IOException e) {
                     Looper.prepare();
@@ -407,6 +404,58 @@ public class ProfileFragment extends Fragment {
                     Looper.prepare();
                     Toast.makeText(getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
                     Looper.loop();
+                }finally {
+                    finishCall(numCall);
+                }
+            }
+        });
+    }
+
+    private void loadProfile(){
+        ArrayAdapter<String> arrayAdapter1 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesCountry);
+        arrayAdapter1.setDropDownViewResource(R.layout.spinner_color);
+
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesCity);
+        arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
+
+        ArrayAdapter<String> arrayAdapter3 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesState);
+        arrayAdapter3.setDropDownViewResource(R.layout.spinner_color);
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    ((Spinner) root.findViewById(R.id.country)).setAdapter(arrayAdapter1);
+                    ((Spinner) root.findViewById(R.id.city)).setAdapter(arrayAdapter2);
+                    ((Spinner) root.findViewById(R.id.state)).setAdapter(arrayAdapter3);
+
+                    //inicSpinnerView(R.id.interal_medicine);
+                    ((TextView)root.findViewById(R.id.name)).setText(name);
+                    ((TextView)root.findViewById(R.id.lastname)).setText(lastname);
+                    ((TextView)root.findViewById(R.id.email)).setText(email);
+                    ((TextView)root.findViewById(R.id.credential)).setText(document);
+                    ((TextView)root.findViewById(R.id.birth_date)).setText(birtdate);
+                    ((TextView)root.findViewById(R.id.address)).setText(ddrss);
+                    ((TextView)root.findViewById(R.id.weight)).setText(w);
+                    ((TextView)root.findViewById(R.id.height)).setText(h);
+                    ((TextView)root.findViewById(R.id.insurance_numb)).setText(nsrnc);
+
+                    ((Spinner) root.findViewById(R.id.gender)).setSelection(gdr);
+
+                    if (MainActivity.PROFILETYPE.equals("m")){
+                        ((Spinner) root.findViewById(R.id.interal_medicine)).setSelection(medSpeciality);
+                    }
+
+                    ((TextView)getActivity().findViewById(R.id.credential_type)).setText(docType);
+                    ((Spinner)root.findViewById(R.id.country)).setSelection(countryId-1);
+                    ((Spinner)root.findViewById(R.id.state)).setSelection(getIndex(stateId,idsStates));
+                    ((Spinner)root.findViewById(R.id.city)).setSelection(getIndex(ct,idsCities));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    mProgressDialog.dismiss();
                 }
             }
         });

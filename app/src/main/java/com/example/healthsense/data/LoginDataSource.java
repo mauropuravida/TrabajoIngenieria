@@ -49,6 +49,7 @@ public class LoginDataSource {
                     String responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
                     MainActivity.TOKEN = json.getString("token");
+                    MainActivity.PROFILETYPE = json.getString("type");
                     la.loginAcepted();
                 } catch (IOException e) {
                     e.printStackTrace();
