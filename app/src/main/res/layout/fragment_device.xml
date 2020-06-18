@@ -7,79 +7,84 @@
     android:background="@color/Background"
     >
 
-    <Button
-        android:id="@+id/btnStartConnection"
-        android:layout_width="400dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/background_model_training"
-        android:text="@string/connect"
-        android:textColor="@color/GrayText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ListView
-        android:id="@+id/lvNewDevices"
-        android:layout_width="412dp"
-        android:layout_height="455dp"
-        android:layout_below="@+id/btnStartConnection"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:background="@color/DarkerBackground"
-        android:cacheColorHint="@color/GrayText"
-        android:divider="@color/GrayText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.57">
-
-    </ListView>
-
     <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/lvNewDevices"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="wrap_content" />
-
         <Button
-            android:id="@+id/btnONOFF"
+            android:id="@+id/btnStartConnection"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="21dp"
-            android:layout_weight="1"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="28dp"
             android:background="@drawable/background_model_training"
-            android:text="@string/on_off"
+            android:text="@string/connect"
             android:textColor="@color/GrayText" />
 
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="wrap_content" />
+        <ListView
+            android:id="@+id/lvNewDevices"
+            android:layout_width="match_parent"
+            android:layout_height="455dp"
+            android:layout_below="@+id/btnStartConnection"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/DarkerBackground"
+            android:cacheColorHint="@color/GrayText"
+            android:divider="@color/GrayText"
+            android:paddingLeft="15dp"
+            android:paddingTop="15dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="15dp">
 
-        <Button
-            android:id="@+id/btnFindUnpairedDevices"
+        </ListView>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="20dp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="21dp"
-            android:layout_weight="1"
-            android:background="@drawable/background_model_training"
-            android:text="@string/discover"
-            android:textColor="@color/GrayText" />
+            android:orientation="horizontal">
 
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="wrap_content" />
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
 
+            <Button
+                android:id="@+id/btnONOFF"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_model_training"
+                android:text="@string/on_off"
+                android:textColor="@color/GrayText" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnFindUnpairedDevices"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_model_training"
+                android:text="@string/discover"
+                android:textColor="@color/GrayText" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

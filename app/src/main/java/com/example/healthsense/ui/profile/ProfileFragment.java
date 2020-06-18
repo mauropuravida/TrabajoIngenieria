@@ -76,7 +76,10 @@ public class ProfileFragment extends Fragment {
         root = inflater.inflate((MainActivity.PROFILETYPE.equals("d"))?  R.layout.fragment_profile_user : R.layout.fragment_profile_medical, container, false);
         cont = root.getContext();
 
-        mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
+        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
+        mProgressDialog.show();
 
         Spinner spGender = root.findViewById(R.id.gender);
         ArrayList<String> values = new ArrayList();
@@ -107,7 +110,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!first) {
-                    mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
+                    mProgressDialog.show();
                     inicSpinner(root, MainActivity.PATH+"state/country_id&" + idsCountries.get((int) sp.getSelectedItemId()), idsStates, valuesCountry);
                 }
             }
@@ -122,7 +125,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!first) {
-                    mProgressDialog = ProgressDialog.show(getContext(), getResources().getString(R.string.loading), getResources().getString(R.string.please_wait), false, false);
+                    mProgressDialog.show();
                     inicSpinner(root, MainActivity.PATH+"city/state_id&" + idsStates.get((int) spState.getSelectedItemId()), null, valuesState);
                 }
             }
@@ -165,7 +168,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private synchronized int addCall(){
-        calls.add(new Integer(1));
+        calls.add(1);
         Log.d("CALLS",calls.size()+"");
         return calls.size()-1;
     }

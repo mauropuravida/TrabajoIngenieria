@@ -63,7 +63,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
 
         //cuando el bond realice cambios
         IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        root.getContext().registerReceiver(nBroadcastReceiver4,filter);
+        requireActivity().registerReceiver(nBroadcastReceiver4,filter);
         lvNewDevices.setOnItemClickListener(DeviceFragment.this);
         //PRENDER-APAGAR BLUETOOTH
         btnONOFF.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +78,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                 startActivity(discoverableIntent);
 
                 IntentFilter intentFilter = new IntentFilter(nBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-                root.getContext().registerReceiver(nBroadcastReceiver2, intentFilter);
+                requireActivity().registerReceiver(nBroadcastReceiver2, intentFilter);
             }
         });
 
@@ -93,18 +93,11 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                 if (nBluetoothAdapter.isDiscovering()) {
                     nBluetoothAdapter.cancelDiscovery();
                     Log.d(TAG, "btnDescubrir: cancelar descubrimiento");
-                    //chequeo permisos en el manifest
-                    checkBTPermissions();
-                    nBluetoothAdapter.startDiscovery();
-                    IntentFilter descubrirDispositivosIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    root.getContext().registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
                 }
-                if (!nBluetoothAdapter.isDiscovering()) {
-                    checkBTPermissions();
-                    nBluetoothAdapter.startDiscovery();
-                    IntentFilter descubrirDispositivosIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-                    root.getContext().registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
-                }
+                checkBTPermissions();
+                nBluetoothAdapter.startDiscovery();
+                IntentFilter descubrirDispositivosIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+                requireActivity().registerReceiver(nBroadcastReceiver3, descubrirDispositivosIntent);
             }
         });
 
@@ -271,8 +264,8 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
         super.onDestroy();
         root.getContext().unregisterReceiver(nBroadcastReceiver1);
         root.getContext().unregisterReceiver(nBroadcastReceiver2);
-        root.getContext(). unregisterReceiver(nBroadcastReceiver3);
-        root.getContext(). unregisterReceiver(nBroadcastReceiver4);
+        root.getContext().unregisterReceiver(nBroadcastReceiver3);
+        root.getContext().unregisterReceiver(nBroadcastReceiver4);
     } /// Se destruye los receiver
 
     @Override
@@ -297,8 +290,8 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkBTPermissions() {
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            int permissionCheck = root.getContext().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-            permissionCheck += root.getContext().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+            int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+            permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
             if (permissionCheck != 0) {
 
                 this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
