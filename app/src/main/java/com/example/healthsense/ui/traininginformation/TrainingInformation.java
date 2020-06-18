@@ -1,5 +1,6 @@
 package com.example.healthsense.ui.traininginformation;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
@@ -16,24 +17,24 @@ import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.example.healthsense.R;
-import com.example.healthsense.ui.traininghistory.TrainingHistoryFragment;
-import com.google.android.youtube.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class TrainingInformation extends Fragment {
 
     public static Fragment fg;
+    private ProgressDialog mProgressDialog;
+    private ArrayList<YouTubePlayerView> you= new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +52,11 @@ public class TrainingInformation extends Fragment {
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
+        mProgressDialog.show();
 
         JSONObject jsonSteps = new JSONObject();
         jsonPut(jsonSteps, "0", "dsfdsdads");
@@ -92,6 +98,8 @@ public class TrainingInformation extends Fragment {
         jsonPut(json3,"instructions", jsonSteps.toString());
 
         createNewExercise(root, json3);
+
+        mProgressDialog.dismiss();
 
         return root;
     }
@@ -222,9 +230,12 @@ public class TrainingInformation extends Fragment {
             @Override
             public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
                 String videoId = (String)jsonGet(json,"URL");
-                youTubePlayer.loadVideo(videoId, 0);
+                youTubePlayer.cueVideo(videoId, 0);
+                //youTubePlayer.loadVideo(videoId, 0);
             }
         });
+
+        you.add(ypv);
 
 
         LinearLayout.LayoutParams lp6 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(40,root.getContext()));
@@ -375,5 +386,11 @@ public class TrainingInformation extends Fragment {
         return Math.round((float) dp * density);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
 
+        for (int i=0; i< you.size(); i++)
+            you.get(i).release();
+    }
 }

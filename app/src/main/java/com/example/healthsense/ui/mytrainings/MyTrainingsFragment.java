@@ -89,9 +89,13 @@ public class MyTrainingsFragment extends Fragment {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
+        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
+
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento OkHttp
-            mProgressDialog = ProgressDialog.show(getContext(), "Loading trainings", "Please wait...", false, false);
+            mProgressDialog.show();
             doAsync.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -106,10 +110,10 @@ public class MyTrainingsFragment extends Fragment {
 
     private void createExercises(View root, View.OnClickListener mListener) {
         //Logica para obtener datos necesarios
-        mProgressDialog.dismiss();
         for (int i = 0; i < workouts.size(); i++) { // desde i hasta cant workouts
             newTraining(root, i, mListener); // ver que datos enviar
         }
+        //mProgressDialog.dismiss();
     }
 
     private void getExercisesWorkout(View root, View.OnClickListener mListener) {
@@ -124,6 +128,7 @@ public class MyTrainingsFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        mProgressDialog.dismiss();
     }
 
     private void getExercises(View root, View.OnClickListener mListener, HashMap<Integer, ArrayList<Integer>> hashObj, int cant) {
@@ -143,6 +148,7 @@ public class MyTrainingsFragment extends Fragment {
                 }
             }
         }
+        mProgressDialog.dismiss();
     }
 
     private void getWorkouts(View root, View.OnClickListener mListener) {
@@ -269,6 +275,7 @@ public class MyTrainingsFragment extends Fragment {
                 Toast.makeText(getActivity(),
                         "Failed to obtain information from " + url, Toast.LENGTH_LONG)
                         .show();
+                mProgressDialog.dismiss();
             }
 
             @Override
