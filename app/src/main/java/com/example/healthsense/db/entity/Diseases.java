@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
-@Entity(tableName="Document_Types" ,
+@Entity(tableName="Diseases" ,
         indices = {@Index("id_UNIQUE"), @Index(value = {"id"}, unique = true)})
-public class DocumentType {
+public class Diseases {
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
@@ -19,7 +19,7 @@ public class DocumentType {
     @ColumnInfo(name="name")
     private String name;
 
-    public DocumentType(@NotNull String name) {
+    public Diseases(@NotNull String name) {
         this.name = name;
     }
 

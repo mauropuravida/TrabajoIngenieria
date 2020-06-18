@@ -2,14 +2,12 @@ package com.example.healthsense.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
-@Entity(tableName="Document_Types" ,
-        indices = {@Index("id_UNIQUE"), @Index(value = {"id"}, unique = true)})
-public class DocumentType {
+@Entity(tableName="Insurances")
+public class Insurances {
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
@@ -19,7 +17,7 @@ public class DocumentType {
     @ColumnInfo(name="name")
     private String name;
 
-    public DocumentType(@NotNull String name) {
+    public Insurances(@NotNull String name) {
         this.name = name;
     }
 

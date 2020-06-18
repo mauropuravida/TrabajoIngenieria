@@ -8,10 +8,10 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
-@Entity(tableName = "Cities", indices =
-        {@Index("cities_test_ibfk_1"), @Index(value = {"state_id"}),
+@Entity(tableName = "States", indices =
+        {@Index("country_region"), @Index(value = {"country_id"}),
          @Index("id_UNIQUE"), @Index(value = {"id"}, unique = true)})
-public class Cities {
+public class States {
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
@@ -21,16 +21,15 @@ public class Cities {
     @ColumnInfo(name="name")
     private String name;
 
-
     @NotNull
-    @ForeignKey(entity = States.class, parentColumns = "id",childColumns = "state_id",
-            onUpdate = ForeignKey.CASCADE)
-    @ColumnInfo(name= "state_id")
-    private int state_id;
+    @ForeignKey(entity = Countries.class, parentColumns = "id", childColumns = "country_id",
+            onDelete = ForeignKey.RESTRICT, onUpdate = ForeignKey.CASCADE)
+    @ColumnInfo(name="country_id")
+    private int country_id;
 
-    public Cities(@NotNull String name, int state_id) {
+    public States(@NotNull String name, int country_id) {
         this.name = name;
-        this.state_id = state_id;
+        this.country_id = country_id;
     }
 
     @NotNull
@@ -38,7 +37,7 @@ public class Cities {
         return name;
     }
 
-    public int getState_id() {
-        return state_id;
+    public int getCountry_id() {
+        return country_id;
     }
 }
