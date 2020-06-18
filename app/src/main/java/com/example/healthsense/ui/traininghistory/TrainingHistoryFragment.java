@@ -73,6 +73,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
         View root = inflater.inflate(R.layout.fragment_training_history, container, false);
 
+
         fg = this;
         // This callback will only be called when MyFragment is at least Started.
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {

@@ -138,7 +138,7 @@ public class SignUpUser extends AppCompatActivity {
         //guardar preferencia de tipo de cuenta, medico o paciente
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         preferencesEditor.edit().putString(((EditText) findViewById(R.id.email)).getText().toString(), ((EditText) findViewById(R.id.name)).getText().toString()).apply();
-        preferencesEditor.edit().putInt(((EditText) findViewById(R.id.email)).getText().toString()+"profile", R.layout.fragment_profile_user).apply();
+        MainActivity.PROFILETYPE = "d";
 
         //iniciar login
         Intent intent;

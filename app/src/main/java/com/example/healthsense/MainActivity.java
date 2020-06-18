@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public static String email;
     public static String user;
     public static String TOKEN = "";
+    public static String PROFILETYPE = "";
+    public static String PATH = "https://healthsenseapi.herokuapp.com/";
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -42,9 +44,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
-        int layoutProfile = preferencesEditor.getInt(getIntent().getExtras().getString("user") + "profile", R.layout.fragment_profile_medical);
 
-        setContentView((layoutProfile == R.layout.fragment_profile_medical) ? R.layout.activity_main_medical : R.layout.activity_main);
+        setContentView((PROFILETYPE.equals("m")) ? R.layout.activity_main_medical : R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
 
 
         //-----------------------------
