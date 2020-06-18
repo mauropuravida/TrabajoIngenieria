@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
 
-
         //-----------------------------
 
         //testing data on local db

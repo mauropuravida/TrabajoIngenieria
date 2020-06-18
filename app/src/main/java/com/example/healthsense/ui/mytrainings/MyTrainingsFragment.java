@@ -1,5 +1,6 @@
 package com.example.healthsense.ui.mytrainings;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -59,6 +60,7 @@ public class MyTrainingsFragment extends Fragment {
     private HashMap<Integer, ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
     private final String URL_BASE = "https://healthsenseapi.herokuapp.com/";
     private JSONArray token;
+    private ProgressDialog mProgressDialog;
 
     public static Fragment fg;
 
@@ -71,10 +73,6 @@ public class MyTrainingsFragment extends Fragment {
         workoutExercises = new HashMap<>();
 
         fg = this;
-
-        Toast.makeText(getActivity(),
-                "LOADING TRAININGS" , Toast.LENGTH_LONG)
-                .show();
 
         View.OnClickListener mListener = new View.OnClickListener() {
             @Override
@@ -93,6 +91,7 @@ public class MyTrainingsFragment extends Fragment {
 
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento OkHttp
+            mProgressDialog = ProgressDialog.show(getContext(), "Loading trainings", "Please wait...", false, false);
             doAsync.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -107,6 +106,7 @@ public class MyTrainingsFragment extends Fragment {
 
     private void createExercises(View root, View.OnClickListener mListener) {
         //Logica para obtener datos necesarios
+        mProgressDialog.dismiss();
         for (int i = 0; i < workouts.size(); i++) { // desde i hasta cant workouts
             newTraining(root, i, mListener); // ver que datos enviar
         }
