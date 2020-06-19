@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
-
-
         //-----------------------------
 
         //testing data on local db

@@ -85,6 +85,10 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
+        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
+
         workoutsCompleted = root.findViewById(R.id.workouts_completed);
         emptyView = root.findViewById(R.id.empty_view);
 
@@ -103,7 +107,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
             public void onClick(View view) {
                 if (networkInfo != null && networkInfo.isConnected() && !first) {
                     Log.d(TAG, "onCreateView: Hay conexion");
-                    mProgressDialog = ProgressDialog.show(getContext(), "Loading trainings", "Please wait...", false, false);
+                    mProgressDialog.show();
                     getData();
                 }
             }
@@ -114,7 +118,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
         if (first)
             if (networkInfo != null && networkInfo.isConnected()) {
                 Log.d(TAG, "onCreateView: Hay conexion");
-                mProgressDialog = ProgressDialog.show(getContext(), "Loading trainings", "Please wait...", false, false);
+                mProgressDialog.show();
                 getData();
             } else {
                 Log.d(TAG, "onCreateView: No hay conexion a internet");

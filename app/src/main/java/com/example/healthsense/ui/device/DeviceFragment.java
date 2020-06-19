@@ -262,10 +262,15 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
     public void onDestroy() {
         Log.d(TAG, "onDestroy:called");
         super.onDestroy();
-        root.getContext().unregisterReceiver(nBroadcastReceiver1);
-        root.getContext().unregisterReceiver(nBroadcastReceiver2);
-        root.getContext().unregisterReceiver(nBroadcastReceiver3);
-        root.getContext().unregisterReceiver(nBroadcastReceiver4);
+        try {
+            root.getContext().unregisterReceiver(nBroadcastReceiver1);
+            root.getContext().unregisterReceiver(nBroadcastReceiver2);
+            root.getContext().unregisterReceiver(nBroadcastReceiver3);
+            root.getContext().unregisterReceiver(nBroadcastReceiver4);
+        }
+        catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
     } /// Se destruye los receiver
 
     @Override
