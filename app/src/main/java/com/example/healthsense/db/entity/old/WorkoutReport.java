@@ -1,11 +1,10 @@
-package com.example.healthsense.db.entity;
+package com.example.healthsense.db.entity.old;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.util.Date;
 
 import static androidx.room.ForeignKey.CASCADE;
 

@@ -1,11 +1,8 @@
-package com.example.healthsense.db.entity;
+package com.example.healthsense.db.entity.old;
 
-import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;

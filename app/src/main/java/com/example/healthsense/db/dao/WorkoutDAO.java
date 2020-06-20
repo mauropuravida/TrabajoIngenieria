@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.healthsense.db.entity.Workout;
+import com.example.healthsense.db.entity.old.Workout;
 
 import java.util.List;
 

@@ -26,9 +26,9 @@ import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.AppDatabaseListener;
-import com.example.healthsense.db.entity.Workout;
+import com.example.healthsense.db.entity.old.Workout;
 import com.example.healthsense.db.entity.WorkoutDone;
-import com.example.healthsense.db.entity.WorkoutReport;
+import com.example.healthsense.db.entity.old.WorkoutReport;
 import com.example.healthsense.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

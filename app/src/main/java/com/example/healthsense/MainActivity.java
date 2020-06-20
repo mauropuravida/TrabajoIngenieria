@@ -11,8 +11,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.healthsense.db.AppDatabase;
-import com.example.healthsense.db.entity.Workout;
-import com.example.healthsense.db.entity.WorkoutReport;
+import com.example.healthsense.db.entity.old.Workout;
+import com.example.healthsense.db.entity.old.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.drawerlayout.widget.DrawerLayout;

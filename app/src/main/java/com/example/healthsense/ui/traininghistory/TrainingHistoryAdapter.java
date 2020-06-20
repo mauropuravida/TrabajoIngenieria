@@ -1,7 +1,6 @@
 package com.example.healthsense.ui.traininghistory;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.healthsense.R;
-import com.example.healthsense.db.entity.Workout;
 import com.example.healthsense.db.entity.WorkoutDone;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 

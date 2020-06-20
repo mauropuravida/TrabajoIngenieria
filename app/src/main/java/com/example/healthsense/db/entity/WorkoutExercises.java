@@ -3,15 +3,24 @@ package com.example.healthsense.db.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Workout_Exercises")
+
+import org.jetbrains.annotations.NotNull;
+
+
+@Entity(tableName="Workout_Exercises" , indices =
+        {@Index("fk_Workouts_has_Exercise_Exercise1_idx"), @Index(value = {"exercise_id"}),
+         @Index("fk_Workouts_has_Exercise_Workouts_idx"), @Index(value = {"workout_id"}),
+         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
 public class WorkoutExercises {
 
-    @PrimaryKey
+    @NotNull
+    @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ForeignKey(entity = Workout.class, parentColumns = "id", childColumns = "workout_id",
+    @ForeignKey(entity = Workouts.class, parentColumns = "id", childColumns = "workout_id",
             onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
     @ColumnInfo(name="workout_id")
     private int workout_id;
@@ -21,11 +30,10 @@ public class WorkoutExercises {
     @ColumnInfo(name="exercise_id")
     private int exercise_id;
 
-    @ColumnInfo(name="time") // Ver qeue tipo almacenar aca, es TIME.
+    @ColumnInfo(name="time")
     private String time;
 
-    public WorkoutExercises(int id, int workout_id, int exercise_id, String time) {
-        this.id = id;
+    public WorkoutExercises(int workout_id, int exercise_id, String time) {
         this.workout_id = workout_id;
         this.exercise_id = exercise_id;
         this.time = time;
