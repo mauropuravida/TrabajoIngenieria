@@ -9,9 +9,9 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Device_Users" , indices =
-        {@Index("fk_Device_users_Insurances1_idx"), @Index(value = {"insurance_id"}),
-         @Index("fk_Device_Users_Users1_idx"), @Index(value = {"user_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
+        {@Index(name ="fk_Device_users_Insurances1_idx", value = {"insurance_id"}),
+         @Index(name = "fk_Device_Users_Users1_idx", value = {"user_id"}),
+         @Index(name = "id_UNIQUE_device", value = "id", unique = true)})
 public class DeviceUsers {
 
     @NotNull
@@ -41,15 +41,6 @@ public class DeviceUsers {
     @ColumnInfo(name="heart_rate_signal_threshold")
     private int heart_rate_signal_threshold;
 
-    public DeviceUsers(int user_id, float weight, float height, int insurance_id, String insurance_number, int heart_rate_signal_threshold) {
-        this.user_id = user_id;
-        this.weight = weight;
-        this.height = height;
-        this.insurance_id = insurance_id;
-        this.insurance_number = insurance_number;
-        this.heart_rate_signal_threshold = heart_rate_signal_threshold;
-    }
-
     public DeviceUsers(int user_id) {
         this.user_id = user_id;
     }
@@ -72,5 +63,41 @@ public class DeviceUsers {
 
     public int getHeart_rate_signal_threshold() {
         return heart_rate_signal_threshold;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public int getInsurance_id() {
+        return insurance_id;
+    }
+
+    public void setInsurance_id(int insurance_id) {
+        this.insurance_id = insurance_id;
+    }
+
+    public void setInsurance_number(String insurance_number) {
+        this.insurance_number = insurance_number;
+    }
+
+    public void setHeart_rate_signal_threshold(int heart_rate_signal_threshold) {
+        this.heart_rate_signal_threshold = heart_rate_signal_threshold;
     }
 }

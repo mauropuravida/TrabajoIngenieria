@@ -10,6 +10,6 @@ import java.util.List;
 @Dao
 public interface WorkoutDoneDAO {
 
-    @Query("SELECT * FROM workouts INNER JOIN workoutreports ON workouts.id_wk = workoutreports.workout_id WHERE workouts.done = 1")
+    @Query("SELECT * FROM workout INNER JOIN workoutreport ON workout.id_wk = workoutreport.workout_id WHERE workout.done = 1")
     List<WorkoutDone> getAllWorkoutsDone();
 }

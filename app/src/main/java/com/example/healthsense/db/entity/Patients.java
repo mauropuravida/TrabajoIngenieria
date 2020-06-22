@@ -9,9 +9,9 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Patients" , indices =
-        {@Index("fk_Medical_Personnel_has_Device_Users_Device_Users1_idx"), @Index(value = {"device_user_id"}),
-         @Index("fk_Medical_Personnel_has_Device_Users_Medical_Personnel1_idx"), @Index(value = {"medical_personnel_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
+        {@Index(name ="fk_Medical_Personnel_has_Device_Users_Device_Users1_idx",value = {"device_user_id"}),
+         @Index(name ="fk_Medical_Personnel_has_Device_Users_Medical_Personnel1_idx", value = {"medical_personnel_id"}),
+         @Index(name ="id_UNIQUE_patient", value = "id", unique = true)})
 public class Patients {
 
     @NotNull
@@ -41,5 +41,21 @@ public class Patients {
 
     public int getDevice_user_id() {
         return device_user_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setMedical_personnel_id(int medical_personnel_id) {
+        this.medical_personnel_id = medical_personnel_id;
+    }
+
+    public void setDevice_user_id(int device_user_id) {
+        this.device_user_id = device_user_id;
     }
 }

@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName = "Cities", indices =
-        {@Index("cities_test_ibfk_1"), @Index(value = {"state_id"}),
-         @Index("id_UNIQUE"), @Index(value = {"id"}, unique = true)})
+        {@Index(name = "cities_test_ibfk_1",value = {"state_id"}),
+         @Index(name = "id_UNIQUE_city",value = {"id"}, unique = true)})
 public class Cities {
 
     @NotNull
@@ -20,7 +20,6 @@ public class Cities {
     @NotNull
     @ColumnInfo(name="name")
     private String name;
-
 
     @NotNull
     @ForeignKey(entity = States.class, parentColumns = "id",childColumns = "state_id",
@@ -40,5 +39,21 @@ public class Cities {
 
     public int getState_id() {
         return state_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    public void setState_id(int state_id) {
+        this.state_id = state_id;
     }
 }

@@ -9,9 +9,9 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Workouts" , indices =
-        {@Index("fk_Workouts_Device_users1_idx"), @Index(value = {"device_user_id"}),
-         @Index("fk_Workouts_Medical_personnel1_idx"), @Index(value = {"medical_personnel_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
+        {@Index(name ="fk_Workouts_Device_users1_idx", value = {"device_user_id"}),
+         @Index(name ="fk_Workouts_Medical_personnel1_idx", value = {"medical_personnel_id"}),
+         @Index(name ="id_UNIQUE_workout", value = "id", unique = true)})
 public class Workouts {
 
     @NotNull
@@ -96,5 +96,45 @@ public class Workouts {
 
     public int getRating() {
         return rating;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setMedical_personnel_id(int medical_personnel_id) {
+        this.medical_personnel_id = medical_personnel_id;
+    }
+
+    public void setDevice_user_id(int device_user_id) {
+        this.device_user_id = device_user_id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    public void setCreation_date(@NotNull String creation_date) {
+        this.creation_date = creation_date;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setDone(int done) {
+        this.done = done;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

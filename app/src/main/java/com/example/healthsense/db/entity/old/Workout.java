@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "Workouts")
+@Entity(tableName = "Workout")
 public class Workout {
 
     @PrimaryKey
+    @ColumnInfo(name= "id_wk")
     private int id_wk;
 
     @ColumnInfo(name = "name")

@@ -7,12 +7,13 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Entity(tableName = "Users",  indices =
-        {@Index("fk_Users_Document_Types1_idx"), @Index(value = {"document_type_id"}),
-         @Index("fk_cities_idx"), @Index(value = {"city_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true),
-         @Index("email_UNIQUE"), @Index(value = "email", unique = true)})
+        {@Index(name ="fk_Users_Document_Types1_idx", value = {"document_type_id"}),
+         @Index(name ="fk_cities_idx", value = {"city_id"}),
+         @Index(name ="id_UNIQUE", value = "id", unique = true),
+         @Index(name ="email_UNIQUE", value = "email", unique = true)})
 public class Users {
 
     @NotNull
@@ -60,7 +61,7 @@ public class Users {
     @ColumnInfo(name = "address")
     private String address;
 
-    public Users (String name, String last_name, String birth_date, char gender, int document_type_id, String document_number, String email, String password, int city_id, String address) {
+    public Users (String name, String last_name, String birth_date, int document_type_id, String document_number, String email, String password) {
         this.name = name;
         this.last_name = last_name;
         this.birth_date = birth_date;
@@ -111,5 +112,53 @@ public class Users {
 
     public String getAddress() {
         return address;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    public void setLast_name(@NotNull String last_name) {
+        this.last_name = last_name;
+    }
+
+    public void setBirth_date(@NotNull String birth_date) {
+        this.birth_date = birth_date;
+    }
+
+    public void setGender(char gender) {
+        this.gender = gender;
+    }
+
+    public void setDocument_type_id(int document_type_id) {
+        this.document_type_id = document_type_id;
+    }
+
+    public void setDocument_number(@NotNull String document_number) {
+        this.document_number = document_number;
+    }
+
+    public void setEmail(@NotNull String email) {
+        this.email = email;
+    }
+
+    public void setPassword(@NotNull String password) {
+        this.password = password;
+    }
+
+    public void setCity_id(int city_id) {
+        this.city_id = city_id;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

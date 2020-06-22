@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 
 @Entity(tableName="Workout_Reports" , indices =
-        {@Index("fk_Workout_reports_Workouts1_idx"), @Index(value = {"workout_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
+        {@Index(name ="fk_Workout_reports_Workouts1_idx", value = {"workout_id"}),
+         @Index(name ="id_UNIQUE_workout_report",value = "id", unique = true)})
 public class WorkoutReports {
 
     @NotNull
@@ -42,5 +42,21 @@ public class WorkoutReports {
     @NotNull
     public String getExecution_date() {
         return execution_date;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setWorkout_id(int workout_id) {
+        this.workout_id = workout_id;
+    }
+
+    public void setExecution_date(@NotNull String execution_date) {
+        this.execution_date = execution_date;
     }
 }

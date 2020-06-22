@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Medical_Specialities" ,
-        indices = {@Index("id_UNIQUE"), @Index(value = {"id"}, unique = true)})
+        indices = {@Index(name ="id_UNIQUE_medical_specialities",value = {"id"}, unique = true)})
 public class MedicalSpecialities {
 
     @NotNull
@@ -30,4 +30,15 @@ public class MedicalSpecialities {
         return name;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
 }

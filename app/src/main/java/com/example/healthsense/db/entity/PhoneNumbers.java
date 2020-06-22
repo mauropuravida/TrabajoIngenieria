@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Phone_Numbers" , indices =
-        {@Index("fk_Phone_Numbers_Users1_idx"), @Index(value = {"user_id"}),
-         @Index("id_UNIQUE"), @Index(value = "id", unique = true)})
+        {@Index(name ="fk_Phone_Numbers_Users1_idx", value = {"user_id"}),
+         @Index(name ="id_UNIQUE_phone_number" ,value = "id", unique = true)})
 public class PhoneNumbers {
 
     @NotNull
@@ -39,5 +39,21 @@ public class PhoneNumbers {
     @NotNull
     public String getNumber() {
         return number;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public void setNumber(@NotNull String number) {
+        this.number = number;
     }
 }

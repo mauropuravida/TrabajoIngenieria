@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.healthsense.db.AppDatabase;
+import com.example.healthsense.db.Repository.DocumentTypeRepository;
+import com.example.healthsense.db.entity.DocumentType;
 import com.example.healthsense.db.entity.old.Workout;
 import com.example.healthsense.db.entity.old.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
@@ -69,10 +72,23 @@ public class MainActivity extends AppCompatActivity {
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
-        //-----------------------------
+        DocumentTypeRepository doc = new DocumentTypeRepository(getApplication());
+        doc.getAllDocumentTypes().observe(this, new Observer<List<DocumentType>>() {
+            @Override
+            public void onChanged(List<DocumentType> documentTypes) {
+                for(int i =0 ; i<documentTypes.size();i++){
+                    System.out.println(" ID: " + documentTypes.get(i).getId() + "  NAME: " +  documentTypes.get(i).getName());
+                }
+            }
+        });
 
+        System.out.println();
+
+        //-----------------------------
+      //  AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
+     //   appDatabase.destroyInstance();
         //testing data on local db
-        new TaskInsertWorkouts().execute();
+        //  new TaskInsertWorkouts().execute();
 
     }
 
@@ -91,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
+/*
     //test inserts history
     private class TaskInsertWorkouts extends AsyncTask<Void, Void, Void> {
 
@@ -133,5 +149,5 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(getBaseContext(), "datos cargados", Toast.LENGTH_LONG).show();
         }
     }
-
+*/
 }

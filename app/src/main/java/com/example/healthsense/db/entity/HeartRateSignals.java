@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Heart_Rate_Signals" , indices =
-        {@Index("fk_Heart_rate_signals_Workout_reports1_idx"), @Index(value = {"workout_report_id"})})
+        {@Index(name = "fk_Heart_rate_signals_Workout_reports1_idx",value = {"workout_report_id"})})
 public class HeartRateSignals {
 
     @NotNull
@@ -47,5 +47,25 @@ public class HeartRateSignals {
 
     public int getValue() {
         return value;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setWorkout_report_id(int workout_report_id) {
+        this.workout_report_id = workout_report_id;
+    }
+
+    public void setTime(@NotNull String time) {
+        this.time = time;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 }

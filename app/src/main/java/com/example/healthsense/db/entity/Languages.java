@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Languages" ,
-        indices = {@Index("name_UNIQUE"), @Index(value = {"name"}, unique = true)})
+        indices = {@Index(name ="name_UNIQUE_language", value = {"name"}, unique = true)})
 public class Languages {
 
     @NotNull
@@ -26,5 +26,17 @@ public class Languages {
     @NotNull
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
     }
 }
