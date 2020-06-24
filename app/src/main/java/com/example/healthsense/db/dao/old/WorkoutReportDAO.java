@@ -1,4 +1,4 @@
-package com.example.healthsense.db.dao;
+package com.example.healthsense.db.dao.old;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

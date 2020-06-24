@@ -17,6 +17,12 @@ import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.MedicalPersonnelRepository;
+import com.example.healthsense.db.Repository.UserRepository;
+import com.example.healthsense.db.entity.DeviceUsers;
+import com.example.healthsense.db.entity.MedicalPersonnel;
+import com.example.healthsense.db.entity.Users;
 import com.example.healthsense.ui.login.LoginActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -140,6 +146,9 @@ public class SignUpUser extends AppCompatActivity {
         preferencesEditor.edit().putString(((EditText) findViewById(R.id.email)).getText().toString(), ((EditText) findViewById(R.id.name)).getText().toString()).apply();
         MainActivity.PROFILETYPE = "d";
 
+        //Agregar a la base de datos local en tabla medicos y usuarios.
+        addLocalDatabase();
+
         //iniciar login
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -147,6 +156,48 @@ public class SignUpUser extends AppCompatActivity {
         intent.putExtra("user",((EditText) findViewById(R.id.email)).getText().toString());
         startActivity(intent);
         finish();
+    }
+
+
+    private void addLocalDatabase(){
+        //Primero se inserta como User.
+        Users user_to_insert = new Users(((EditText) findViewById(R.id.name)).getText().toString(),
+                ((EditText) findViewById(R.id.lastname)).getText().toString(),
+                PikerDate.Companion.toDateFormat(((TextView) findViewById(R.id.birth_date)).getText().toString()),
+                (int)(((Spinner) findViewById(R.id.credential_type)).getSelectedItemId()+1),
+                ((EditText) findViewById(R.id.credential)).getText().toString(),
+                ((EditText) findViewById(R.id.email)).getText().toString(),
+                ((EditText) findViewById(R.id.password)).getText().toString()
+        );
+        System.out.println("DATOS DEL USER: "+ " " + user_to_insert.getId() +
+                " " + user_to_insert.getAddress() +" " + user_to_insert.getBirth_date() +
+                " " + user_to_insert.getDocument_number() +" " + user_to_insert.getEmail() +
+                " " + user_to_insert.getLast_name() +" " + user_to_insert.getName() +
+                " " + user_to_insert.getPassword() +" " + user_to_insert.getCity_id() +
+                " " + user_to_insert.getDocument_type_id() + " " + user_to_insert.getGender());
+        UserRepository userRepository = new UserRepository(getApplication());
+        userRepository.insert(user_to_insert);
+
+        //Se consulta el id autogenerado con el que se inserto.
+        System.out.println("ID antes: " + user_to_insert.getId());
+
+        int id = userRepository.getId(user_to_insert.getEmail());
+        System.out.println("ID despues: " + user_to_insert.getId() + "  ID POSTA: " + id);
+
+        //Se inserta como Device User.
+        while (id == 0){
+            id = userRepository.getId(user_to_insert.getEmail());
+            System.out.println("wait");
+        }
+        DeviceUsers device_user_to_insert = new DeviceUsers(id);
+
+        System.out.println("DATOS DEL DEVICE USER: "+ " " + device_user_to_insert.getId() +
+                " " + device_user_to_insert.getInsurance_number() +" " + device_user_to_insert.getHeart_rate_signal_threshold() +
+                " " + device_user_to_insert.getHeight() +" " + device_user_to_insert.getInsurance_id() +
+                " " + device_user_to_insert.getUser_id() + " " + device_user_to_insert.getWeight());
+
+        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository(getApplication());
+        deviceUsersRepository.insert(device_user_to_insert);
     }
 
     private void getDocumentTypes(Context v){

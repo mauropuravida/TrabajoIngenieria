@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.healthsense.R;
-import com.example.healthsense.db.entity.WorkoutDone;
+import com.example.healthsense.db.entity.old.WorkoutDone;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import java.util.ArrayList;

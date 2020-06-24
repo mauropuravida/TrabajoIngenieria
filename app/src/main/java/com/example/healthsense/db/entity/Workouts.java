@@ -18,11 +18,10 @@ public class Workouts {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @NotNull
     @ForeignKey(entity = MedicalPersonnel.class, parentColumns = "id", childColumns = "medical_personnel_id",
             onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
     @ColumnInfo(name = "medical_personnel_id")
-    private int medical_personnel_id;
+    private Integer medical_personnel_id;
 
     @NotNull
     @ForeignKey(entity = DeviceUsers.class, parentColumns = "id", childColumns = "device_user_id",
@@ -64,7 +63,7 @@ public class Workouts {
         this.rating = rating;
     }
 
-    public int getMedical_personnel_id() {
+    public Integer getMedical_personnel_id() {
         return medical_personnel_id;
     }
 

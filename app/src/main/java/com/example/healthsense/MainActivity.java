@@ -11,8 +11,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.AppDatabase;
+import com.example.healthsense.db.Repository.DeviceUsersRepository;
 import com.example.healthsense.db.Repository.DocumentTypeRepository;
+import com.example.healthsense.db.Repository.UserRepository;
+import com.example.healthsense.db.entity.DeviceUsers;
 import com.example.healthsense.db.entity.DocumentType;
 import com.example.healthsense.db.entity.old.Workout;
 import com.example.healthsense.db.entity.old.WorkoutReport;
@@ -26,7 +30,9 @@ import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -45,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
 
         setContentView((PROFILETYPE.equals("m")) ? R.layout.activity_main_medical : R.layout.activity_main);
@@ -84,12 +89,30 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println();
 
+        //  DeviceUsersRepository deviceUsers = new DeviceUsersRepository( getActivity().getApplication());
+        //  deviceUsers.deleteAll();;
+        //   UserRepository userRepository = new UserRepository(getActivity().getApplication());
+        //   userRepository.deleteAll();
         //-----------------------------
-      //  AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
-     //   appDatabase.destroyInstance();
+     //   AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
+       // new ElimnarTodasLasTablasYDestroy(appDatabase).execute();
         //testing data on local db
         //  new TaskInsertWorkouts().execute();
 
+    }
+
+    private static class ElimnarTodasLasTablasYDestroy extends AsyncTask<Void, Void, Void> {
+        private AppDatabase db;
+        private ElimnarTodasLasTablasYDestroy(AppDatabase db) {
+            this.db = db;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            System.out.println("VORRO");
+            db.clearAllTables();
+            db.destroyInstance();
+            return null;
+        }
     }
 
     @Override

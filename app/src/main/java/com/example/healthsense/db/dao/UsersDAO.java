@@ -21,6 +21,9 @@ public interface UsersDAO {
     @Delete
     void delete(Users user);
 
+    @Query("DELETE FROM Users")
+    void deleteAll();
+
     @Query("SELECT id from Users where email = :email")
     int getID(String email);
 

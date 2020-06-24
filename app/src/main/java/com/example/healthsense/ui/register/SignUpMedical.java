@@ -191,7 +191,10 @@ public class SignUpMedical extends AppCompatActivity {
         System.out.println("ID antes: " + user_to_insert.getId());
         int id = userRepository.getId(user_to_insert.getEmail());
         System.out.println("ID despues: " + user_to_insert.getId() + "  ID POSTA: " + id);
-
+        while (id == 0){
+            id = userRepository.getId(user_to_insert.getEmail());
+            System.out.println("wait");
+        }
         //Se inserta como Medical Pesonnel. todo
         MedicalPersonnel medical_to_insert = new MedicalPersonnel(id,
                 ((int)((Spinner) findViewById(R.id.interal_medicine)).getSelectedItemId()+1));

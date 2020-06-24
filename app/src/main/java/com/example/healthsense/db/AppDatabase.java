@@ -7,15 +7,20 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.healthsense.db.dao.DeviceUsersDAO;
 import com.example.healthsense.db.dao.DocumentTypeDAO;
+import com.example.healthsense.db.dao.ExercisesDAO;
 import com.example.healthsense.db.dao.MedicalPersonnelDAO;
 import com.example.healthsense.db.dao.UsersDAO;
-import com.example.healthsense.db.dao.WorkoutDAO;
-import com.example.healthsense.db.dao.WorkoutDoneDAO;
-import com.example.healthsense.db.dao.WorkoutReportDAO;
+import com.example.healthsense.db.dao.WorkoutsDAO;
+import com.example.healthsense.db.dao.WorkoutsExercisesDAO;
+import com.example.healthsense.db.dao.WorkoutsReportDAO;
+import com.example.healthsense.db.dao.old.WorkoutDAO;
+import com.example.healthsense.db.dao.old.WorkoutDoneDAO;
+import com.example.healthsense.db.dao.old.WorkoutReportDAO;
 import com.example.healthsense.db.entity.Cities;
 import com.example.healthsense.db.entity.Countries;
 import com.example.healthsense.db.entity.DeviceUsers;
@@ -48,7 +53,7 @@ import com.example.healthsense.db.entity.old.WorkoutReport;
         Patients.class, PhoneNumbers.class, States.class, UserDiseases.class, Users.class, WorkoutExercises.class,
         WorkoutReports.class, Workouts.class,
         Workout.class, WorkoutReport.class // quitar estos dos
-}, version = 1, exportSchema = false)
+}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "com.example.healthsense";
@@ -65,12 +70,17 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract DeviceUsersDAO deviceUsersDAO();
     public abstract MedicalPersonnelDAO medicalPersonnelDAO();
     public abstract DocumentTypeDAO documentTypeDAO();
+    public abstract WorkoutsDAO workoutsDAO();
+    public abstract WorkoutsExercisesDAO workoutsExercisesDAO();
+    public abstract ExercisesDAO exercisesDAO();
+    public  abstract WorkoutsReportDAO workoutsReportDAO();
 
     public static synchronized AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE =
                     Room.databaseBuilder(context, AppDatabase.class, DB_NAME)
                             .addCallback(roomCallback)
+                            .fallbackToDestructiveMigration()// para realizar modificaciones en las tablas
                             .build();
         }
         return INSTANCE;
@@ -79,6 +89,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public static void destroyInstance() {
         INSTANCE = null;
     }
+
+    public static void clearAll(){ INSTANCE.clearAllTables();}
 
 
     private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {

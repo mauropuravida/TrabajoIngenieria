@@ -2,6 +2,9 @@ package com.example.healthsense.ui.traininginformation;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
@@ -17,9 +20,23 @@ import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
+import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.db.AppDatabase;
+import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.ExercisesRepository;
+import com.example.healthsense.db.Repository.UserRepository;
+import com.example.healthsense.db.Repository.WorkoutsExercisesRepository;
+import com.example.healthsense.db.Repository.WorkoutsReportsRepository;
+import com.example.healthsense.db.Repository.WorkoutsRepository;
+import com.example.healthsense.db.entity.Exercises;
+import com.example.healthsense.db.entity.WorkoutExercises;
+import com.example.healthsense.db.entity.WorkoutReports;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
@@ -28,7 +45,12 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import static com.example.healthsense.MainActivity.PREFS_FILENAME;
+import static com.example.healthsense.MainActivity.user;
 
 public class TrainingInformation extends Fragment {
 
@@ -292,6 +314,10 @@ public class TrainingInformation extends Fragment {
         bt1.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
+                   if (!trainingWithoutConnection()) {
+                       Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
+                       //boton 3 y 4 desactivar.
+                   }
                    /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                        createNewForm(root);
                        //bt1.setVisibility(View.GONE);
@@ -392,5 +418,73 @@ public class TrainingInformation extends Fragment {
 
         for (int i=0; i< you.size(); i++)
             you.get(i).release();
+    }
+
+    private boolean trainingWithoutConnection(){
+        //Consulta con la base de datos local si puede realizar el training antes de que de play. Esto si es que no hay internet.
+        //Agregue un campo en device_users que es upload -> entrenamientos por subir.
+        UserRepository userRepository = new UserRepository(getActivity().getApplication());
+        int user_id = userRepository.getId(MainActivity.email);
+        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
+        int works_saved = deviceUsersRepository.getWorksSaved(user_id);
+        return works_saved < 5;
+    }
+
+    private void addToDatabase(){
+        //todo agregar trainings al dar end up a la base de datos.
+        //se agrega el training a la base local (para el serverless), al dar end up si no habia internet se aumentaria en uno la cantidad de entrenamientos almacenados.
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Si hay conexión a Internet en este momento OkHttp
+        } else {
+            // No hay conexión a Internet en este momento Room
+            addFinishTrainingNoInternet();
+        }
+    }
+
+    private void addFinishTrainingNoInternet(){
+        //Es esta funcion agrego los datos del entrenamiento finalizado.
+        int workout_id = 0; //todo obtener de mysharedpreferences, al apretar el workout enviarlo por ahi.
+
+        //Actualizo el workout como done.
+        WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
+        workoutsRepository.update(true,workout_id); // actualizo campo done en workouts
+
+        //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push. VER DONDE HACER ESTO.
+        UserRepository userRepository = new UserRepository(getActivity().getApplication());
+        int user_id = userRepository.getId(MainActivity.email);
+        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
+        deviceUsersRepository.increaseWorks(user_id);
+
+        //Agregar reportes.
+        Calendar currentDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        System.out.println(sdf.format(currentDate.getTime()));
+        String execution_date = PikerDate.Companion.toDateFormat(sdf.format(currentDate.getTime()));
+        WorkoutReports report_to_insert = new WorkoutReports(workout_id,execution_date);
+        WorkoutsReportsRepository workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
+        workoutsReportsRepository.insert(report_to_insert);
+
+        //Agregar HeartRateSignals valores que obtenemos de conexion de dispositivos cada x tiempo.
+        //todo
+
+    }
+
+    //Esta funcion se deberia ejecutar al loguearse para cargar los datos del servidor.
+    private void addExercises(){
+        // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless. Guardado de workout se debe hacer previamente.
+        ExercisesRepository exercisesRepository = new ExercisesRepository(getActivity().getApplication());
+        WorkoutsExercisesRepository workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
+        int workout_id = 0; //todo obtener de mysharedpreferences, al apretar el workout enviarlo por ahi.
+        String time_workout_exercises = null; //todo obtener el tiempo del workout / exercices de la tabla workout_exercises
+        for (int i = 0; i<you.size();i++){
+            Exercises exercises_to_insert = new Exercises("Esta es la descripcion del trabajo", "esta es la direccion donde esta el video.");
+            exercisesRepository.insert(exercises_to_insert);
+            WorkoutExercises workoutExercises_to_insert = new WorkoutExercises(workout_id,exercisesRepository.getNumFiles(), time_workout_exercises);
+            workoutsExercisesRepository.insert(workoutExercises_to_insert);
+        }
+
     }
 }

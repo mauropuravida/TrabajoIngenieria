@@ -33,7 +33,7 @@ public class Users {
     private String birth_date;
 
     @ColumnInfo(name = "gender")
-    private char gender;
+    private Character gender;
 
     @NotNull
     @ForeignKey(entity = DocumentType.class, parentColumns = "id",
@@ -86,7 +86,7 @@ public class Users {
         return birth_date;
     }
 
-    public char getGender() {
+    public Character getGender() {
         return gender;
     }
 

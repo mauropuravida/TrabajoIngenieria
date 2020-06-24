@@ -27,6 +27,15 @@ public class DeviceUsersRepository {
         new DeleteUsersyncTask(deviceUsersDAO).execute(deviceUsers);
     }
 
+    public void increaseWorks(int id){ deviceUsersDAO.increaseWorks(id);}
+
+    public void decreaseWorks(int id){ deviceUsersDAO.decreaseWorks(id);}
+
+    public int getWorksSaved(int id){return deviceUsersDAO.getWorksSaved(id);}
+
+    public void deleteAll(){ deviceUsersDAO.deleteAll();}
+
+
     private static class InsertUserAsyncTask extends AsyncTask<DeviceUsers, Void, Void> {
         private DeviceUsersDAO deviceUsersDAO;
 

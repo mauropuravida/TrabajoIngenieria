@@ -33,13 +33,24 @@ public class DeviceUsers {
     @ForeignKey(entity = Insurances.class, parentColumns = "id", childColumns = "insurance_id",
             onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.RESTRICT)
     @ColumnInfo(name="insurance_id")
-    private int insurance_id;
+    private Integer insurance_id;
 
     @ColumnInfo(name="insurance_number")
     private String insurance_number;
 
     @ColumnInfo(name="heart_rate_signal_threshold")
-    private int heart_rate_signal_threshold;
+    private Integer heart_rate_signal_threshold;
+
+    public int getUpload() {
+        return upload;
+    }
+
+    public void setUpload(int upload) {
+        this.upload = upload;
+    }
+
+    @ColumnInfo(name="upload")
+    private int upload = 0;
 
     public DeviceUsers(int user_id) {
         this.user_id = user_id;
@@ -61,7 +72,7 @@ public class DeviceUsers {
         return insurance_number;
     }
 
-    public int getHeart_rate_signal_threshold() {
+    public Integer getHeart_rate_signal_threshold() {
         return heart_rate_signal_threshold;
     }
 
@@ -85,7 +96,7 @@ public class DeviceUsers {
         this.height = height;
     }
 
-    public int getInsurance_id() {
+    public Integer getInsurance_id() {
         return insurance_id;
     }
 

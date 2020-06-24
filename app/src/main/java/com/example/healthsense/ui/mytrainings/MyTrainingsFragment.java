@@ -22,6 +22,8 @@ import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
+import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.UserRepository;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
@@ -130,42 +132,6 @@ public class MyTrainingsFragment extends Fragment {
         mProgressDialog.dismiss();
     }
 
-    /*
-        private void getExercisesWorkout(View root, View.OnClickListener mListener) {
-            String path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
-            token = new JSONArray();
-            int i = 0;
-            for (JSONObject o : workouts) {
-                try {
-                    i++;
-                    getBackendResponse(path, o.getInt("id"), null, workoutExercises, root, mListener, i);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    */
-/*
-    private void getExercises(View root, View.OnClickListener mListener, HashMap<Integer, ArrayList<Integer>> hashObj, int cant) {
-        String path = "exercise/"; // obtengo por cada par work_id|exercice_id, la info del exercise
-        // Podria optimizarse obteniendo todos los exercices para realizar muchos menos llamados.
-        // Pero si la cantidad de exercises es muy grande no conviene.
-        String finalPath = path;
-        Iterator it = hashObj.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            ArrayList<Integer> values = (ArrayList<Integer>) pair.getValue();
-            for (int i = 0; i < values.size(); i++) {
-                if (!it.hasNext() && (i == values.size() - 1) && cant == workouts.size()) {
-                    getLastResponse(finalPath, values.get(i).intValue(), exercises, null, root, mListener);
-                } else {
-                    getBackendResponse(finalPath, values.get(i).intValue(), exercises, null, root, mListener, 0);
-                }
-            }
-        }
-        mProgressDialog.dismiss();
-    }
-*/
     private Runnable getWorks() {
         return new Runnable() {
             @Override
@@ -359,7 +325,9 @@ public class MyTrainingsFragment extends Fragment {
 
                     if (jsonType instanceof JSONObject) { //Si es JSONOBject -> exercices
                         JSONObject json = new JSONObject((responseData));
-                        listObj.add(json);
+                        System.out.println(json.toString());
+                        if(listObj != null)
+                            listObj.add(json);
                     } else if (jsonType instanceof JSONArray) {// Si es JSONArray -> workoust/workout_exercise
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {

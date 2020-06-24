@@ -26,10 +26,10 @@ public class MedicalPersonnel {
     @ForeignKey(entity = MedicalSpecialities.class, parentColumns = "id", childColumns = "medical_speciality_id",
             onUpdate = ForeignKey.CASCADE)
     @ColumnInfo(name="medical_speciality_id")
-    private int medical_speciality_id;
+    private Integer medical_speciality_id;
 
     @ColumnInfo(name="available") // ver esto porque es BIT.
-    private boolean available;
+    private Boolean available;
 
     @ColumnInfo(name="mp_public_key")
     private String mp_public_key;
@@ -47,7 +47,7 @@ public class MedicalPersonnel {
         return user_id;
     }
 
-    public boolean isAvailable() {
+    public Boolean isAvailable() {
         return available;
     }
 
@@ -71,7 +71,7 @@ public class MedicalPersonnel {
         this.user_id = user_id;
     }
 
-    public int getMedical_speciality_id() {
+    public Integer getMedical_speciality_id() {
         return medical_speciality_id;
     }
 
