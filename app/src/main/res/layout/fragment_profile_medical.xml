@@ -101,9 +101,11 @@
                 android:backgroundTint="@color/DarkerButton"
                 android:ems="10"
                 android:enabled="false"
+                android:hint="@string/credential_type"
                 android:inputType="textPersonName"
                 android:paddingLeft="20dp"
-                android:textColor="@color/DarkGrayText" />
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
 
             <Space
                 android:layout_width="10dp"
@@ -231,7 +233,7 @@
             android:imeOptions="actionDone"
             android:paddingLeft="20dp"
             android:selectAllOnFocus="true"
-            android:textColor="@color/TextGray" />
+            android:textColorHint="@color/DarkGrayText" />
 
         <Spinner
             android:id="@+id/language"

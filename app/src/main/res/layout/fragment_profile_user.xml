@@ -67,7 +67,8 @@
                 android:enabled="false"
                 android:gravity="center_vertical"
                 android:hint="@string/name"
-                android:paddingLeft="20dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:textColor="@color/DarkGrayText"
                 android:textColorHint="@color/DarkGrayText" />
 
@@ -82,7 +83,8 @@
                 android:gravity="center_vertical"
                 android:hint="@string/lastname"
                 android:inputType="textPersonName"
-                android:paddingLeft="20dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:textColor="@color/DarkGrayText"
                 android:textColorHint="@color/DarkGrayText" />
         </LinearLayout>
@@ -101,9 +103,12 @@
                 android:backgroundTint="@color/DarkerButton"
                 android:ems="10"
                 android:enabled="false"
+                android:hint="@string/credential_type"
                 android:inputType="textPersonName"
-                android:paddingLeft="20dp"
-                android:textColor="@color/DarkGrayText" />
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:textColor="@color/DarkGrayText"
+                android:textColorHint="@color/DarkGrayText" />
 
             <Space
                 android:layout_width="10dp"
@@ -120,7 +125,8 @@
                 android:gravity="center_vertical"
                 android:hint="@string/credential_id"
                 android:inputType="number"
-                android:paddingLeft="20dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:textColor="@color/DarkGrayText"
                 android:textColorHint="@color/DarkGrayText" />
 
@@ -143,7 +149,8 @@
                 android:gravity="center_vertical"
                 android:hint="@string/birthday_date"
                 android:inputType="textPersonName"
-                android:paddingLeft="20dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:textColor="@color/DarkGrayText"
                 android:textColorHint="@color/DarkGrayText"
                 android:textSize="18sp" />
@@ -157,7 +164,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_spinner" />
+                android:background="@drawable/bg_spinner"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
         </LinearLayout>
 
         <EditText
@@ -170,7 +179,8 @@
             android:gravity="center_vertical"
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
-            android:paddingLeft="20dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:selectAllOnFocus="true"
             android:textColor="@color/DarkGrayText"
             android:textColorHint="@color/DarkGrayText"
@@ -186,8 +196,10 @@
                 android:id="@+id/country"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_spinner"
-                android:layout_weight="1" />
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
 
             <Space
                 android:layout_width="20dp"
@@ -198,7 +210,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_spinner"/>
+                android:background="@drawable/bg_spinner"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
 
         </LinearLayout>
 
@@ -209,7 +223,8 @@
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:background="@drawable/bg_spinner"
-            android:paddingLeft="10dp" />
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp" />
 
         <EditText
             android:id="@+id/address"
@@ -219,10 +234,11 @@
 
             android:background="@drawable/background_white_form"
             android:backgroundTint="@color/White"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
             android:hint="@string/address"
             android:imeOptions="actionDone"
-            android:paddingLeft="20dp"
-            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,QWERTYUIOPASDFGHJKLZXCVBNM"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:selectAllOnFocus="true" />
 
         <LinearLayout
@@ -241,7 +257,8 @@
                 android:ems="10"
                 android:hint="@string/Weight"
                 android:inputType="numberDecimal"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
 
             <Space
                 android:layout_width="10dp"
@@ -258,38 +275,42 @@
                 android:ems="10"
                 android:hint="@string/height"
                 android:inputType="numberDecimal"
-                android:paddingLeft="20dp" />
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="45dp"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/insurance_numb"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_white_form"
-                android:backgroundTint="@color/White"
-                android:ems="10"
-                android:hint="@string/insurance_number"
-                android:inputType="number"
-                android:paddingLeft="20dp" />
-
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content" />
 
             <Spinner
                 android:id="@+id/insurance_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:background="@drawable/bg_spinner"
-                android:backgroundTint="@color/White" />
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/insurance_numb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:background="@drawable/background_white_form"
+                android:backgroundTint="@color/White"
+                android:ems="10"
+                android:hint="@string/insurance_number"
+                android:inputType="number"
+                android:paddingLeft="15dp"
+                android:paddingEnd="15dp" />
+
         </LinearLayout>
 
         <Spinner
@@ -297,7 +318,9 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
-            android:backgroundTint="@color/DarkGrayText" />
+            android:backgroundTint="@color/DarkGrayText"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp" />
 
     </LinearLayout>
 
