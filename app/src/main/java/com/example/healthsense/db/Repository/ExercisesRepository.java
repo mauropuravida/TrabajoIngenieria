@@ -12,10 +12,12 @@ import java.util.List;
 public class ExercisesRepository {
 
     private ExercisesDAO exercisesDAO;
+    private List<Exercises> exercises;
 
     public ExercisesRepository(Application application) {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         exercisesDAO = database.exercisesDAO();
+        exercises = exercisesDAO.getAll();
     }
 
     public void insert(Exercises exercises) {
@@ -29,6 +31,8 @@ public class ExercisesRepository {
     public void delete(Exercises exercises) {
         new DeleteUsersyncTask(exercisesDAO).execute(exercises);
     }
+
+    public List<Exercises> getAll(){return this.exercises;}
 
     public Exercises getExercises(int id){return exercisesDAO.getExercises(id);}
 

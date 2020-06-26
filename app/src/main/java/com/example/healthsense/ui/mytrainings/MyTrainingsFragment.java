@@ -2,6 +2,7 @@ package com.example.healthsense.ui.mytrainings;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,7 +24,14 @@ import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.ExercisesRepository;
 import com.example.healthsense.db.Repository.UserRepository;
+import com.example.healthsense.db.Repository.WorkoutsExercisesRepository;
+import com.example.healthsense.db.Repository.WorkoutsRepository;
+import com.example.healthsense.db.entity.Exercises;
+import com.example.healthsense.db.entity.WorkoutExercises;
+import com.example.healthsense.db.entity.Workouts;
+import com.example.healthsense.db.entity.old.Workout;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
@@ -38,12 +46,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+
+import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
 //ESTO NO SE HACE MAS.
 // Obtener lista Device_User  /deviceUser/:fk&:0  -> fk es el user_id  ES UN USUARIO
@@ -65,6 +78,7 @@ public class MyTrainingsFragment extends Fragment {
     private View.OnClickListener listenerGeneral;
     private View rootGeneral;
     private ArrayList<Integer> calls = new ArrayList<>();
+    private boolean first = true;
 
 
     public static Fragment fg;
@@ -82,6 +96,8 @@ public class MyTrainingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // nuevo intent con la info del layout seleccionado.
+                SharedPreferences preferencesEditor = getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+                preferencesEditor.edit().putInt("Work_id",Integer.valueOf(getTag()));
                 TrainingInformation.fg = fg;
                 getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
             }
@@ -99,11 +115,19 @@ public class MyTrainingsFragment extends Fragment {
         mProgressDialog.setCancelable(false);
 
         if (networkInfo != null && networkInfo.isConnected()) {
+            if (first) {
+                try {
+                    addExercisesRoom();
+                    first = false;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
             // Si hay conexión a Internet en este momento OkHttp
             mProgressDialog.show();
             getData();
         } else {
-            // No hay conexión a Internet en este momento Room
+            // No hay conexión a Internet en este momento levantar datos de Room
         }
         return root;
     }
@@ -380,4 +404,74 @@ public class MyTrainingsFragment extends Fragment {
             }
         });
     }
+
+
+    private void addWorkoutsRoom() throws JSONException {
+        // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless.
+        WorkoutsExercisesRepository workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
+        WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
+        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository(getActivity().getApplication());
+        UserRepository userRepository = new UserRepository(getActivity().getApplication());
+        List<Workouts> workouts_room = workoutsRepository.getAll();
+        boolean in_room;
+        for (int i = 0; i<workouts.size(); i++){
+            int workout_id = workouts.get(i).getInt("id");
+            in_room = false;
+            for(int j = 0; j<workouts_room.size(); j++){
+                if ( workout_id == workouts_room.get(j).getId_backend()){
+                    in_room = true;
+                    break;
+                }
+            }
+            if (!in_room){
+                int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                Workouts workout_to_insert = new Workouts(null,device_user_id_room,workouts.get(i).getString("name"),
+                        workouts.get(i).getString("creation_date"),workouts.get(i).getInt("difficulty"),workouts.get(i).getInt("price"),
+                        workouts.get(i).getInt("done"),workouts.get(i).getInt("rating"));
+                workout_to_insert.setId_backend(workout_id);
+                workoutsRepository.insert(workout_to_insert);
+            }
+        }
+        addExercisesRoom();
+      //  addWorkoutsExercisesRoom();
+    }
+
+    private void addExercisesRoom() throws JSONException {
+        ExercisesRepository exercisesRepository = new ExercisesRepository(getActivity().getApplication());
+        List<Exercises> exercises_room = exercisesRepository.getAll();
+        boolean in_room;
+        for(int i = 0; i< exercises.size(); i++){
+            int exercises_id =exercises.get(i).getInt("id");
+            in_room = false;
+            for(int j = 0; j< exercises_room.size(); j++){
+                if (exercises_room.get(j).getId_backend() == exercises_id ){
+                    in_room = true;
+                    break;
+                }
+            }
+            if (!in_room){
+                Exercises exercises_to_insert = new Exercises(exercises.get(i).getString("description"), exercises.get(i).getString("path"));
+                exercises_to_insert.setId_backend(exercises_id);
+                exercisesRepository.insert(exercises_to_insert);
+            }
+        }
+    }
+
+  /*  private void addWorkoutsExercisesRoom(){
+        WorkoutsExercisesRepository workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
+        Map<Integer, ArrayList<Integer>> map = new HashMap<Integer,  ArrayList<Integer>>(workoutExercises);
+        List<WorkoutExercises> workoutExercises_room = workoutsExercisesRepository.getAll();
+        boolean in_room;
+        for(Integer key : map.keySet()){
+            List<Integer> v = map.get(key);
+            in_room = false;
+            for(int i = 0; i < v.size(); i++){
+                for( int j=0; j<workoutExercises_room.size();j++){
+                    if (workoutExercises_room.get(j).getId_backend() == )
+
+                }
+            }
+        }
+    //todo cargar los workouts exercises. (guardando el workout ya puego guardar los reportes offline -> puedo hacer los workouts offline)
+    }*/
 }

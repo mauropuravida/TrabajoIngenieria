@@ -3,6 +3,7 @@ package com.example.healthsense.db.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -15,6 +16,9 @@ import org.jetbrains.annotations.NotNull;
          @Index(name ="fk_Workouts_has_Exercise_Workouts_idx",value = {"workout_id"}),
          @Index(name ="id_UNIQUE_workout_exercise",value = "id", unique = true)})
 public class WorkoutExercises {
+
+    @Ignore
+    int id_backend;
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
@@ -69,5 +73,13 @@ public class WorkoutExercises {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getId_backend() {
+        return id_backend;
+    }
+
+    public void setId_backend(int id_backend) {
+        this.id_backend = id_backend;
     }
 }

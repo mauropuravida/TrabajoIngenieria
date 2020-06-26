@@ -21,6 +21,9 @@ public interface DeviceUsersDAO {
     @Delete
     void delete(DeviceUsers deviceUser);
 
+    @Query("Select du.user_id FROM Device_Users du INNER JOIN Users u ON u.id = du.user_id WHERE u.id = :id ")
+    int getDeviceUserId(int id);
+
     @Query("DELETE FROM Device_Users")
     void deleteAll();
 

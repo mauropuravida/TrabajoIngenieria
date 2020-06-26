@@ -11,10 +11,12 @@ import java.util.List;
 
 public class WorkoutsRepository {
     private WorkoutsDAO workoutsDAO;
+    private List<Workouts> workouts;
 
     public WorkoutsRepository(Application application) {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         workoutsDAO = database.workoutsDAO();
+        workouts = workoutsDAO.getAll();
     }
 
     public void insert(Workouts workouts) {
@@ -38,6 +40,8 @@ public class WorkoutsRepository {
     public List<Workouts> getWorkoutsDevice(int id){ return workoutsDAO.getWorkoutsDevice(id);}
 
     public List<Workouts> getWorkoutsMedical(int id){ return workoutsDAO.getWorkoutsMedical(id);}
+
+    public List<Workouts> getAll(){ return workouts;}
 
     private static class InsertUserAsyncTask extends AsyncTask<Workouts, Void, Void> {
         private WorkoutsDAO workoutsDAO;

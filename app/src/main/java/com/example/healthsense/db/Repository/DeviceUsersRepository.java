@@ -35,6 +35,7 @@ public class DeviceUsersRepository {
 
     public void deleteAll(){ deviceUsersDAO.deleteAll();}
 
+    public int getDeviceUserId(int id){return deviceUsersDAO.getDeviceUserId(id);}
 
     private static class InsertUserAsyncTask extends AsyncTask<DeviceUsers, Void, Void> {
         private DeviceUsersDAO deviceUsersDAO;

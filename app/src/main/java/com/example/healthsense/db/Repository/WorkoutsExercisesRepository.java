@@ -11,10 +11,12 @@ import java.util.List;
 
 public class WorkoutsExercisesRepository {
     private WorkoutsExercisesDAO workoutsExercisesDAO;
+    List<WorkoutExercises> workoutExercises;
 
     public WorkoutsExercisesRepository(Application application) {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         workoutsExercisesDAO = database.workoutsExercisesDAO();
+        workoutExercises = workoutsExercisesDAO.getAll();
     }
 
     public void insert(WorkoutExercises workouts) {
@@ -28,6 +30,9 @@ public class WorkoutsExercisesRepository {
     public void delete(WorkoutExercises workouts) {
         new DeleteUsersyncTask(workoutsExercisesDAO).execute(workouts);
     }
+
+    public List<WorkoutExercises> getAll(){ return workoutsExercisesDAO.getAll();}
+
 
     public WorkoutExercises getWorkoutExercises(int id){return workoutsExercisesDAO.getWorkoutsExercises(id);}
 

@@ -22,11 +22,14 @@ public interface WorkoutsDAO {
     @Delete
     void delete(Workouts workout);
 
-    @Query("DELETE FROM workouts")
+    @Query("DELETE FROM Workouts")
     void deleteAll();
 
-    @Query("SELECT * FROM workouts WHERE id =  :id")
+    @Query("SELECT * FROM Workouts WHERE id =  :id")
     Workouts getWorkout(int id);
+
+    @Query("SELECT * FROM Workouts")
+    List<Workouts> getAll();
 
     @Query("SELECT * FROM Workouts WHERE device_user_id = :id")
     List<Workouts> getWorkoutsDevice(int id);

@@ -446,8 +446,10 @@ public class TrainingInformation extends Fragment {
 
     private void addFinishTrainingNoInternet(){
         //Es esta funcion agrego los datos del entrenamiento finalizado.
-        int workout_id = 0; //todo obtener de mysharedpreferences, al apretar el workout enviarlo por ahi.
+        SharedPreferences preferencesEditor = getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
 
+        int workout_id = preferencesEditor.getInt("Work_id",0); //todo obtener de mysharedpreferences, al apretar el workout enviarlo por ahi.
+        System.out.println("WORK ID " + workout_id);
         //Actualizo el workout como done.
         WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
         workoutsRepository.update(true,workout_id); // actualizo campo done en workouts
@@ -472,19 +474,4 @@ public class TrainingInformation extends Fragment {
 
     }
 
-    //Esta funcion se deberia ejecutar al loguearse para cargar los datos del servidor.
-    private void addExercises(){
-        // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless. Guardado de workout se debe hacer previamente.
-        ExercisesRepository exercisesRepository = new ExercisesRepository(getActivity().getApplication());
-        WorkoutsExercisesRepository workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
-        int workout_id = 0; //todo obtener de mysharedpreferences, al apretar el workout enviarlo por ahi.
-        String time_workout_exercises = null; //todo obtener el tiempo del workout / exercices de la tabla workout_exercises
-        for (int i = 0; i<you.size();i++){
-            Exercises exercises_to_insert = new Exercises("Esta es la descripcion del trabajo", "esta es la direccion donde esta el video.");
-            exercisesRepository.insert(exercises_to_insert);
-            WorkoutExercises workoutExercises_to_insert = new WorkoutExercises(workout_id,exercisesRepository.getNumFiles(), time_workout_exercises);
-            workoutsExercisesRepository.insert(workoutExercises_to_insert);
-        }
-
-    }
 }
