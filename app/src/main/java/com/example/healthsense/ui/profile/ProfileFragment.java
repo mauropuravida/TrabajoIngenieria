@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,11 +43,11 @@ public class ProfileFragment extends Fragment {
     private ArrayList<String> valuesCity = new ArrayList<>();
     private ArrayList<String> valuesState = new ArrayList<>();
     private ArrayList<String> valuesCountry = new ArrayList<>();
-    private ArrayList<String> valuesLanguage = new ArrayList<>();
-    private ArrayList<String> valuesInsurance = new ArrayList<>();
     private ArrayList<String> valuesSpeciality;
 
     private int stateId = -1;
+    private int countryId = -1;
+    private boolean first=true;
     private ProgressDialog mProgressDialog;
     private View root;
 
@@ -66,13 +65,8 @@ public class ProfileFragment extends Fragment {
     private int ct;
     private String ddrss="";
     private String nsrnc;
-    private int nsrncID;
     private LinkedList lnggs = new LinkedList();
-    private long countryActual;
-    private boolean actualize = false;
     // fin valores de variables
-
-    private String dType;
 
     private ArrayList<Integer> calls = new ArrayList<>();
 
@@ -85,7 +79,6 @@ public class ProfileFragment extends Fragment {
         mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
         mProgressDialog.setTitle(R.string.loading);
         mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
-        mProgressDialog.setCancelable(false);
         mProgressDialog.show();
 
         Spinner spGender = root.findViewById(R.id.gender);
@@ -98,6 +91,10 @@ public class ProfileFragment extends Fragment {
         arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
         spGender.setAdapter(arrayAdapter2);
 
+        inicSpinnerView(R.id.country);
+        inicSpinnerView(R.id.state);
+        inicSpinnerView(R.id.city);
+
         doAsync.execute(new Runnable() {
             @Override
             public void run() {
@@ -106,26 +103,15 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        doAsync.execute(new Runnable() {
-            @Override
-            public void run() {
-                //consulta idiomas
-                inicSpinner(root,MainActivity.PATH+"language/", null, valuesLanguage);
-            }
-        });
 
         //consulta la lista de provincias para el pais seleccionado
         Spinner sp = root.findViewById(R.id.country);
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (sp.getSelectedItemId() != countryActual-1) {
-                    //Log.d("SALIDA COUNTRY", sp.getSelectedItemId()+" "+(countryActual-1));
+                if (!first) {
                     mProgressDialog.show();
-                    countryActual = sp.getSelectedItemId()+1;
-                    //inicSpinner(root, MainActivity.PATH+"state/country_id&" + idsCountries.get((int) sp.getSelectedItemId()), idsStates, valuesCountry);
-                    inicSpinner(root,MainActivity.PATH+"state/country_id&"+countryActual, idsStates = new ArrayList<>(), valuesState = new ArrayList<>());
-                    actualize = true;
+                    inicSpinner(root, MainActivity.PATH+"state/country_id&" + idsCountries.get((int) sp.getSelectedItemId()), idsStates, valuesCountry);
                 }
             }
 
@@ -138,13 +124,9 @@ public class ProfileFragment extends Fragment {
         spState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(spState.getSelectedItemId() != getIndex(stateId,idsStates) || actualize) {
-                    //Log.d("SALIDA STATE", spState.getSelectedItemId()+" "+(stateId));
+                if (!first) {
                     mProgressDialog.show();
-                    stateId =  Integer.parseInt(idsStates.get((int)spState.getSelectedItemId())); //getIndex((int)spState.getSelectedItemId(),idsStates);
-                    //Log.d("MUESTRA DE stateId", stateId+"");
-                    inicSpinner(root,MainActivity.PATH+"city/state_id&"+stateId, idsCities = new ArrayList<>(), valuesCity = new ArrayList<>());
-                    actualize = false;
+                    inicSpinner(root, MainActivity.PATH+"city/state_id&" + idsStates.get((int) spState.getSelectedItemId()), null, valuesState);
                 }
             }
 
@@ -152,23 +134,42 @@ public class ProfileFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        final String[] select_qualification = {
+                "Languages","Spanish", "Italian", "English", "Turkish"};
+        Spinner spinner = root.findViewById(R.id.language);
+
+        ArrayList<StateV0> listVOs = new ArrayList<>();
+
+        for (int i = 0; i < select_qualification.length; i++) {
+            StateV0 stateVO = new StateV0();
+            stateVO.setTitle(select_qualification[i]);
+            stateVO.setSelected(false);
+            listVOs.add(stateVO);
+        }
+        MyAdapter myAdapter = new MyAdapter(root.getContext(), R.layout.spinner_color,
+                listVOs);
+        spinner.setAdapter(myAdapter);
+
         if (MainActivity.PROFILETYPE.equals("m")) {
             inicSpinner(root,MainActivity.PATH+"medicalspeciality/", null, valuesSpeciality = new ArrayList<>());
+        } else {
+            inicUser(root);
         }
 
         root.findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveInfo();
+                @Override
+                public void onClick(View v) {
+                    saveInfo();
+                }
             }
-        });
+        );
 
         return root;
     }
 
     private synchronized int addCall(){
         calls.add(1);
-        //Log.d("CALLS",calls.size()+"");
+        Log.d("CALLS",calls.size()+"");
         return calls.size()-1;
     }
 
@@ -193,12 +194,14 @@ public class ProfileFragment extends Fragment {
             e.printStackTrace();
         }
 
+        Log.d("TOKEN ", MainActivity.TOKEN);
+
         int numCall = addCall();
 
         request.GET(conexion,jarr, new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                //Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
                 finishCall(numCall);
             }
 
@@ -218,51 +221,37 @@ public class ProfileFragment extends Fragment {
                     if (!json.getString("address").equals("null"))
                         ddrss = json.getString("address");
 
+                    if (!json.getString("weight").equals("null"))
+                        w = json.getString("weight");
+
+                    if (!json.getString("height").equals("null"))
+                        h = json.getString("height");
+
+                    gdr = (json.getString("gender").equals("null")) ? 0 : ((json.getString("gender").equals("M")) ? 1 : 2);
+
                     if (MainActivity.PROFILETYPE.equals("m")){
                         medSpeciality = Integer.parseInt(json.getString("medical_speciality_id"))-1;
                     }
-                    else{
-                        if (!json.getString("weight").equals("null"))
-                            w = json.getString("weight");
 
-                        if (!json.getString("height").equals("null"))
-                            h = json.getString("height");
-
-                        gdr = (json.getString("gender").equals("null") || json.getString("gender").equals("O")) ? 0 : ((json.getString("gender").equals("M")) ? 1 : 2);
-
-                        if (!json.getString("insurance_number").equals("null"))
-                            nsrnc = json.getString("insurance_number");
-
-                        nsrncID = Integer.parseInt(json.getString("insurance_id"))-1;
-
-                        //consulta valores de obras socuales
-                        doAsync.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                inicSpinner(root, MainActivity.PATH + "insurance/", null, valuesInsurance);
-                            }
-                        });
-                    }
+                    if (!json.getString("insurance_number").equals("null"))
+                        nsrnc = json.getString("insurance_number");
 
                     ct = Integer.parseInt((json.getString("city_id").equals("null")) ? "1" : json.getString("city_id"));
 
-                    dType = json.getString("document_type_id");
-
-                    //consulta tipos de documentos
-                    doAsync.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            getDocumentTypes(dType);
-                        }
-                    });
-
                     getFK(root,MainActivity.PATH+"city/"+ct,"state_id");
 
+                    getDocumentTypes(json.getString("document_type_id"));
 
                 } catch (IOException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 } catch (JSONException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }finally {
                     finishCall(numCall);
                 }
@@ -287,7 +276,7 @@ public class ProfileFragment extends Fragment {
         request.GET(conexion, new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
                 finishCall(numCall);
             }
 
@@ -304,15 +293,21 @@ public class ProfileFragment extends Fragment {
                         getFK(root,MainActivity.PATH+"state/"+stateId,"country_id");
                     }
                     else {
-                        countryActual = Integer.parseInt(json.getString(fk));
+                        countryId = Integer.parseInt(json.getString(fk));
                         inicSpinner(root,MainActivity.PATH+"country/",idsCountries, valuesCountry);
-                        inicSpinner(root,MainActivity.PATH+"state/country_id&"+countryActual,idsStates, valuesState);
+                        inicSpinner(root,MainActivity.PATH+"state/country_id&"+countryId,idsStates, valuesState);
                     }
 
                 } catch (IOException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont, response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 } catch (JSONException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont, response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }finally {
                     finishCall(numCall);
                 }
@@ -320,7 +315,20 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void inicSpinner(View root, String path, ArrayList<String> arr, ArrayList<String> values){
+    private void inicUser(View root){
+
+    }
+
+    private void inicSpinnerView(int resourse){
+        Spinner sp = root.findViewById(resourse);
+        ArrayList<String> values = new ArrayList();
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(root.getContext(),
+                R.layout.spinner_color, values);
+        arrayAdapter2.setDropDownViewResource(R.layout.spinner_color);
+        sp.setAdapter(arrayAdapter2);
+    }
+
+    private void inicSpinner(View root, String path, ArrayList arr, ArrayList<String> values){
 
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = path;
@@ -329,7 +337,7 @@ public class ProfileFragment extends Fragment {
         request.GET(conexion, new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e, 4000);
+                Toast.makeText(root.getContext(), "ERROR", Toast.LENGTH_SHORT).show();
                 finishCall(numCall);
             }
 
@@ -347,16 +355,22 @@ public class ProfileFragment extends Fragment {
                         values.add(json.getString("name"));
                         if (arr != null){
                             arr.add(json.getString("id"));
-
-                            //Log.d("SALIDAARREGLO",arr.get(i)+"  "+ values.get(values.size()-1));
                         }
                         //Log.d("SALIDAVARIABLE",json.getString("name"));
+                        //Log.d("SALIDAARREGLO",values.get(values.size()-1));
+
                     }
 
                 } catch (IOException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 } catch (JSONException e) {
-                    msjToast(e,response.code());
+                    e.printStackTrace();
+                    Looper.prepare();
+                    Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
                 finally {
                     finishCall(numCall);
@@ -364,15 +378,6 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
-    private void msjToast(Exception e, int code){
-        mProgressDialog.dismiss();
-        e.printStackTrace();
-        Looper.prepare();
-        Toast.makeText(root.getContext(), LoginActivity.error(cont,code), Toast.LENGTH_SHORT).show();
-        Looper.loop();
-    }
-
 
     private void getDocumentTypes(String index){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
@@ -382,7 +387,6 @@ public class ProfileFragment extends Fragment {
         request.GET(conexion,new JSONArray(), new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
                 finishCall(numCall);
             }
 
@@ -396,9 +400,13 @@ public class ProfileFragment extends Fragment {
                     docType = json.getString("name");
 
                 } catch (IOException e) {
-                    msjToast(e,response.code());
+                    Looper.prepare();
+                    Toast.makeText(getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 } catch (JSONException e) {
-                    msjToast(e,response.code());
+                    Looper.prepare();
+                    Toast.makeText(getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }finally {
                     finishCall(numCall);
                 }
@@ -407,8 +415,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadProfile(){
-        calls = new ArrayList<>();
-
         ArrayAdapter<String> arrayAdapter1 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesCountry);
         arrayAdapter1.setDropDownViewResource(R.layout.spinner_color);
 
@@ -418,29 +424,6 @@ public class ProfileFragment extends Fragment {
         ArrayAdapter<String> arrayAdapter3 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesState);
         arrayAdapter3.setDropDownViewResource(R.layout.spinner_color);
 
-        ArrayList<StateV0> listVOs = new ArrayList<>();
-
-        StateV0 st = new StateV0();
-        st.setTitle(getResources().getString(R.string.language));
-        st.setSelected(false);
-        listVOs.add(st);
-
-        for (int i = 0; i < valuesLanguage.size(); i++) {
-            StateV0 stateVO = new StateV0();
-            stateVO.setTitle(valuesLanguage.get(i));
-            stateVO.setSelected(false);
-            listVOs.add(stateVO);
-        }
-
-        MyAdapter myAdapter = new MyAdapter(root.getContext(), R.layout.spinner_color, listVOs);
-
-        ArrayAdapter<String> arrayAdapter4 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesInsurance);
-        arrayAdapter4.setDropDownViewResource(R.layout.spinner_color);
-
-        ArrayAdapter<String> arrayAdapter5 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesSpeciality);
-        arrayAdapter5.setDropDownViewResource(R.layout.spinner_color);
-
-
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -449,29 +432,26 @@ public class ProfileFragment extends Fragment {
                     ((Spinner) root.findViewById(R.id.country)).setAdapter(arrayAdapter1);
                     ((Spinner) root.findViewById(R.id.city)).setAdapter(arrayAdapter2);
                     ((Spinner) root.findViewById(R.id.state)).setAdapter(arrayAdapter3);
-                    ((Spinner) root.findViewById(R.id.language)).setAdapter(myAdapter);
 
+                    //inicSpinnerView(R.id.interal_medicine);
                     ((TextView)root.findViewById(R.id.name)).setText(name);
                     ((TextView)root.findViewById(R.id.lastname)).setText(lastname);
                     ((TextView)root.findViewById(R.id.email)).setText(email);
                     ((TextView)root.findViewById(R.id.credential)).setText(document);
                     ((TextView)root.findViewById(R.id.birth_date)).setText(birtdate);
                     ((TextView)root.findViewById(R.id.address)).setText(ddrss);
+                    ((TextView)root.findViewById(R.id.weight)).setText(w);
+                    ((TextView)root.findViewById(R.id.height)).setText(h);
+                    ((TextView)root.findViewById(R.id.insurance_numb)).setText(nsrnc);
+
+                    ((Spinner) root.findViewById(R.id.gender)).setSelection(gdr);
 
                     if (MainActivity.PROFILETYPE.equals("m")){
-                        ((Spinner) root.findViewById(R.id.interal_medicine)).setAdapter(arrayAdapter5);
                         ((Spinner) root.findViewById(R.id.interal_medicine)).setSelection(medSpeciality);
-                    }else{
-                        ((Spinner) root.findViewById(R.id.insurance_id)).setAdapter(arrayAdapter4);
-                        ((TextView)root.findViewById(R.id.weight)).setText(w);
-                        ((TextView)root.findViewById(R.id.height)).setText(h);
-                        ((TextView)root.findViewById(R.id.insurance_numb)).setText(nsrnc);
-                        ((Spinner) root.findViewById(R.id.gender)).setSelection(gdr);
-                        ((Spinner)root.findViewById(R.id.insurance_id)).setSelection(nsrncID);
                     }
 
                     ((TextView)getActivity().findViewById(R.id.credential_type)).setText(docType);
-                    ((Spinner)root.findViewById(R.id.country)).setSelection((int)(countryActual-1));
+                    ((Spinner)root.findViewById(R.id.country)).setSelection(countryId-1);
                     ((Spinner)root.findViewById(R.id.state)).setSelection(getIndex(stateId,idsStates));
                     ((Spinner)root.findViewById(R.id.city)).setSelection(getIndex(ct,idsCities));
 
@@ -485,75 +465,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveInfo(){
-        mProgressDialog.show();
 
-        String path = (MainActivity.PROFILETYPE.equals("m"))? "medicalinfo/" : "userinfo/";
-
-        String gender;
-        if (((Spinner) root.findViewById(R.id.gender)).getSelectedItemId() == 0)
-            gender = "O";
-        else {
-            if (((Spinner) root.findViewById(R.id.gender)).getSelectedItemId() == 1)
-                gender = "M";
-            else
-                gender = "F";
-        }
-
-        JSONObject js = new JSONObject();
-
-        try {
-            js.put("name", ((EditText)root.findViewById(R.id.name)).getText().toString());
-            js.put("last_name", ((EditText)root.findViewById(R.id.lastname)).getText().toString());
-            js.put("birth_date", PikerDate.Companion.toDateFormat(((EditText)root.findViewById(R.id.birth_date)).getText().toString()));
-            js.put("gender", gender);
-            js.put("document_type", dType);
-            js.put("document_number", ((EditText)root.findViewById(R.id.credential)).getText().toString());
-            js.put("email", ((EditText)root.findViewById(R.id.email)).getText().toString());
-            js.put("password", "");
-            js.put("city_id", idsCities.get((int) ((Spinner) root.findViewById(R.id.city)).getSelectedItemId()));
-            js.put("address", ((EditText)root.findViewById(R.id.address)).getText().toString());
-
-            if (MainActivity.PROFILETYPE.equals("m")){
-                js.put("medical_speciality", (((Spinner) root.findViewById(R.id.interal_medicine)).getSelectedItemId()+1)+"");
-            }else{
-                js.put("weight", ((EditText)root.findViewById(R.id.weight)).getText().toString());
-                js.put("height", ((EditText)root.findViewById(R.id.height)).getText().toString());
-                js.put("insurance_id", (((Spinner) root.findViewById(R.id.insurance_id)).getSelectedItemId()+1)+"");
-                js.put("insurance_number", ((EditText)root.findViewById(R.id.insurance_numb)).getText().toString());
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("TESTING ",js.toString());
-
-        JSONArray jarr = new JSONArray();
-        try {
-            JSONObject jobj = new JSONObject();
-            jobj.put("x-access-token", MainActivity.TOKEN);
-            jarr.put(jobj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = MainActivity.PATH + path;
-
-        request.PUT(conexion, jarr, js, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mProgressDialog.dismiss();
-                msjToast(e, 4000);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) {
-                mProgressDialog.dismiss();
-                Looper.prepare();
-                Toast.makeText(root.getContext(), LoginActivity.error(cont,response.code()), Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-        });
     }
 }
