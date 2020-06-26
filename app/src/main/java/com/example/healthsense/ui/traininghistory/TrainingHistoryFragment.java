@@ -88,7 +88,6 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
         mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
         mProgressDialog.setTitle(R.string.loading);
         mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
-        mProgressDialog.setCancelable(false);
 
         workoutsCompleted = root.findViewById(R.id.workouts_completed);
         emptyView = root.findViewById(R.id.empty_view);
