@@ -129,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //loginAcepted();
     }
 
     private void isLoged() {
@@ -196,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String error(Context v,int code){
         switch(code) {
             case 200:
-                return "";
+                return v.getString(R.string.e200);
             case 401:
                 return v.getString(R.string.e401);
             case 402:
@@ -229,6 +230,8 @@ public class LoginActivity extends AppCompatActivity {
                 return v.getString(R.string.e417);
             case 500:
                 return v.getString(R.string.e500);
+            case 4000:
+                return v.getString(R.string.e4000);
             default:
                 return v.getString(R.string.eGeneric);
         }
