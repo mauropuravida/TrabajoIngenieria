@@ -20,7 +20,7 @@ public interface WorkoutReportDAO {
     @Insert(onConflict = OnConflictStrategy. REPLACE)
     void insertAll(List<WorkoutReport> workoutReports);
 
-    @Query("SELECT * FROM WorkoutReports")
+    @Query("SELECT * FROM WorkoutReport")
     List<WorkoutReport> getWorkoutsReports();
 
     @Update
@@ -29,9 +29,9 @@ public interface WorkoutReportDAO {
     @Delete
     void delete(WorkoutReport workoutReport);
 
-    @Query("DELETE FROM WorkoutReports")
+    @Query("DELETE FROM WorkoutReport")
     void deleteAll();
 
-    @Query("SELECT COUNT(*) FROM WorkoutReports")
+    @Query("SELECT COUNT(*) FROM WorkoutReport")
     int getSize();
 }
