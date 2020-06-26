@@ -4,6 +4,9 @@ import android.icu.text.SimpleDateFormat;
 
 import androidx.room.Embedded;
 
+import com.example.healthsense.db.entity.old.Workout;
+import com.example.healthsense.db.entity.old.WorkoutReport;
+
 import java.text.ParseException;
 import java.util.Date;
 
