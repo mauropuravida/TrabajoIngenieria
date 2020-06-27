@@ -50,6 +50,8 @@ public class WorkoutsRepository {
 
     public List<Workouts> getAll(){ return workouts;}
 
+    public int getWourkoutIdRoom(int id_backend){ return workoutsDAO.obtainWorkoutIdRoom(id_backend);}
+
     public void deleteAll(){ new DeleteAll(workoutsDAO).execute();}
 
     private static class DeleteAll extends AsyncTask<Void, Void, Void> {

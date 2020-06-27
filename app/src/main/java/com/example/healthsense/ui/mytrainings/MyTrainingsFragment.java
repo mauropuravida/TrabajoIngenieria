@@ -77,6 +77,7 @@ import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 public class MyTrainingsFragment extends Fragment {
     private ArrayList<LinearLayout> listll;
     private ArrayList<JSONObject> workouts, exercises;
+    private HashMap<Integer,String> times;
     private HashMap<Integer, ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
     private final String URL_BASE = "https://healthsenseapi.herokuapp.com/";
     private JSONArray token;
@@ -86,8 +87,9 @@ public class MyTrainingsFragment extends Fragment {
     private ArrayList<Integer> calls = new ArrayList<>();
     private List<Exercises> exercises_room;
     private ExercisesRepository exercisesRepository;
-    private  WorkoutsRepository workoutsRepository;
-
+    private WorkoutsRepository workoutsRepository;
+    private WorkoutsExercisesRepository workoutsExercisesRepository;
+    private  DeviceUsersRepository deviceUsersRepository;
     public static Fragment fg;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -97,10 +99,14 @@ public class MyTrainingsFragment extends Fragment {
         workouts = new ArrayList<>();
         exercises = new ArrayList<>();
         workoutExercises = new HashMap<>();
+        times = new HashMap<>();
         fg = this;
 
+        deviceUsersRepository = new DeviceUsersRepository(getActivity().getApplication());
         workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
-        exercisesRepository =new ExercisesRepository(getActivity().getApplication());
+        exercisesRepository = new ExercisesRepository(getActivity().getApplication());
+        workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
+
         //exercisesRepository.deleteAll();
         exercises_room = exercisesRepository.getAll();
         System.out.println("TAMA " + exercises_room.size());
@@ -157,6 +163,8 @@ public class MyTrainingsFragment extends Fragment {
             try {
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
+                addWorkoutsExercisesRoom();
+                addWorkoutsExercisesRoom();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -166,30 +174,29 @@ public class MyTrainingsFragment extends Fragment {
         createExercises(rootGeneral, listenerGeneral);
     }
 
-    private void depureExercises(){
+
+    private void depureExercises() {
         List<Integer> values = new ArrayList<>();
         int contador = 0;
         while (contador < exercises.size()) {
             int exercises_id = 0;
             try {
-                if(exercises.get(contador).has("id")){
+                if (exercises.get(contador).has("id")) {
                     exercises_id = exercises.get(contador).getInt("id");
                     if (!values.contains(new Integer(exercises_id))) {
                         contador++;
                         values.add(new Integer(exercises_id));
-                    }
-                    else{
+                    } else {
                         exercises.remove(exercises.get(contador));
                     }
-                }
-                else{
+                } else {
                     exercises.remove(exercises.get(contador));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        for (int i = 0; i<values.size();i++)
+        for (int i = 0; i < values.size(); i++)
             System.out.println(values.get(i));
     }
 
@@ -246,7 +253,8 @@ public class MyTrainingsFragment extends Fragment {
             @Override
             public void run() {
                 String path = "workout/device_user_id&"; // obtengo workouts del user_id. REEMPLAZAR TOKEN por MAINACTIVITY.TOKEN
-                JSONObject ob = new JSONObject(); // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE"
+                JSONObject ob = new JSONObject(); //
+                MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
                 try {
                     ob.put("x-access-token", MainActivity.TOKEN);
                     token = new JSONArray();
@@ -394,7 +402,7 @@ public class MyTrainingsFragment extends Fragment {
 
                     if (jsonType instanceof JSONObject) { //Si es JSONOBject -> exercices
                         JSONObject json = new JSONObject((responseData));
-                        if (listObj != null){
+                        if (listObj != null) {
                             listObj.add(json);
 
                         }
@@ -404,7 +412,10 @@ public class MyTrainingsFragment extends Fragment {
                             if (hashObj == null) {
                                 listObj.add(json.getJSONObject(i));
                             } else {
-                                values.add(json.getJSONObject(i).getInt("exercise_id"));
+                                String time = json.getJSONObject(i).get("time").toString();
+                                int id = json.getJSONObject(i).getInt("exercise_id");
+                                times.put(id,time);
+                                values.add(id);
                             }
                         }
                         if (hashObj != null) {
@@ -454,9 +465,8 @@ public class MyTrainingsFragment extends Fragment {
 
     private void addWorkoutsRoom() throws JSONException {
         // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless.
-        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository(getActivity().getApplication());
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
-      //  workoutsRepository.deleteAll();
+        //  workoutsRepository.deleteAll();
         List<Workouts> workouts_room = workoutsRepository.getAll();
       /*  System.out.println("TAM WORKOURS" + workouts_room.size());
         for(int k = 0 ; k<workouts_room.size();k++){
@@ -477,13 +487,13 @@ public class MyTrainingsFragment extends Fragment {
             if (!in_room) {
                 int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
                 System.out.println("DEVICE USER ID " + device_user_id_room);
-                int  price = 0;
+                int price = 0;
                 try {
-                    price =  workouts.get(i).getInt("price");
+                    price = workouts.get(i).getInt("price");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                int  rating = 0;
+                int rating = 0;
                 try {
                     rating = workouts.get(i).getInt("rating");
                 } catch (JSONException e) {
@@ -511,13 +521,13 @@ public class MyTrainingsFragment extends Fragment {
             //  System.out.println("EXERCISES ID: " + exercises_id);
             in_room = false;
             for (int j = 0; j < exercises_room.size(); j++) {
-        //        System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
+                //        System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
                 if (exercises_room.get(j).getId_backend() == exercises_id) {
                     in_room = true;
                     break;
                 }
             }
-         //   System.out.println("EXERCICE EN ROOM?: " + in_room);
+            //   System.out.println("EXERCICE EN ROOM?: " + in_room);
             if (!in_room) {
                 Exercises exercises_to_insert = null;
                 try {
@@ -526,54 +536,32 @@ public class MyTrainingsFragment extends Fragment {
                     e.printStackTrace();
                 }
                 exercises_to_insert.setId_backend(exercises_id);
-        //        System.out.println("EXERCISES ID BACK: " + exercises_to_insert.getId_backend());
-        //        System.out.println("EXERCISES DESCRIPTION: " + exercises_to_insert.getDescription());
-       //         System.out.println("EXERCISES PATH: " + exercises_to_insert.getPath());
+                //        System.out.println("EXERCISES ID BACK: " + exercises_to_insert.getId_backend());
+                //        System.out.println("EXERCISES DESCRIPTION: " + exercises_to_insert.getDescription());
+                //         System.out.println("EXERCISES PATH: " + exercises_to_insert.getPath());
                 exercisesRepository.insert(exercises_to_insert);
             }
         }
 
     }
 
-    /*private class TaskGetAllExercises extends AsyncTask<Void, Void, List<Exercises>> {
-
-        private ExercisesRepository exercisesRepository;
-
-        public TaskGetAllExercises(ExercisesRepository exercisesRepository) {
-            this.exercisesRepository = exercisesRepository;
-        }
-
-        @Override
-        protected List<Exercises> doInBackground(Void... voids) {
-            return exercisesRepository.getAll();
-        }
-
-        @Override
-        protected void onPostExecute(List<Exercises> exercises) {
-            super.onPostExecute(exercises);
-            try {
-                addExercisesRoom(exercises);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
-  /*  private void addWorkoutsExercisesRoom(){
-        WorkoutsExercisesRepository workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
-        Map<Integer, ArrayList<Integer>> map = new HashMap<Integer,  ArrayList<Integer>>(workoutExercises);
-        List<WorkoutExercises> workoutExercises_room = workoutsExercisesRepository.getAll();
+    private void addWorkoutsExercisesRoom() {
+        Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
+       // workoutsExercisesRepository.deleteAll();
         boolean in_room;
-        for(Integer key : map.keySet()){
+        for (Integer key : map.keySet()) {
             List<Integer> v = map.get(key);
-            in_room = false;
-            for(int i = 0; i < v.size(); i++){
-                for( int j=0; j<workoutExercises_room.size();j++){
-                    if (workoutExercises_room.get(j).getId_backend() == )
-
+            int workout_id_room = workoutsRepository.getWourkoutIdRoom(key);
+            for (int i = 0; i < v.size(); i++) {
+                int exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
+                in_room = workoutsExercisesRepository.existExercisesWorkout(workout_id_room,exercises_id_room);
+                System.out.println("ESTA EN ROOM? : " + workout_id_room + "  " + exercises_id_room + " " + in_room);
+                if (!in_room){
+                    //System.out.println("ENTRO A INSERTAR EL WORKOUT: " + workout_id_room + exercises_id_room + "CON UN TIEMPO: " + times.get(key));
+                    WorkoutExercises to_insert = new WorkoutExercises(workout_id_room,exercises_id_room, times.get(key));
+                    workoutsExercisesRepository.insert(to_insert);
                 }
             }
         }
-    //todo cargar los workouts exercises. (guardando el workout ya puego guardar los reportes offline -> puedo hacer los workouts offline)
-    }*/
+    }
 }

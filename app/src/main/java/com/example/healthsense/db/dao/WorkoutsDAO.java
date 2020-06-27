@@ -40,4 +40,7 @@ public interface WorkoutsDAO {
     @Query("UPDATE Workouts SET done = :done WHERE id = :id")
     int updateDone(boolean done, int id);
 
+    @Query("Select id FROM Workouts where id_backend = :id_backend")
+    int obtainWorkoutIdRoom(int id_backend);
+
 }

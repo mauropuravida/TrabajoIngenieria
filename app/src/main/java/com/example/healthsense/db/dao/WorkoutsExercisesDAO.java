@@ -34,4 +34,12 @@ public interface WorkoutsExercisesDAO {
 
     @Query("SELECT * FROM Workout_Exercises")
     List<WorkoutExercises> getAll();
+
+    @Query("SELECT CASE WHEN EXISTS (SELECT * FROM Workout_Exercises WHERE" +
+            " workout_id = :id_workout AND exercise_id = :id_exercises)" +
+            "THEN CAST(1 AS BIT)ELSE CAST(0 AS BIT) END")
+    boolean existExerciseWorkout(int id_workout, int id_exercises);
+
+    @Query("DELETE FROM Workout_Exercises")
+    void deleteAll();
 }

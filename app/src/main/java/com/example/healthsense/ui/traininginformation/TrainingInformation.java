@@ -420,6 +420,14 @@ public class TrainingInformation extends Fragment {
             you.get(i).release();
     }
 
+    private void loadInformation(){
+        SharedPreferences preferencesEditor = getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+        int workout_id = preferencesEditor.getInt("Work_id",0);
+        System.out.println("WORK ID " + workout_id);
+
+        //cargar datos de room, ya esta todo guardado ahi.
+    }
+
     private boolean trainingWithoutConnection(){
         //Consulta con la base de datos local si puede realizar el training antes de que de play. Esto si es que no hay internet.
         //Agregue un campo en device_users que es upload -> entrenamientos por subir.

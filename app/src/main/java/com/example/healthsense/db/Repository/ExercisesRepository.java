@@ -45,6 +45,9 @@ public class ExercisesRepository {
 
     public List<Exercises> getAll(){ return exercises;}
 
+    public int getExercisesIdBackend(int id_backend){ return exercisesDAO.obtainExercisesIdRoom(id_backend);}
+
+
     public Exercises getExercises(int id){return exercisesDAO.getExercises(id);}
 
     public int getNumFiles() {

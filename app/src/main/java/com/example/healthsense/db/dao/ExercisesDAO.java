@@ -35,4 +35,6 @@ public interface ExercisesDAO {
     @Query("SELECT COUNT(id) FROM Exercises ")
     int getCount();
 
+    @Query("Select id FROM Exercises where id_backend = :id_backend")
+    int obtainExercisesIdRoom(int id_backend);
 }
