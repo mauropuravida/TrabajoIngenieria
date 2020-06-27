@@ -15,9 +15,6 @@ import org.jetbrains.annotations.NotNull;
          @Index(name ="id_UNIQUE_workout", value = "id", unique = true)})
 public class Workouts {
 
-    @Ignore
-    int id_backend;
-
     @NotNull
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -55,6 +52,9 @@ public class Workouts {
 
     @ColumnInfo(name = "rating")
     private int rating;
+
+    @ColumnInfo(name="id_backend")
+    int id_backend;
 
     public Workouts(Integer medical_personnel_id, int device_user_id, @NotNull String name, @NotNull String creation_date, int difficulty, double price, int done, int rating) {
         this.medical_personnel_id = medical_personnel_id;

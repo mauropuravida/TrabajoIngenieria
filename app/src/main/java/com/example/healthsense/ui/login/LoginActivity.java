@@ -24,16 +24,36 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
+import com.example.healthsense.Resquest.OkHttpRequest;
+import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.UserRepository;
+import com.example.healthsense.db.entity.DeviceUsers;
+import com.example.healthsense.db.entity.Users;
 import com.example.healthsense.ui.password.Password;
 import com.example.healthsense.ui.register.ChoiseProfile;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+
+import static com.example.healthsense.MainActivity.FIRST_LOGIN;
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private LoginActivity act;
+    private UserRepository userRepository;
+    private  DeviceUsersRepository deviceUsersRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
+        userRepository = new UserRepository(getApplication());
+        deviceUsersRepository = new DeviceUsersRepository(getApplication());
+
 
         act = this;
         isLoged();
@@ -165,6 +188,16 @@ public class LoginActivity extends AppCompatActivity {
         );
 
         String user = (preferencesEditor.getString("User","").equals("")) ? ((EditText) findViewById(R.id.username)).getText().toString() : preferencesEditor.getString("User","");
+       // userRepository.deleteAll();
+      //  deviceUsersRepository.deleteAll();
+        if( !userRepository.exist(user) && FIRST_LOGIN){
+            System.out.println("ENTRO A AGREGAR AL USUARIO" + user);
+            getUserInformation();
+            MainActivity.FIRST_LOGIN = false;
+        }
+        else
+            System.out.println("El usuario SIIIII existe");
+
 
         Intent intent;
         intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -173,6 +206,58 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         //Terminar activity de login.
         finish();
+    }
+
+    private void getUserInformation() {
+        //call al backend y llamada al addUser
+        System.out.println("ENTRO A AGREGAR EL USUARIO" + MainActivity.TOKEN);
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = "https://healthsenseapi.herokuapp.com/userinfo/";
+
+        JSONArray jarr = new JSONArray();
+        try {
+            JSONObject jobj = new JSONObject();
+            jobj.put("x-access-token", MainActivity.TOKEN);
+            jarr.put(jobj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        request.GET(conexion, jarr, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String responseData = response.body().string();
+                    JSONObject json = new JSONObject(responseData);
+                    String name = json.getString("name");
+                    String lastname = json.getString("last_name");
+                    String email = json.getString("email");
+                    String document = json.getString("document_number");
+                    String birtdate = PikerDate.Companion.toDateFormatView(json.getString("birth_date"));
+                    String password =  ((EditText) findViewById(R.id.password)).getText().toString();
+                    int dType = json.getInt("document_type_id");
+                    Users user_to_insert = new Users(name, lastname,birtdate,dType,document,email,password);
+                    System.out.println("EL MAIL ES : " + user_to_insert.getEmail());
+                    userRepository.insert(user_to_insert);
+                    int id = userRepository.getId(user_to_insert.getEmail());
+                    while (id==0){
+                        id = userRepository.getId(user_to_insert.getEmail());
+                    }
+                    DeviceUsers device_user_to_insert = new DeviceUsers(id);
+                    deviceUsersRepository.insert(device_user_to_insert);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+
     }
 
     public void showLoginFailed(@StringRes Integer errorString) {

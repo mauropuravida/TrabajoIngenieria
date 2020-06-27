@@ -440,6 +440,7 @@ public class TrainingInformation extends Fragment {
             // Si hay conexión a Internet en este momento OkHttp
         } else {
             // No hay conexión a Internet en este momento Room
+            System.out.println("ENTRO A AGREGAR trainiings ");
             addFinishTrainingNoInternet();
         }
     }

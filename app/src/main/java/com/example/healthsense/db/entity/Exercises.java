@@ -10,10 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Exercises" ,
         indices = {@Index( name ="id_UNIQUE_exercice", value = {"id"}, unique = true)})
-public class Exercises {
+public class Exercises{
 
-    @Ignore
-    int id_backend;
+
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
@@ -25,6 +24,10 @@ public class Exercises {
 
     @ColumnInfo(name="path")
     private String path;
+
+    @ColumnInfo(name="id_backend")
+    private int id_backend;
+
 
     public Exercises(@NotNull String description, String path) {
         this.description = description;
@@ -62,5 +65,6 @@ public class Exercises {
     public void setId_backend(int id_backend) {
         this.id_backend = id_backend;
     }
+
 }
 

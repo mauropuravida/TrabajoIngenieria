@@ -27,4 +27,12 @@ public interface UsersDAO {
     @Query("SELECT id from Users where email = :email")
     int getID(String email);
 
+    @Query("SELECT CASE WHEN EXISTS (\n" +
+            "    SELECT *\n" +
+            "    FROM Users\n" +
+            "    WHERE email = :email\n" +
+            ")\n" +
+            "THEN CAST(1 AS BIT)\n" +
+            "ELSE CAST(0 AS BIT) END")
+    boolean exist(String email);
 }

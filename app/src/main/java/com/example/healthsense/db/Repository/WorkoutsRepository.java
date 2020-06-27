@@ -8,6 +8,7 @@ import com.example.healthsense.db.dao.WorkoutsDAO;
 import com.example.healthsense.db.entity.Workouts;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class WorkoutsRepository {
     private WorkoutsDAO workoutsDAO;
@@ -16,7 +17,13 @@ public class WorkoutsRepository {
     public WorkoutsRepository(Application application) {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         workoutsDAO = database.workoutsDAO();
-        workouts = workoutsDAO.getAll();
+        try {
+            workouts =  new TaskGetAllWorkouts(workoutsDAO).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void insert(Workouts workouts) {
@@ -42,6 +49,22 @@ public class WorkoutsRepository {
     public List<Workouts> getWorkoutsMedical(int id){ return workoutsDAO.getWorkoutsMedical(id);}
 
     public List<Workouts> getAll(){ return workouts;}
+
+    public void deleteAll(){ new DeleteAll(workoutsDAO).execute();}
+
+    private static class DeleteAll extends AsyncTask<Void, Void, Void> {
+        private WorkoutsDAO workoutsDAO;
+
+        private DeleteAll(WorkoutsDAO workoutsDAO) {
+            this.workoutsDAO = workoutsDAO;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            workoutsDAO.deleteAll();
+            return null;
+        }
+    }
 
     private static class InsertUserAsyncTask extends AsyncTask<Workouts, Void, Void> {
         private WorkoutsDAO workoutsDAO;
@@ -83,6 +106,21 @@ public class WorkoutsRepository {
             workoutsDAO.delete(workouts[0]);
             return null;
         }
+    }
+
+    private static class TaskGetAllWorkouts extends AsyncTask<Void, Void, List<Workouts>> {
+
+        private WorkoutsDAO workoutsDAO;
+
+        private TaskGetAllWorkouts(WorkoutsDAO workoutsDAO) {
+            this.workoutsDAO = workoutsDAO;
+        }
+
+        @Override
+        protected List<Workouts> doInBackground(Void... voids) {
+            return workoutsDAO.getAll();
+        }
+
     }
 
 }

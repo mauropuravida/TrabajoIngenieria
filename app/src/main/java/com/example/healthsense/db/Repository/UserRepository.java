@@ -29,6 +29,8 @@ public class UserRepository {
 
     public int getId(String email){ return userDao.getID(email);}
 
+    public boolean exist(String email){ return userDao.exist(email);}
+
     public void deleteAll(){ userDao.deleteAll();}
 
     private static class InsertUserAsyncTask extends AsyncTask<Users, Void, Void> {

@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     //nombre de archivo de preferencias
     public static final String PREFS_FILENAME = "data.prefs";
+    public static boolean FIRST_TRAINING = true;
+    public static boolean FIRST_LOGIN = true;
     public static String email;
     public static String user;
     public static String TOKEN = "";
@@ -76,18 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
-        DocumentTypeRepository doc = new DocumentTypeRepository(getApplication());
-        doc.getAllDocumentTypes().observe(this, new Observer<List<DocumentType>>() {
-            @Override
-            public void onChanged(List<DocumentType> documentTypes) {
-                for(int i =0 ; i<documentTypes.size();i++){
-                    System.out.println(" ID: " + documentTypes.get(i).getId() + "  NAME: " +  documentTypes.get(i).getName());
-                }
-            }
-        });
-
-        System.out.println();
 
         //  DeviceUsersRepository deviceUsers = new DeviceUsersRepository( getActivity().getApplication());
         //  deviceUsers.deleteAll();;

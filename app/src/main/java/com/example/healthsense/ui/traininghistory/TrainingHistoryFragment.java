@@ -202,7 +202,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                     @Override
                     public void run() {
 
-                        MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3R1c2VyMTBAZ21haWwuY29tIiwiaWF0IjoxNTkyMDIwNjAyfQ.thkUtcbXqN__A327UA-NL8gwpoI5IDYaiT1SjRsesUc";
+                       // MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3R1c2VyMTBAZ21haWwuY29tIiwiaWF0IjoxNTkyMDIwNjAyfQ.thkUtcbXqN__A327UA-NL8gwpoI5IDYaiT1SjRsesUc";
 
                         JSONObject ob = new JSONObject();
                         try {

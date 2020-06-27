@@ -53,7 +53,7 @@ import com.example.healthsense.db.entity.old.WorkoutReport;
         Patients.class, PhoneNumbers.class, States.class, UserDiseases.class, Users.class, WorkoutExercises.class,
         WorkoutReports.class, Workouts.class,
         Workout.class, WorkoutReport.class // quitar estos dos
-}, version = 4, exportSchema = false)
+}, version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "com.example.healthsense";
