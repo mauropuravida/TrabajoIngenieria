@@ -1,5 +1,6 @@
 package com.example.healthsense.ui.mytrainings;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -112,14 +113,17 @@ public class MyTrainingsFragment extends Fragment {
         System.out.println("TAMA " + exercises_room.size());
 
         View.OnClickListener mListener = new View.OnClickListener() {
+            @SuppressLint("CommitPrefEdits")
             @Override
             public void onClick(View v) {
                 // nuevo intent con la info del layout seleccionado.
-                SharedPreferences preferencesEditor = getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
                 System.out.println("WORK ID: " + v.getTag());
-                preferencesEditor.edit().putInt("Work_id", (int) v.getTag());
+                Bundle datosAEnviar = new Bundle();
+                datosAEnviar.putInt("Work_ID",(int) v.getTag());
                 TrainingInformation.fg = fg;
-                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
+                Fragment fragment = new TrainingInformation();
+                fragment.setArguments(datosAEnviar);
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,fragment).addToBackStack(null).commit();
             }
         };
 

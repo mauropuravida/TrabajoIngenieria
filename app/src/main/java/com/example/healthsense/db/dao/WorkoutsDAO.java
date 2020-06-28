@@ -43,4 +43,6 @@ public interface WorkoutsDAO {
     @Query("Select id FROM Workouts where id_backend = :id_backend")
     int obtainWorkoutIdRoom(int id_backend);
 
+    @Query("SELECT * FROM Workouts where id_backend = :id_backend")
+    Workouts getWorkoutFromIdBackend(int id_backend);
 }

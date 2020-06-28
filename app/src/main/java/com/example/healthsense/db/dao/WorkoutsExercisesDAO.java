@@ -42,4 +42,7 @@ public interface WorkoutsExercisesDAO {
 
     @Query("DELETE FROM Workout_Exercises")
     void deleteAll();
+
+    @Query("SELECT time FROM Workout_Exercises WHERE workout_id = :workout_id AND exercise_id = :exercise_id")
+    String getTime(int workout_id, int exercise_id);
 }

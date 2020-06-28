@@ -54,6 +54,9 @@ public class WorkoutsRepository {
 
     public void deleteAll(){ new DeleteAll(workoutsDAO).execute();}
 
+    public Workouts getWorkoutFromIdBackend(int id_backend) { return workoutsDAO.getWorkoutFromIdBackend(id_backend);
+    }
+
     private static class DeleteAll extends AsyncTask<Void, Void, Void> {
         private WorkoutsDAO workoutsDAO;
 
@@ -124,6 +127,7 @@ public class WorkoutsRepository {
         }
 
     }
+
 
 }
 
