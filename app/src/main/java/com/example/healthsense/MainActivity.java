@@ -18,8 +18,6 @@ import com.example.healthsense.db.Repository.DocumentTypeRepository;
 import com.example.healthsense.db.Repository.UserRepository;
 import com.example.healthsense.db.entity.DeviceUsers;
 import com.example.healthsense.db.entity.DocumentType;
-import com.example.healthsense.db.entity.old.Workout;
-import com.example.healthsense.db.entity.old.WorkoutReport;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.drawerlayout.widget.DrawerLayout;

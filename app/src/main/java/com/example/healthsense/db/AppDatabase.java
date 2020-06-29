@@ -18,9 +18,8 @@ import com.example.healthsense.db.dao.UsersDAO;
 import com.example.healthsense.db.dao.WorkoutsDAO;
 import com.example.healthsense.db.dao.WorkoutsExercisesDAO;
 import com.example.healthsense.db.dao.WorkoutsReportDAO;
-import com.example.healthsense.db.dao.old.WorkoutDAO;
-import com.example.healthsense.db.dao.old.WorkoutDoneDAO;
-import com.example.healthsense.db.dao.old.WorkoutReportDAO;
+import com.example.healthsense.db.dao.WorkoutDoneDAO;
+
 import com.example.healthsense.db.entity.Cities;
 import com.example.healthsense.db.entity.Countries;
 import com.example.healthsense.db.entity.DeviceUsers;
@@ -38,11 +37,10 @@ import com.example.healthsense.db.entity.PhoneNumbers;
 import com.example.healthsense.db.entity.States;
 import com.example.healthsense.db.entity.UserDiseases;
 import com.example.healthsense.db.entity.Users;
+import com.example.healthsense.db.entity.WorkoutDone;
 import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.WorkoutReports;
 import com.example.healthsense.db.entity.Workouts;
-import com.example.healthsense.db.entity.old.Workout;
-import com.example.healthsense.db.entity.old.WorkoutReport;
 
 
 //Agregar todas las tablas en entities
@@ -51,19 +49,13 @@ import com.example.healthsense.db.entity.old.WorkoutReport;
         DocumentType.class, Exercises.class, HeartRateSignals.class, Insurances.class,
         Languages.class, MedicalLanguages.class, MedicalPersonnel.class, MedicalSpecialities.class,
         Patients.class, PhoneNumbers.class, States.class, UserDiseases.class, Users.class, WorkoutExercises.class,
-        WorkoutReports.class, Workouts.class,
-        Workout.class, WorkoutReport.class // quitar estos dos
-}, version = 5, exportSchema = false)
+        WorkoutReports.class, Workouts.class
+}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "com.example.healthsense";
 
     private static AppDatabase INSTANCE;
-
-    //Agregar todos los DAO
-     public abstract WorkoutDAO workoutDAO();
-     public abstract WorkoutReportDAO workoutReportDAO();
-     public abstract WorkoutDoneDAO workoutDoneDAO();
 
      //Dao
     public abstract UsersDAO usersDAO();
@@ -73,7 +65,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract WorkoutsDAO workoutsDAO();
     public abstract WorkoutsExercisesDAO workoutsExercisesDAO();
     public abstract ExercisesDAO exercisesDAO();
-    public  abstract WorkoutsReportDAO workoutsReportDAO();
+    public abstract WorkoutsReportDAO workoutsReportDAO();
+    public abstract WorkoutDoneDAO workoutDoneDAO();
 
     public static synchronized AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {

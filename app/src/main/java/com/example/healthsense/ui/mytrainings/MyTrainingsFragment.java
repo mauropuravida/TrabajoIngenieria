@@ -37,7 +37,6 @@ import com.example.healthsense.db.Repository.WorkoutsRepository;
 import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.Workouts;
-import com.example.healthsense.db.entity.old.Workout;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;

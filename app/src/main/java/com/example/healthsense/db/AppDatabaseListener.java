@@ -1,6 +1,6 @@
 package com.example.healthsense.db;
 
-import com.example.healthsense.db.entity.old.WorkoutDone;
+import com.example.healthsense.db.entity.WorkoutDone;
 
 import java.util.List;
 
