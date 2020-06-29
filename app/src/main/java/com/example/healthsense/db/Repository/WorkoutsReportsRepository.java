@@ -31,9 +31,17 @@ public class WorkoutsReportsRepository {
     }
 
 
-    public List<WorkoutReports> getWorkoutsReportsId(int id){ return workoutsReportDAO.getWorkoutsId(id);}
+    public List<WorkoutReports> getWorkoutsReportsId(int id) {
+        return workoutsReportDAO.getWorkoutsId(id);
+    }
 
-    public List<WorkoutReports> getWorkoutsReports(){ return workoutsReportDAO.getWorkoutsReports();}
+    public List<WorkoutReports> getWorkoutsReports() {
+        return workoutsReportDAO.getWorkoutsReports();
+    }
+
+    public boolean contains(int id, String date) {
+        return workoutsReportDAO.existWorkoutReport(id, date);
+    }
 
     private static class InsertUserAsyncTask extends AsyncTask<WorkoutReports, Void, Void> {
         private WorkoutsReportDAO workoutsReportDAODAO;

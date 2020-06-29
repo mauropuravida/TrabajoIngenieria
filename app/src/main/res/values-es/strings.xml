@@ -20,6 +20,8 @@
     <string name="alias">ALIAS</string>
     <string name="cuil_cuit">CUIL/CUIT</string>
 
+    <string name="rate_training">Califica tu entrenamiento!</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Contraseña</string>
@@ -43,6 +45,9 @@
     <!-- Strings related for Trainings history-->
     <string name="workouts_completed">ENTRENAMIENTOS COMPLETADOS:</string>
     <string name="total_hours">CANTIDAD TOTAL DE HORAS:</string>
+    <string name="date_executed">Fecha:</string>
+    <string name="rating">Puntuacion:</string>
+
 
 
     <!-- Strings related fir sign up and profile -->

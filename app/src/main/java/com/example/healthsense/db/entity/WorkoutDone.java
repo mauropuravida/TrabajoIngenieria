@@ -1,11 +1,8 @@
-package com.example.healthsense.db.entity.old;
+package com.example.healthsense.db.entity;
 
 import android.icu.text.SimpleDateFormat;
 
 import androidx.room.Embedded;
-
-import com.example.healthsense.db.entity.old.Workout;
-import com.example.healthsense.db.entity.old.WorkoutReport;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -13,10 +10,10 @@ import java.util.Date;
 public class WorkoutDone implements Comparable<WorkoutDone> {
 
     @Embedded
-    private Workout workout;
+    private Workouts workout;
 
     @Embedded
-    private WorkoutReport workoutReport;
+    private WorkoutReports workoutReport;
 
     public String getName() {
         return workout.getName();
@@ -30,19 +27,23 @@ public class WorkoutDone implements Comparable<WorkoutDone> {
         return workout.getDifficulty();
     }
 
-    public Workout getWorkout() {
+    public int getRating(){
+        return workout.getRating();
+    }
+
+    public Workouts getWorkout() {
         return workout;
     }
 
-    public void setWorkout(Workout workout) {
+    public void setWorkout(Workouts workout) {
         this.workout = workout;
     }
 
-    public WorkoutReport getWorkoutReport() {
+    public WorkoutReports getWorkoutReport() {
         return workoutReport;
     }
 
-    public void setWorkoutReport(WorkoutReport workoutReport) {
+    public void setWorkoutReport(WorkoutReports workoutReport) {
         this.workoutReport = workoutReport;
     }
 
@@ -51,11 +52,11 @@ public class WorkoutDone implements Comparable<WorkoutDone> {
     }
 
     public int getWorkoutId(){
-        return this.workout.getId_wk();
+        return this.workout.getId();
     }
 
     public int getReportId(){
-        return workoutReport.getId_wkr();
+        return workoutReport.getId_wr();
     }
 
     @Override

@@ -36,4 +36,9 @@ public interface WorkoutsReportDAO {
 
     @Query("SELECT * FROM Workout_Reports WHERE workout_id = :id")
     List<WorkoutReports> getWorkoutsId(int id);
+
+    @Query("SELECT CASE WHEN EXISTS (SELECT * FROM Workout_Reports WHERE" +
+            " workout_id = :id_workout AND execution_date Like :execution_date)" +
+            "THEN CAST(1 AS BIT)ELSE CAST(0 AS BIT) END")
+    boolean existWorkoutReport(int id_workout, String execution_date);
 }

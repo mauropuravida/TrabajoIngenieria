@@ -18,10 +18,8 @@ public class WorkoutsRepository {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         workoutsDAO = database.workoutsDAO();
         try {
-            workouts =  new TaskGetAllWorkouts(workoutsDAO).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            workouts = new TaskGetAllWorkouts(workoutsDAO).execute().get();
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -34,27 +32,44 @@ public class WorkoutsRepository {
         new UpdateUserAsyncTask(workoutsDAO).execute(workouts);
     }
 
-    public void update(boolean done, int id){
-        workoutsDAO.updateDone(done,id);
+    public void update(boolean done, int id, int rating) {
+        workoutsDAO.updateDone(done, id, rating);
     }
 
     public void delete(Workouts workouts) {
         new DeleteUsersyncTask(workoutsDAO).execute(workouts);
     }
 
-    public Workouts getWorkout(int id){return workoutsDAO.getWorkout(id);}
+    public Workouts getWorkout(int id) {
+        return workoutsDAO.getWorkout(id);
+    }
 
-    public List<Workouts> getWorkoutsDevice(int id){ return workoutsDAO.getWorkoutsDevice(id);}
+    public List<Workouts> getWorkoutsDevice(int id) {
+        return workoutsDAO.getWorkoutsDevice(id);
+    }
 
-    public List<Workouts> getWorkoutsMedical(int id){ return workoutsDAO.getWorkoutsMedical(id);}
+    public List<Workouts> getWorkoutsMedical(int id) {
+        return workoutsDAO.getWorkoutsMedical(id);
+    }
 
-    public List<Workouts> getAll(){ return workouts;}
+    public List<Workouts> getAll() {
+        return workouts;
+    }
 
-    public int getWourkoutIdRoom(int id_backend){ return workoutsDAO.obtainWorkoutIdRoom(id_backend);}
+    public int getWourkoutIdRoom(int id_backend) {
+        return workoutsDAO.obtainWorkoutIdRoom(id_backend);
+    }
 
-    public void deleteAll(){ new DeleteAll(workoutsDAO).execute();}
+    public void deleteAll() {
+        new DeleteAll(workoutsDAO).execute();
+    }
 
-    public Workouts getWorkoutFromIdBackend(int id_backend) { return workoutsDAO.getWorkoutFromIdBackend(id_backend);
+    public Workouts getWorkoutFromIdBackend(int id_backend) {
+        return workoutsDAO.getWorkoutFromIdBackend(id_backend);
+    }
+
+    public boolean contains(int id) {
+        return workoutsDAO.existWorkout(id);
     }
 
     private static class DeleteAll extends AsyncTask<Void, Void, Void> {
@@ -70,6 +85,7 @@ public class WorkoutsRepository {
             return null;
         }
     }
+
 
     private static class InsertUserAsyncTask extends AsyncTask<Workouts, Void, Void> {
         private WorkoutsDAO workoutsDAO;

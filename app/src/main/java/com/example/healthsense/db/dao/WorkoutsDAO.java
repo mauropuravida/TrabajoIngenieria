@@ -37,12 +37,19 @@ public interface WorkoutsDAO {
     @Query("SELECT * FROM Workouts WHERE medical_personnel_id = :id")
     List<Workouts> getWorkoutsMedical(int id);
 
-    @Query("UPDATE Workouts SET done = :done WHERE id = :id")
-    int updateDone(boolean done, int id);
+    @Query("UPDATE Workouts SET done = :done AND rating = :rating WHERE id = :id")
+    void updateDone(boolean done, int id, int rating);
 
     @Query("Select id FROM Workouts where id_backend = :id_backend")
     int obtainWorkoutIdRoom(int id_backend);
 
     @Query("SELECT * FROM Workouts where id_backend = :id_backend")
     Workouts getWorkoutFromIdBackend(int id_backend);
+
+    @Query("SELECT COUNT(*) FROM workouts")
+    int getSize();
+
+    @Query("SELECT CASE WHEN EXISTS (SELECT * FROM Workouts WHERE id_backend = :id_backend)" +
+            "THEN CAST(1 AS BIT)ELSE CAST(0 AS BIT) END")
+    boolean existWorkout(int id_backend);
 }

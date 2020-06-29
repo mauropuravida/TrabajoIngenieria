@@ -52,6 +52,8 @@
 
     <string name="close_session">Log out</string>
 
+    <string name="rate_training">Rate your training!</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -75,6 +77,9 @@
     <!-- Strings related for Trainings history-->
     <string name="workouts_completed">WORKOUTS COMPLETED:</string>
     <string name="total_hours">TOTAL HOURS:</string>
+    <string name="date_executed">Date:</string>
+    <string name="rating">Rating:</string>
+
 
 
     <!-- Strings related first sign up and profile -->

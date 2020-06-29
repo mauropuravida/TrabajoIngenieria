@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.healthsense.R;
-import com.example.healthsense.db.entity.old.WorkoutDone;
+import com.example.healthsense.db.entity.WorkoutDone;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import java.util.ArrayList;
@@ -55,11 +55,11 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
 
         holder.name.setText(workout.getName());
         holder.description.setText(workout.getDescription());
-        holder.date.setText(Html.fromHtml("<b>DATE:</b> " + String.valueOf(workout.getDate())));
+        holder.date.setText(Html.fromHtml("<b>" + TrainingHistoryFragment.fg.getResources().getString(R.string.date_executed) + "</b> " + String.valueOf(workout.getDate())));
+        holder.difficulty.setText(Html.fromHtml("<b>" + TrainingHistoryFragment.fg.getResources().getString(R.string.rating) + "</b>"));
 
-        holder.difficulty.setText(Html.fromHtml("<b>DIFFICULTY:</b>"));
 
-        for (int i = 0; i < workout.getDifficulty(); i++) {
+        for (int i = 0; i < workout.getRating(); i++) {
             TextView tv = new TextView(holder.getContext());
             tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
             holder.linearLayout.addView(tv);
@@ -71,8 +71,12 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
 
     @Override
     public int getItemCount() {
-        return dataset.size();
+        if (dataset != null)
+            return dataset.size();
+        else
+            return -1;
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -108,10 +112,6 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
             Toast.makeText(view.getContext(),
                     "Click on workout: " + String.valueOf(this.workout_id) + " - report: " + String.valueOf(this.report_id),
                     Toast.LENGTH_SHORT).show();
-
-//            Intent intent = new Intent();
-//            intent.getIntExtra("workout id", this.workout_id);
-//            intent.getIntExtra("report id", this.report_id);
 
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             TrainingInformation.fg = TrainingHistoryFragment.fg;

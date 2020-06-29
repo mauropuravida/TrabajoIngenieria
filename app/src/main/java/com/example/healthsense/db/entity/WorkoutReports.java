@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName="Workout_Reports" , indices =
         {@Index(name ="fk_Workout_reports_Workouts1_idx", value = {"workout_id"}),
-         @Index(name ="id_UNIQUE_workout_report",value = "id", unique = true)})
+         @Index(name ="id_UNIQUE_workout_report",value = "id_wr", unique = true)})
 public class WorkoutReports {
 
     @NotNull
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id_wr;
 
     @NotNull
     @ForeignKey(entity = Workouts.class, parentColumns = "id", childColumns = "workout_id",
@@ -44,12 +44,12 @@ public class WorkoutReports {
         return execution_date;
     }
 
-    public int getId() {
-        return id;
+    public int getId_wr() {
+        return id_wr;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId_wr(int id) {
+        this.id_wr = id;
     }
 
     public void setWorkout_id(int workout_id) {
