@@ -1,5 +1,6 @@
 package com.example.healthsense.Resquest
 
+import android.util.Log
 import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -15,12 +16,12 @@ class OkHttpRequest(client: OkHttpClient) {
 
     fun POST(url: String, header: JSONArray , js: JSONObject , callback: Callback): Call {
 
-        val client = OkHttpClient()
+       // val client = OkHttpClient()
         val body: RequestBody = RequestBody.create(JSON, js.toString())
 
         val request = Request.Builder()
                 .url(url)
-                .post(body)
+
 
         if (header.length()>0){
             for (i in 0 until header.length()) {
@@ -28,6 +29,8 @@ class OkHttpRequest(client: OkHttpClient) {
                 request.addHeader(name, header.getJSONObject(i).getString(name))
             }
         }
+
+        request.post(body)
 
         val call = client.newCall(request.build())
         call.enqueue(callback)

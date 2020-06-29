@@ -1,6 +1,7 @@
 package com.example.healthsense.ui.suscriptions;
 
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,8 +36,14 @@ import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.ui.login.LoginActivity;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.model.Payment;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.core.CustomServer;
+import com.mercadopago.model.ApiException;
+import com.mercadopago.preferences.CheckoutPreference;
+import com.mercadopago.util.JsonUtil;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,11 +51,15 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+
+import static android.app.Activity.RESULT_CANCELED;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,6 +74,10 @@ public class SuscriptionsFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private Context cont;
     private ArrayList<View> views = new ArrayList<>();
+    private String textPriceButton ="-1";
+    private ArrayList<String> medicalSubscriptions = new ArrayList<>();
+    private String textEmail = "";
+    private String textName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,6 +85,7 @@ public class SuscriptionsFragment extends Fragment {
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_suscriptions, container, false);
         cont = root.getContext();
+        fg = this;
 
         mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
         mProgressDialog.setTitle(R.string.loading);
@@ -91,18 +107,6 @@ public class SuscriptionsFragment extends Fragment {
             }
         });
 
-
-        JSONObject json = new JSONObject();
-
-        jsonPut(json,"name", "Raul Rodriguez");
-        jsonPut(json,"Gender", "Male");
-        jsonPut(json,"DNI", "");
-        jsonPut(json,"Email", "rodriguezgds@gmail.com");
-        jsonPut(json,"City", "Tadelisca");
-        jsonPut(json,"Address", "Narrow street 47");
-        jsonPut(json,"Speciality", "Cardiologist");
-        jsonPut(json,"Action", "ACCEPTED ON:");
-
         LinearLayout list1 = root.findViewById(R.id.list1);
         root.findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
                @Override
@@ -115,11 +119,6 @@ public class SuscriptionsFragment extends Fragment {
                }
            }
         );
-
-        //newSuscription(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.pay, null, "0"),View.VISIBLE);
-        //newSuscription(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.pay, null, "0"),View.VISIBLE);
-        //newSuscription(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.pay, null, "0"),View.VISIBLE);
-        //newSuscription(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.pay, null, "0"),View.VISIBLE);
 
         ((TextView)root.findViewById(R.id.count1)).setText("0");
 
@@ -136,21 +135,6 @@ public class SuscriptionsFragment extends Fragment {
            }
         );
 
-        JSONObject json2 = new JSONObject();
-
-        jsonPut(json2,"name", "Raul Rodriguez");
-        jsonPut(json2,"Gender", "Male");
-        jsonPut(json,"DNI", "");
-        jsonPut(json2,"Email", "rodriguezgds@gmail.com");
-        jsonPut(json2,"City", "Tadelisca");
-        jsonPut(json2,"Address", "Narrow street 47");
-        jsonPut(json2,"Speciality", "Cardiologist");
-        jsonPut(json2,"Action", "REGISTERED IN:");
-
-        //newSuscription(root, json2, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.suscribe,null, "0"),View.GONE);
-        //newSuscription(root, json2, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.suscribe, null, "0"),View.GONE);
-        //newSuscription(root, json2, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.suscribe, null, "0"),View.GONE);
-
         ((TextView)root.findViewById(R.id.count2)).setText("0");
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -165,6 +149,15 @@ public class SuscriptionsFragment extends Fragment {
 
         return root;
     }
+
+
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        //Funciones de regargar y quitar vistas si se realizó el pago
+    }
+
 
     private void newSuscription(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility){
         String created = "";
@@ -215,7 +208,7 @@ public class SuscriptionsFragment extends Fragment {
         price.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
         price.setClickable(false);
         price.setEnabled(false);
-        price.setText("530");
+        price.setText(textPriceButton);
         price.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         price.setTextColor(getResources().getColor(android.R.color.black));
         price.setVisibility(viewVisibility);
@@ -227,6 +220,9 @@ public class SuscriptionsFragment extends Fragment {
         llR.setOrientation(LinearLayout.VERTICAL);
         llR.setGravity(Gravity.CENTER_VERTICAL);
         llR.setLayoutParams(lp2);
+
+        //if (Integer.parseInt(textPriceButton) <= 0)
+            //bton.setEnabled(false);
 
         llR.addView(price);
         llR.addView(s1);
@@ -263,8 +259,6 @@ public class SuscriptionsFragment extends Fragment {
                 if (text == R.string.suscribe) {
                     Log.d("TESTEO", pos+"");
                     suscribe(id);
-                    //((LinearLayout)root.findViewById(R.id.list2)).removeViewAt(pos);
-                    //((LinearLayout)root.findViewById(R.id.list2)).removeViewAt((pos+1));
                     ((LinearLayout)root.findViewById(R.id.list2)).removeView(views.get(2*pos));
                     ((LinearLayout)root.findViewById(R.id.list2)).removeView(views.get((2*pos)+1));
 
@@ -291,7 +285,6 @@ public class SuscriptionsFragment extends Fragment {
         //loadProfile();
         //mProgressDialog.dismiss();
         if (valuesCity.size()>0) {
-            getMedicalList();
             getSubscriptions();
         }
     }
@@ -325,46 +318,53 @@ public class SuscriptionsFragment extends Fragment {
 
                     LinearLayout list2 = root.findViewById(R.id.list2);
 
+                    int cantSubs = 0;
+
                     for (int i=0;i< jsonArray.length(); i++) {
 
                         JSONObject json = new JSONObject(jsonArray.get(i).toString());
 
-                        int c = (json.getString("city_id").equals("null"))? 1: Integer.parseInt(json.getString("city_id"));
-                        int s = (json.getString("medical_speciality_id").equals("null"))? 1: Integer.parseInt(json.getString("medical_speciality_id"));
-                        String add = (json.getString("address").equals("null"))? "": json.getString("address");
-                        String g =  (json.getString("gender").equals("M") )? "Male": ((json.getString("gender").equals("F")) ? "Female" : "");
-                        int pos = i;
+                        if (!medicalSubscriptions.contains(json.getString("medical_personnel_id"))) {
+
+                            int c = (json.getString("city_id").equals("null")) ? 1 : Integer.parseInt(json.getString("city_id"));
+                            int s = (json.getString("medical_speciality_id").equals("null")) ? 1 : Integer.parseInt(json.getString("medical_speciality_id"));
+                            String add = (json.getString("address").equals("null")) ? "" : json.getString("address");
+                            String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
+                            int pos = cantSubs;
+                            cantSubs++;
 
 
-                        JSONObject jsonSend = new JSONObject();
-                        jsonPut(jsonSend, "name", json.getString("name"));
-                        jsonPut(jsonSend, "Gender", g);
-                        jsonPut(jsonSend, "DNI", json.getString("document_number"));
-                        jsonPut(jsonSend, "Email", json.getString("email"));
-                        jsonPut(jsonSend, "City", valuesCity.get(c));
-                        jsonPut(jsonSend, "Address", add);
-                        jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
-                        jsonPut(jsonSend, "Action", "REGISTERED IN:");
+                            JSONObject jsonSend = new JSONObject();
+                            jsonPut(jsonSend, "name", json.getString("name"));
+                            jsonPut(jsonSend, "Gender", g);
+                            jsonPut(jsonSend, "DNI", json.getString("document_number"));
+                            jsonPut(jsonSend, "Email", json.getString("email"));
+                            jsonPut(jsonSend, "City", valuesCity.get(c));
+                            jsonPut(jsonSend, "Address", add);
+                            jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
+                            jsonPut(jsonSend, "Action", "REGISTERED IN:");
 
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
 
-                                    newSuscription(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, json.getString("medical_personnel_id"), pos), View.GONE);
+                                        newSuscription(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, json.getString("medical_personnel_id"), pos), View.GONE);
 
-                                }catch (Exception e){
-                                    msjToast(e,response.code());
+                                    } catch (Exception e) {
+                                        msjToast(e, response.code());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
+                    String cantSubString = cantSubs+"";
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                ((TextView)root.findViewById(R.id.count2)).setText(jsonArray.length()+"");
+                                ((TextView)root.findViewById(R.id.count2)).setText(cantSubString);
                             }catch (Exception e){
                                 msjToast(e,response.code());
                             }
@@ -417,22 +417,65 @@ public class SuscriptionsFragment extends Fragment {
 
                         LinearLayout list1 = root.findViewById(R.id.list1);
 
+                        int cantSubs = 0;
+
                         for (int i = 0; i < jsonArray.length(); i++) {
 
                             JSONObject json = new JSONObject(jsonArray.get(i).toString());
 
+                            int c = (json.getString("city_id").equals("null"))? 1: Integer.parseInt(json.getString("city_id"));
+                            int s = (json.getString("medical_speciality_id").equals("null"))? 1: Integer.parseInt(json.getString("medical_speciality_id"));
+                            String add = (json.getString("address").equals("null"))? "": json.getString("address");
+                            String g =  (json.getString("gender").equals("M") )? "Male": ((json.getString("gender").equals("F")) ? "Female" : "");
+                            int pos = i;
+
                             JSONObject jsonSend = new JSONObject();
-                            jsonPut(jsonSend, "name", "");
-                            jsonPut(jsonSend, "Gender", "");
-                            jsonPut(jsonSend, "DNI", "");
-                            jsonPut(jsonSend, "Email", "");
-                            jsonPut(jsonSend, "City", "");
-                            jsonPut(jsonSend, "Address", "");
-                            jsonPut(jsonSend, "Speciality", "");
+                            jsonPut(jsonSend, "name", json.get("name").toString());
+                            jsonPut(jsonSend, "Gender", g);
+                            jsonPut(jsonSend, "DNI", json.get("document_number").toString());
+                            jsonPut(jsonSend, "Email", json.get("email").toString());
+                            jsonPut(jsonSend, "City", valuesCity.get(c));
+                            jsonPut(jsonSend, "Address", add);
+                            jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
                             jsonPut(jsonSend, "Action", "REGISTERED IN:");
 
-                            newSuscription(root, jsonSend, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, json.getString("medical_personnel_id"), i), View.VISIBLE);
+
+                            textPriceButton = json.get("amount").toString();
+                            textEmail = json.get("email").toString();
+                            textName = json.get("name").toString();
+
+                            medicalSubscriptions.add(json.getString("Medical_Personnel_id"));
+
+                            if (Integer.parseInt(textPriceButton)>=0) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+
+                                            newSuscription(root, jsonSend, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, json.getString("Medical_Personnel_id"), pos), View.VISIBLE);
+
+                                        } catch (Exception e) {
+                                            msjToast(e, response.code());
+                                        }
+                                    }
+                                });
+                                cantSubs++;
+                            }
                         }
+
+                        String cantSubsString = cantSubs+"";
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ((TextView)root.findViewById(R.id.count1)).setText(cantSubsString);
+                                }catch (Exception e){
+                                    msjToast(e,response.code());
+                                }
+                            }
+                        });
+
+                        getMedicalList();
                     }
 
                 } catch (IOException e) {
@@ -440,7 +483,7 @@ public class SuscriptionsFragment extends Fragment {
                 } catch (JSONException e) {
                     msjToast(e,response.code());
                 }finally {
-                    mProgressDialog.dismiss();
+                    //mProgressDialog.dismiss();
                     //finishCall(numCall);
                 }
             }
@@ -491,7 +534,7 @@ public class SuscriptionsFragment extends Fragment {
         Log.d("TOKEN ", MainActivity.TOKEN);
         JSONObject js = new JSONObject();
         try {
-            js.put("medical_personnel_id", id);
+            js.put("medical_personnel_id", Integer.parseInt(id));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -505,6 +548,7 @@ public class SuscriptionsFragment extends Fragment {
             e.printStackTrace();
         }
 
+        header.put(jsAux);
 
         String conexion = MainActivity.PATH+"subscriptions/subscribe";
 
@@ -534,7 +578,32 @@ public class SuscriptionsFragment extends Fragment {
     }
 
     private void pay(String id){
+        Bundle datosAEnviar = new Bundle();
+        datosAEnviar.putString("email",textEmail);
+        datosAEnviar.putFloat("price",Float.parseFloat(textPriceButton));
+        datosAEnviar.putString("title","Workout By "+textName);
 
+        Map<String, Object> preferenceMap = new HashMap<>();
+        preferenceMap.put("id", "1");
+        preferenceMap.put("title", "Workout By "+textName);
+        preferenceMap.put("quantity", 1);
+        preferenceMap.put("currency_id", "ARS");
+        preferenceMap.put("unit_price", 11.4);
+        preferenceMap.put("email", textEmail);
+
+
+        CustomServer.createCheckoutPreference(root.getContext(), "https://mauropuravida.000webhostapp.com", "preference.php", preferenceMap, new com.mercadopago.callbacks.Callback<CheckoutPreference>() {
+
+            @Override
+            public void success(CheckoutPreference checkoutPreference) {
+                startMercadoPagoCheckout(checkoutPreference.getId());
+            }
+
+            @Override
+            public void failure(ApiException apiException) {
+                Log.d("ERROR DE SALIDA", apiException.getMessage());
+            }
+        });
     }
 
     private void setPriceWorkout(){
@@ -557,6 +626,37 @@ public class SuscriptionsFragment extends Fragment {
             e.printStackTrace();
         }
         return value;
+    }
+
+    private static String pk = "TEST-7d36b114-d09c-4884-8b5c-d9e9575533b3";
+    private static final int REQUEST_CODE = 1;
+
+    private void startMercadoPagoCheckout(String checkoutPreferenceId) {
+        new MercadoPagoCheckout.Builder(pk, checkoutPreferenceId)
+                .build()
+                .startPayment(root.getContext(), REQUEST_CODE);
+    }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == MercadoPagoCheckout.PAYMENT_RESULT_CODE) {
+                final Payment payment = (Payment) data.getSerializableExtra(MercadoPagoCheckout.EXTRA_PAYMENT_RESULT);
+                //((TextView) findViewById(R.id.mp_results)).setText("Resultado del pago: " + payment.getPaymentStatus());
+
+
+                //Done!
+            } else if (resultCode == RESULT_CANCELED) {
+                if (data != null && data.getStringExtra("mercadoPagoError") != null) {
+                    MercadoPagoError mercadoPagoError = JsonUtil.getInstance().fromJson(data.getStringExtra("mercadoPagoError"), MercadoPagoError.class);
+                    //((TextView) findViewById(R.id.mp_results)).setText("Error: " +  mercadoPagoError.getMessage());
+                    //Resolve error in checkout
+                } else {
+                    //Resolve canceled checkout
+                }
+            }
+        }
     }
 
 }
