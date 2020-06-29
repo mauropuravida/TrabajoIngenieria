@@ -1,7 +1,9 @@
 package com.example.healthsense.ui.traininginformation;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
@@ -69,6 +72,8 @@ public class TrainingInformation extends Fragment {
     private WorkoutsExercisesRepository workoutsExercisesRepository;
     private int workout_id;
     private View root;
+
+    int rating = 0;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -513,6 +518,9 @@ public class TrainingInformation extends Fragment {
         //todo agregar trainings al dar end up a la base de datos.
         //se agrega el training a la base local (para el serverless), al dar end up si no habia internet se aumentaria en uno la cantidad de entrenamientos almacenados.
 
+        showDialogRating();
+
+
         if (internetConnection()) {
             // Si hay conexión a Internet en este momento OkHttp
             //post y punto
@@ -529,7 +537,7 @@ public class TrainingInformation extends Fragment {
         System.out.println("WORK ID " + workout_id);
         //Actualizo el workout como done.
         WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
-        workoutsRepository.update(true, workout_id); // actualizo campo done en workouts
+        workoutsRepository.update(true, workout_id, rating); // actualizo campo done en workouts
 
         //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push. VER DONDE HACER ESTO.
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
@@ -548,6 +556,63 @@ public class TrainingInformation extends Fragment {
 
         //Agregar HeartRateSignals valores que obtenemos de conexion de dispositivos cada x tiempo.
         //todo
+    }
+
+    public void showDialogRating()
+    {
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(getContext(), R.style.AppCompatAlertDialogStyle);
+
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        final RatingBar rating = new RatingBar(getContext());
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        rating.setLayoutParams(lp);
+        rating.setNumStars(5);
+        rating.setStepSize(0.1f);
+
+        linearLayout.addView(rating);
+
+        popDialog.setTitle(R.string.rate_training);
+
+        popDialog.setView(linearLayout);
+
+
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rate, boolean fromUser) {
+                if (fromUser)
+                    ratingBar.setRating((int) Math.ceil(rate));
+            }
+        });
+
+        // Button OK
+        popDialog.setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        setStars((int) Math.ceil(rating.getProgress())/10);
+                        dialog.dismiss();
+                    }
+
+                })
+
+                // Button Cancel
+                .setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        popDialog.create();
+        popDialog.show();
+
+    }
+
+    public void setStars(int n){
+        this.rating = n;
     }
 
 }
