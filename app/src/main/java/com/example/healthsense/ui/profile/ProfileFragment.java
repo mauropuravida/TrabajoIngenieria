@@ -233,7 +233,8 @@ public class ProfileFragment extends Fragment {
                         if (!json.getString("insurance_number").equals("null"))
                             nsrnc = json.getString("insurance_number");
 
-                        nsrncID = Integer.parseInt(json.getString("insurance_id"))-1;
+
+                        nsrncID = (json.getString("insurance_id").equals("null")) ? 0 : Integer.parseInt(json.getString("insurance_id"))-1;
 
                         //consulta valores de obras socuales
                         doAsync.execute(new Runnable() {
