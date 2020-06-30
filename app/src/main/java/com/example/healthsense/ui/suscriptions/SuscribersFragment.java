@@ -1,6 +1,7 @@
 package com.example.healthsense.ui.suscriptions;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Looper;
 import android.text.Html;
+import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,30 +24,62 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
+import com.example.healthsense.Resquest.OkHttpRequest;
+import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.ui.login.LoginActivity;
 import com.example.healthsense.ui.traininginformation.CreateTraining;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+
 public class SuscribersFragment extends Fragment {
 
     public static Fragment fg;
-
+    private ProgressDialog mProgressDialog;
     private ArrayList<LinearLayout> listll;
+    private View root;
+    private ArrayList<String> valuesCity = new ArrayList<>();
+    private ArrayList<Integer> calls = new ArrayList<>();
+    private ArrayList<View> views = new ArrayList<>();
+    private ArrayList<EditText> amountViews = new ArrayList<>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         listll = new ArrayList<>();
-        View root = inflater.inflate(R.layout.fragment_suscribers, container, false);
+        root = inflater.inflate(R.layout.fragment_suscribers, container, false);
+
+
+        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+
+        doAsync.execute(new Runnable() {
+            @Override
+            public void run() {
+                getValues(valuesCity, "city/");
+            }
+        });
+
 
 
         JSONObject json = new JSONObject();
@@ -67,12 +103,12 @@ public class SuscribersFragment extends Fragment {
            }
         );
 
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
 
-        ((TextView)root.findViewById(R.id.count1)).setText("4");
+        ((TextView)root.findViewById(R.id.count1)).setText("0");
 
         LinearLayout list2 = root.findViewById(R.id.list2);
         root.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
@@ -87,11 +123,11 @@ public class SuscribersFragment extends Fragment {
            }
         );
 
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
+        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
 
-        ((TextView)root.findViewById(R.id.count2)).setText("3");
+        ((TextView)root.findViewById(R.id.count2)).setText("0");
 
         LinearLayout list3 = root.findViewById(R.id.list3);
         root.findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
@@ -107,14 +143,14 @@ public class SuscribersFragment extends Fragment {
         );
         fg = this;
 
+        /*newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
         newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
         newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
         newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
         newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
+        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);*/
 
-        ((TextView)root.findViewById(R.id.count3)).setText("6");
+        ((TextView)root.findViewById(R.id.count3)).setText("0");
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
@@ -146,6 +182,63 @@ public class SuscribersFragment extends Fragment {
         return value;
     }
 
+    private void finishCall(int i){
+        Log.d("TESTING ","CHECK CALLS");
+        calls.set(i,0);
+        for (int j = 0; j< calls.size();j++) {
+            if (calls.get(j) == 1)
+                return;
+        }
+        Log.d("TESTING ","FINISH CALLLS");
+        //loadProfile();
+        //mProgressDialog.dismiss();
+        if (valuesCity.size()>0) {
+            getSubscribers();
+        }
+    }
+
+    private synchronized int addCall(){
+        calls.add(1);
+        //Log.d("CALLS",calls.size()+"");
+        return calls.size()-1;
+    }
+
+    private void getValues(ArrayList arr, String path){
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = MainActivity.PATH+path;
+
+        int numCall = addCall();
+
+        request.GET(conexion,new JSONArray(), new Callback(){
+            @Override
+            public void onFailure(Call call, IOException e) {
+                msjToast(e,4000);
+                finishCall(numCall);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+
+                try {
+                    String responseData = response.body().string();
+                    JSONArray jsonArray = new JSONArray(responseData);
+
+                    for (int i=0;i< jsonArray.length(); i++) {
+                        JSONObject json = new JSONObject(jsonArray.get(i).toString());
+                        arr.add(json.getString("name"));
+                    }
+
+                } catch (IOException e) {
+                    msjToast(e,response.code());
+                } catch (JSONException e) {
+                    msjToast(e,response.code());
+                }finally {
+                    finishCall(numCall);
+                }
+            }
+        });
+    }
+
     private void newSuscriber(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility){
         String created = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -164,10 +257,14 @@ public class SuscribersFragment extends Fragment {
 
         tv1.setText(Html.fromHtml("<b>"+jsonGet(json,"name")+"</b><br><br> DNI: "+
                 jsonGet(json,"DNI")+
+                "<br> Gender: "+jsonGet(json,"gender")+
                 "<br> Weight: "+jsonGet(json,"Weight")+
                 "<br> Height: "+jsonGet(json,"Height")+
+                "<br> City: "+jsonGet(json,"city")+
+                "<br> Address: "+jsonGet(json,"address")+
+                "<br> Email: "+jsonGet(json,"email")+
                 "<br> Patologies: "+jsonGet(json,"Patologies")+
-                "<br><br> <b>SUSCRIBED ON: </b>"+ PikerDate.Companion.toDateFormatV(created)));
+                "<br><br> <b>EXPIRED: </b>"+ jsonGet(json,"subs")));
 
         tv1.setTextColor(root.getResources().getColor(android.R.color.white));
         tv1.setPadding(30,30,0,30);
@@ -191,6 +288,7 @@ public class SuscribersFragment extends Fragment {
         EditText price = new EditText(root.getContext());
         price.setHintTextColor(getResources().getColor(R.color.White));
         price.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
+        price.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 
         price.setHint(R.string.price);
         price.setVisibility(viewVisibility);
@@ -219,10 +317,16 @@ public class SuscribersFragment extends Fragment {
 
         list.addView(s0);
         list.addView(llSub);
+
+        views.add(s0);
+        views.add(llSub);
+
+        if (viewVisibility == View.VISIBLE)
+            amountViews.add(price);
         //------fin de programación del formato
     }
 
-    private Button createButton(View root, int text , Fragment fragment){
+    private Button createButton(View root, int text , Fragment fragment, String id, int pos){
         Button bt = new Button(root.getContext());
         bt.setText(text);
         bt.setBackground(getResources().getDrawable(R.drawable.background_model_training));
@@ -231,7 +335,7 @@ public class SuscribersFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (fragment == null){
-                        setPriceWorkout();
+                        setPriceWorkout(id, pos);
                     }else {
                         Intent intent = new Intent();
                         AppCompatActivity activity = (AppCompatActivity) root.getContext();
@@ -244,8 +348,178 @@ public class SuscribersFragment extends Fragment {
         return bt;
     }
 
-    private void setPriceWorkout(){
-        //TODO , hay que ver como se implementa, se puede mostrar un mensaje cuando se ejecuta
+    private void getSubscribers(){
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = MainActivity.PATH+"subscriptions/getSubscribed";
+
+        //int numCall = addCall();
+
+        JSONArray jarr = new JSONArray();
+        try {
+            JSONObject jobj = new JSONObject();
+            jobj.put("x-access-token", MainActivity.TOKEN);
+            jarr.put(jobj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        request.GET(conexion,jarr, new Callback(){
+            @Override
+            public void onFailure(Call call, IOException e) {
+                msjToast(e,4000);
+                //finishCall(numCall);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+
+                try {
+                    String responseData = response.body().string();
+
+                    if (response.code() == 200) {
+                        JSONArray jsonArray = new JSONArray(responseData);
+
+                        LinearLayout list2 = root.findViewById(R.id.list2);
+                        LinearLayout list3 = root.findViewById(R.id.list3);
+
+                        int cantSubs3 = 0;
+                        int cantSubs2 = 0;
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject json = new JSONObject(jsonArray.get(i).toString());
+
+                            int c = (json.getString("city_id").equals("null"))? 1: Integer.parseInt(json.getString("city_id"));
+                            String add = (json.getString("address").equals("null"))? "": json.getString("address");
+                            String g =  (json.getString("gender").equals("M") )? "Male": ((json.getString("gender").equals("F")) ? "Female" : "");
+                            int pos = i;
+
+                            JSONObject jsonSend = new JSONObject();
+                            jsonPut(jsonSend, "name", json.get("name").toString());
+                            jsonPut(jsonSend, "gender", g);
+                            jsonPut(jsonSend, "DNI", json.get("document_number").toString());
+                            jsonPut(jsonSend, "email", json.get("email").toString());
+                            jsonPut(jsonSend, "city", valuesCity.get(c));
+                            jsonPut(jsonSend, "address", add);
+                            jsonPut(jsonSend,"Weight", json.get("weight").toString());
+                            jsonPut(jsonSend,"Height", json.get("height").toString());
+                            jsonPut(jsonSend,"Patologies", "None");
+
+
+                            String expires = (json.getString("expires").equals("null"))? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
+
+                            jsonPut(jsonSend,"subs",expires);
+
+
+                            float price = Float.parseFloat(json.get("amount").toString());
+                            /*textEmail = json.get("email").toString();
+                            textName = json.get("name").toString();
+
+                            medicalSubscriptions.add(json.getString("Medical_Personnel_id"));*/
+
+                            if (price == 0) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            newSuscriber(root, jsonSend, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null, json.getString("Device_Users_id"), pos),View.VISIBLE);
+                                        } catch (Exception e) {
+                                            msjToast(e, response.code());
+                                        }
+                                    }
+                                });
+                                cantSubs3++;
+                            }else{
+                                if(!(json.getString("expires").equals("null"))){
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining(), json.getString("Device_Users_id"), pos),View.GONE);
+                                            } catch (Exception e) {
+                                                msjToast(e, response.code());
+                                            }
+                                        }
+                                    });
+                                    cantSubs2++;
+                                }
+                            }
+                        }
+
+                        String cantSubsString3 = cantSubs3+"";
+                        String cantSubsString2 = cantSubs2+"";
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ((TextView)root.findViewById(R.id.count2)).setText(cantSubsString2);
+                                    ((TextView)root.findViewById(R.id.count3)).setText(cantSubsString3);
+                                }catch (Exception e){
+                                    msjToast(e,response.code());
+                                }
+                            }
+                        });
+
+                        //getMedicalList();
+                    }
+
+                } catch (IOException e) {
+                    msjToast(e,response.code());
+                } catch (JSONException e) {
+                    msjToast(e,response.code());
+                }finally {
+                    mProgressDialog.dismiss();
+                    //finishCall(numCall);
+                }
+            }
+        });
+    }
+
+    private void msjToast(Exception e, int code){
+        mProgressDialog.dismiss();
+        if (e != null)
+            e.printStackTrace();
+        Looper.prepare();
+        Toast.makeText(root.getContext(), LoginActivity.error(root.getContext(),code), Toast.LENGTH_SHORT).show();
+        Looper.loop();
+    }
+
+    private void setPriceWorkout(String id, int p){
+
+        String textedit = amountViews.get(p).getText().toString();
+
+        Log.d("TESTING ",textedit);
+        JSONObject js = new JSONObject();
+
+        try {
+            js.put("amount", Float.parseFloat(textedit));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONArray jarr = new JSONArray();
+        try {
+            JSONObject jobj = new JSONObject();
+            jobj.put("x-access-token", MainActivity.TOKEN);
+            jarr.put(jobj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = MainActivity.PATH +"subscriptions/approve/"+id;
+
+        request.PUT(conexion, jarr, js, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                msjToast(e, 4000);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                msjToast(null,response.code());
+            }
+        });
     }
 
 }

@@ -74,7 +74,7 @@ public class SuscriptionsFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private Context cont;
     private ArrayList<View> views = new ArrayList<>();
-    private String textPriceButton ="-1";
+    //private String textPriceButton ="-1";
     private ArrayList<String> medicalSubscriptions = new ArrayList<>();
     private String textEmail = "";
     private String textName = "";
@@ -159,7 +159,7 @@ public class SuscriptionsFragment extends Fragment {
     }
 
 
-    private void newSuscription(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility){
+    private void newSuscription(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility, String amount){
         String created = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             created = LocalDate.now().toString();
@@ -182,7 +182,7 @@ public class SuscriptionsFragment extends Fragment {
                 "<br> Email: "+jsonGet(json,"Email")+
                 "<br> City: "+jsonGet(json,"City")+
                 "<br> Address: "+jsonGet(json,"Address")+
-                "<br><br> <b>"+jsonGet(json,"Action")+"</b>"+ PikerDate.Companion.toDateFormatV(created)));
+                "<br><br> <b>"+jsonGet(json,"Action")+" </b>"+ jsonGet(json,"date")));
 
         tv1.setTextColor(root.getResources().getColor(android.R.color.white));
         tv1.setPadding(30,30,0,30);
@@ -208,7 +208,7 @@ public class SuscriptionsFragment extends Fragment {
         price.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
         price.setClickable(false);
         price.setEnabled(false);
-        price.setText(textPriceButton);
+        price.setText(amount);
         price.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         price.setTextColor(getResources().getColor(android.R.color.black));
         price.setVisibility(viewVisibility);
@@ -241,12 +241,14 @@ public class SuscriptionsFragment extends Fragment {
         list.addView(s0);
         list.addView(llSub);
 
-        views.add(s0);
-        views.add(llSub);
+        if (list.getId() == root.findViewById(R.id.list2).getId()) {
+            views.add(s0);
+            views.add(llSub);
+        }
         //------fin de programación del formato
     }
 
-    private Button createButton(View root, int text , Fragment fragment, String id, int pos){
+    private Button createButton(View root, int text , Fragment fragment, String id, int pos, String price){
         Button bt = new Button(root.getContext());
         bt.setText(text);
         bt.setBackground(getResources().getDrawable(R.drawable.background_model_training));
@@ -267,7 +269,7 @@ public class SuscriptionsFragment extends Fragment {
                     //Log.d("TESTEO", ((LinearLayout)root.findViewById(R.id.list2)).get),
                 }
                 else
-                    pay(id);
+                    pay(price, id);
 
                 Toast.makeText(root.getContext(), "The operation was done" , Toast.LENGTH_SHORT).show();
               }
@@ -342,14 +344,16 @@ public class SuscriptionsFragment extends Fragment {
                             jsonPut(jsonSend, "City", valuesCity.get(c));
                             jsonPut(jsonSend, "Address", add);
                             jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
-                            jsonPut(jsonSend, "Action", "REGISTERED IN:");
+                            jsonPut(jsonSend, "Action", "EXPIRES :");
+
+                            jsonPut(jsonSend, "date", "--/--/----");
 
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
 
-                                        newSuscription(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, json.getString("medical_personnel_id"), pos), View.GONE);
+                                        newSuscription(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, json.getString("medical_personnel_id"), pos, "0"), View.GONE, "0");
 
                                     } catch (Exception e) {
                                         msjToast(e, response.code());
@@ -437,22 +441,28 @@ public class SuscriptionsFragment extends Fragment {
                             jsonPut(jsonSend, "City", valuesCity.get(c));
                             jsonPut(jsonSend, "Address", add);
                             jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
-                            jsonPut(jsonSend, "Action", "REGISTERED IN:");
+                            jsonPut(jsonSend, "Action", "EXPIRES: ");
+
+                            String expires = (json.getString("expires").equals("null")) ? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
+
+                            jsonPut(jsonSend, "date", expires);
 
 
-                            textPriceButton = json.get("amount").toString();
+                            final String textPriceButton = json.get("amount").toString();
                             textEmail = json.get("email").toString();
                             textName = json.get("name").toString();
 
                             medicalSubscriptions.add(json.getString("Medical_Personnel_id"));
 
-                            if (Integer.parseInt(textPriceButton)>=0) {
+                            int visibilidad = (json.getString("expires").equals("null")? View.VISIBLE : View.VISIBLE);
+
+                            if (Integer.parseInt(textPriceButton)>0) {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
 
-                                            newSuscription(root, jsonSend, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, json.getString("Medical_Personnel_id"), pos), View.VISIBLE);
+                                            newSuscription(root, jsonSend, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, json.getString("Medical_Personnel_id"), pos, textPriceButton), visibilidad, textPriceButton);
 
                                         } catch (Exception e) {
                                             msjToast(e, response.code());
@@ -577,10 +587,10 @@ public class SuscriptionsFragment extends Fragment {
         Looper.loop();
     }
 
-    private void pay(String id){
+    private void pay(String price ,String id){
         Bundle datosAEnviar = new Bundle();
         datosAEnviar.putString("email",textEmail);
-        datosAEnviar.putFloat("price",Float.parseFloat(textPriceButton));
+        datosAEnviar.putFloat("price",Float.parseFloat(price));
         datosAEnviar.putString("title","Workout By "+textName);
 
         Map<String, Object> preferenceMap = new HashMap<>();
@@ -588,7 +598,7 @@ public class SuscriptionsFragment extends Fragment {
         preferenceMap.put("title", "Workout By "+textName);
         preferenceMap.put("quantity", 1);
         preferenceMap.put("currency_id", "ARS");
-        preferenceMap.put("unit_price", 11.4);
+        preferenceMap.put("unit_price", Float.parseFloat(price));
         preferenceMap.put("email", textEmail);
 
 
@@ -604,10 +614,6 @@ public class SuscriptionsFragment extends Fragment {
                 Log.d("ERROR DE SALIDA", apiException.getMessage());
             }
         });
-    }
-
-    private void setPriceWorkout(){
-        //TODO , hay que ver como se implementa, se puede mostrar un mensaje cuando se ejecuta
     }
 
     private void jsonPut(JSONObject json, String key, String value){
