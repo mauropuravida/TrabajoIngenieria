@@ -25,10 +25,13 @@ import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
+import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.Repository.DeviceUsersRepository;
+import com.example.healthsense.db.Repository.MedicalPersonnelRepository;
 import com.example.healthsense.db.Repository.UserRepository;
 import com.example.healthsense.db.entity.DeviceUsers;
+import com.example.healthsense.db.entity.MedicalPersonnel;
 import com.example.healthsense.db.entity.Users;
 import com.example.healthsense.ui.password.Password;
 import com.example.healthsense.ui.register.ChoiseProfile;
@@ -54,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginActivity act;
     private UserRepository userRepository;
     private  DeviceUsersRepository deviceUsersRepository;
+    private MedicalPersonnelRepository medicalPersonnelRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = findViewById(R.id.password);
         userRepository = new UserRepository(getApplication());
         deviceUsersRepository = new DeviceUsersRepository(getApplication());
+        medicalPersonnelRepository = new MedicalPersonnelRepository(getApplication());
 
 
         act = this;
@@ -112,17 +117,18 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+       /* passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString(), act);
+                    System.out.println("ENTRO EN EL PASSWORD");
                 }
                 return false;
             }
-        });
+        });*/
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +137,8 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString(),act);
+                System.out.println("ENTRO EN EL LOGIN POSTA");
+
             }
         });
 
@@ -164,6 +172,8 @@ public class LoginActivity extends AppCompatActivity {
         if (!user.equals("")) {
             findViewById(R.id.loading).setVisibility(View.VISIBLE);
             loginViewModel.login(user, pass, act);
+            System.out.println("ENTRO EN EL IsLogged");
+
         }
     }
 
@@ -190,10 +200,14 @@ public class LoginActivity extends AppCompatActivity {
         String user = (preferencesEditor.getString("User","").equals("")) ? ((EditText) findViewById(R.id.username)).getText().toString() : preferencesEditor.getString("User","");
        // userRepository.deleteAll();
       //  deviceUsersRepository.deleteAll();
-        if( !userRepository.exist(user) && FIRST_LOGIN){
+        if( !userRepository.exist(user)){
             System.out.println("ENTRO A AGREGAR AL USUARIO" + user);
-            getUserInformation();
-            MainActivity.FIRST_LOGIN = false;
+            doAsync.execute(new Runnable() {
+                @Override
+                public void run() {
+                    getUserInformation();
+                }
+            });
         }
         else
             System.out.println("El usuario SIIIII existe");
@@ -212,7 +226,8 @@ public class LoginActivity extends AppCompatActivity {
         //call al backend y llamada al addUser
         System.out.println("ENTRO A AGREGAR EL USUARIO" + MainActivity.TOKEN);
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = "https://healthsenseapi.herokuapp.com/userinfo/";
+        String conexion = (MainActivity.PROFILETYPE.equals("d")) ? MainActivity.PATH+"userinfo/" : MainActivity.PATH+"medicalinfo/";
+
 
         JSONArray jarr = new JSONArray();
         try {
@@ -231,8 +246,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseData = null;
                 try {
-                    String responseData = response.body().string();
+                    responseData = response.body().string();
                     JSONObject json = new JSONObject(responseData);
                     String name = json.getString("name");
                     String lastname = json.getString("last_name");
@@ -242,14 +258,19 @@ public class LoginActivity extends AppCompatActivity {
                     String password =  ((EditText) findViewById(R.id.password)).getText().toString();
                     int dType = json.getInt("document_type_id");
                     Users user_to_insert = new Users(name, lastname,birtdate,dType,document,email,password);
-                    System.out.println("EL MAIL ES : " + user_to_insert.getEmail());
                     userRepository.insert(user_to_insert);
                     int id = userRepository.getId(user_to_insert.getEmail());
                     while (id==0){
                         id = userRepository.getId(user_to_insert.getEmail());
                     }
-                    DeviceUsers device_user_to_insert = new DeviceUsers(id);
-                    deviceUsersRepository.insert(device_user_to_insert);
+                    if (MainActivity.PROFILETYPE.equals("d")){
+                        DeviceUsers device_user_to_insert = new DeviceUsers(id);
+                        deviceUsersRepository.insert(device_user_to_insert);
+                    }else{
+                        int speciality = json.getInt("medical_speciality_id");
+                        MedicalPersonnel medicalPersonnel_to_insert = new MedicalPersonnel(id,speciality);
+                        medicalPersonnelRepository.insert(medicalPersonnel_to_insert);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

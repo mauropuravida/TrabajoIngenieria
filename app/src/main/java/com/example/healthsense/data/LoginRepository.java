@@ -48,6 +48,5 @@ public class LoginRepository {
     public void login(String username, String password, LoginActivity la) {
         // handle login
         dataSource.login(username, password, la);
-
     }
 }

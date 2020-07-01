@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Html;
 import android.text.InputType;
 import android.view.Gravity;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -54,7 +57,10 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
 
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 import static com.example.healthsense.MainActivity.user;
@@ -72,6 +78,12 @@ public class TrainingInformation extends Fragment {
     private WorkoutsExercisesRepository workoutsExercisesRepository;
     private int workout_id;
     private View root;
+    private boolean running = false;
+    private long pauseOffset;
+    private Map<String,Long> timers;
+    private Map<String,Long> offsets;
+    private Map<String,Boolean> first_time;
+
 
     int rating = 0;
 
@@ -87,6 +99,9 @@ public class TrainingInformation extends Fragment {
         exercisesRepository = new ExercisesRepository(getActivity().getApplication());
         workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
 
+        timers = new HashMap<>();
+        first_time = new HashMap<>();
+        offsets = new HashMap<>();
         // This callback will only be called when MyFragment is at least Started.
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
@@ -156,7 +171,7 @@ public class TrainingInformation extends Fragment {
         jsonPut(json3, "URL", "Ks-lKvKQ8f4");
         jsonPut(json3, "instructions", jsonSteps.toString());
 
-        createNewExercise(root, json3);
+        createNewExercise(root, json3,"History");
         System.out.println("EXERCISEES TAM " + exercisesList.size());
         System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
         mProgressDialog.dismiss();
@@ -182,7 +197,7 @@ public class TrainingInformation extends Fragment {
         return value;
     }
 
-    private void createNewExercise(View root, JSONObject json) {
+    private void createNewExercise(View root, JSONObject json, String tag) {
 
         LinearLayout ll3 = new LinearLayout(root.getContext());
 
@@ -206,7 +221,7 @@ public class TrainingInformation extends Fragment {
         bt2.setText("X");
         bt2.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
         bt2.setLayoutParams(lp11);
-        bt2.setTag("bt2");
+        //bt2.setTag("bt2");
 
         bt2.setOnClickListener(new View.OnClickListener() {
                                    @Override
@@ -274,14 +289,27 @@ public class TrainingInformation extends Fragment {
         LinearLayout.LayoutParams lp5 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(70, root.getContext()));
         lp5.setMargins(0, dpToPx(10, root.getContext()), 0, 0);
 
-        EditText e4 = new EditText(root.getContext());
+       /* EditText e4 = new EditText(root.getContext()); // Temporizador.
         e4.setPadding(30, 0, 30, 0);
         e4.setTextSize(dpToPx(24, root.getContext()));
         e4.setTextColor(getResources().getColor(R.color.DarkGrayText));
         e4.setText("00:00");
+        e4.setFocusable(false);
         e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
         e4.setGravity(Gravity.CENTER);
-        e4.setLayoutParams(lp5);
+        e4.setLayoutParams(lp5);*/
+
+        Chronometer chronometer = new Chronometer(root.getContext());
+        chronometer.setPadding(30, 0, 30, 0);
+        chronometer.setTextSize(dpToPx(24, root.getContext()));
+        chronometer.setTextColor(getResources().getColor(R.color.DarkGrayText));
+        chronometer.setText("00:00");
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.setFormat("%s");
+        chronometer.setFocusable(false);
+        e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
+        chronometer.setGravity(Gravity.CENTER);
+        chronometer.setLayoutParams(lp5);
 
 
         YouTubePlayerView ypv = new YouTubePlayerView(root.getContext());
@@ -346,7 +374,21 @@ public class TrainingInformation extends Fragment {
         ll2.setGravity(Gravity.CENTER);
         ll2.setLayoutParams(lp8);
 
-        Button bt1 = new Button(root.getContext());
+        Button bt1 = new Button(root.getContext()); //Start
+        Button bt3 = new Button(root.getContext()); //Stop
+        Button bt4 = new Button(root.getContext()); //EndUp
+
+        bt1.setTag(tag);
+        bt3.setTag(tag);
+        bt4.setTag(tag);
+        chronometer.setTag(tag);
+        timers.put(tag,new Long(0));
+        offsets.put(tag,new Long(0));
+        first_time.put(tag,true);
+
+        bt3.setEnabled(false);
+        bt4.setEnabled(false);
+
         bt1.setBackground(root.getResources().getDrawable(R.drawable.background_model_training));
         bt1.setText(root.getResources().getString(R.string.start));
         bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
@@ -356,8 +398,11 @@ public class TrainingInformation extends Fragment {
                                    public void onClick(View v) {
                                        if (!trainingWithoutConnection()) {
                                            Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
-                                           //boton 3 y 4 desactivar.
                                        } else {
+                                           startChronometer(chronometer);
+                                           bt1.setEnabled(false);
+                                           bt3.setEnabled(true);
+                                           bt4.setEnabled(false);
                                            //comenzar cuenta regresiva.
                                        }
                    /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
@@ -371,7 +416,6 @@ public class TrainingInformation extends Fragment {
                                }
         );
 
-        Button bt3 = new Button(root.getContext());
         bt3.setBackground(root.getResources().getDrawable(R.drawable.background_target_waiting_training));
         bt3.setText(root.getResources().getString(R.string.stop));
         bt3.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
@@ -380,6 +424,13 @@ public class TrainingInformation extends Fragment {
             @Override
             public void onClick(View v) {
                 //pausar cuenta regresiva, reactivar...
+                if (running)
+                    stopChronometer(chronometer);
+                else
+                    startChronometer(chronometer);
+                bt3.setEnabled(false);
+                bt1.setEnabled(true);
+                bt4.setEnabled(true);
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
                 //bt1.setVisibility(View.GONE);
@@ -392,7 +443,6 @@ public class TrainingInformation extends Fragment {
         Space s4 = new Space(root.getContext());
         s4.setMinimumWidth(dpToPx(30, root.getContext()));
 
-        Button bt4 = new Button(root.getContext());
         bt4.setBackground(root.getResources().getDrawable(R.drawable.background_model_training_history));
         bt4.setText(root.getResources().getString(R.string.end_up));
         bt4.setTextColor(root.getResources().getColor(R.color.White));
@@ -400,6 +450,8 @@ public class TrainingInformation extends Fragment {
         bt4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bt1.setEnabled(false);
+                bt2.setEnabled(false);
                 addToDatabase();
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
@@ -438,7 +490,8 @@ public class TrainingInformation extends Fragment {
         ll3.addView(ypv);
         ll3.addView(t1);
         ll3.addView(sc1);
-        ll3.addView(e4);
+        //ll3.addView(e4);
+        ll3.addView(chronometer);
         ll3.addView(ll2);
 
         Space s7 = new Space(root.getContext());
@@ -459,7 +512,6 @@ public class TrainingInformation extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         for (int i = 0; i < you.size(); i++)
             you.get(i).release();
     }
@@ -472,24 +524,24 @@ public class TrainingInformation extends Fragment {
         for (int i = 0; i < workoutsExercises.size(); i++) {
             exercisesList.add(exercisesRepository.getExercises(workoutsExercises.get(i).getExercise_id()));
         }
+        System.out.println("TAMAÑO " + exercisesList.size());
         for (int i = 0; i < exercisesList.size(); i++) {
+            System.out.println(exercisesList.get(i));
             JSONObject json = new JSONObject();
             jsonPut(json, "name", workout.getName() + ":  " + "exercise " + i);
-            String time = workoutsExercisesRepository.getTime(workout_id, exercisesList.get(i).getId()); // obtener de workoutsExercises
-            if (time == null)
-                time = "0:0";
-            jsonPut(json, "time", time);
+            int exercise_id = exercisesList.get(i).getId();
+           // String time = workoutsExercisesRepository.getTime(workout_id, exercise_id ); // obtener de workoutsExercises
+            jsonPut(json, "time", "Video");
             jsonPut(json, "difficulty", workout.getDifficulty());
-            // jsonPut(json,"URL", exercisesList.get(i).getPath());
-            jsonPut(json, "URL", "Ks-lKvKQ8f4"); // todo CAMBIAR ACA POR PATH.
+            jsonPut(json,"URL", exercisesList.get(i).getPath());
+           // jsonPut(json, "URL", "Ks-lKvKQ8f4"); // todo CAMBIAR ACA POR PATH.
             jsonPut(json, "instructions", exercisesList.get(i).getDescription());
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    createNewExercise(root, json);
+                    createNewExercise(root, json,""+ exercise_id);
                 }
             });
-
         }
         System.out.println("EXERCISEES TAM " + exercisesList.size());
         System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
@@ -505,6 +557,7 @@ public class TrainingInformation extends Fragment {
         int user_id = userRepository.getId(MainActivity.email);
         DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
         int works_saved = deviceUsersRepository.getWorksSaved(user_id);
+        System.out.println("WORK SAVED " + works_saved);
         return works_saved < 5;
     }
 
@@ -519,7 +572,6 @@ public class TrainingInformation extends Fragment {
         //se agrega el training a la base local (para el serverless), al dar end up si no habia internet se aumentaria en uno la cantidad de entrenamientos almacenados.
 
         showDialogRating();
-
 
         if (internetConnection()) {
             // Si hay conexión a Internet en este momento OkHttp
@@ -614,5 +666,32 @@ public class TrainingInformation extends Fragment {
     public void setStars(int n){
         this.rating = n;
     }
+
+    private void startChronometer(Chronometer chronometer){
+        if (!running){
+            if (first_time.get(chronometer.getTag())){
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                first_time.replace((String) chronometer.getTag(),false);
+            }
+            else{
+                chronometer.setBase(SystemClock.elapsedRealtime()  - offsets.get(chronometer.getTag()));
+            }
+
+            chronometer.start();
+            running = true;
+        }
+    }
+
+    private void stopChronometer(Chronometer chronometer){
+        if (running){
+            chronometer.stop();
+           // long base = SystemClock.elapsedRealtime() - timers.get(chronometer.getTag());
+           // timers.replace((String) chronometer.getTag(), timers.get(chronometer.getTag()) + base);
+            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+            offsets.replace((String)chronometer.getTag(),pauseOffset);
+            running = false;
+        }
+    }
+
 
 }

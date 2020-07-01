@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         email = getIntent().getExtras().getString("user");
         user = preferencesEditor.getString(email, "");
-
+        System.out.println(email);
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 

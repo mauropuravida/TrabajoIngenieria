@@ -29,6 +29,7 @@ import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
+import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.Repository.DeviceUsersRepository;
 import com.example.healthsense.db.Repository.ExercisesRepository;
 import com.example.healthsense.db.Repository.UserRepository;
@@ -163,10 +164,12 @@ public class MyTrainingsFragment extends Fragment {
         depureExercises();
 
         if (MainActivity.FIRST_TRAINING) {
-            try {
+            try{
+                //workoutsExercisesRepository.deleteAll();
+               // workoutsRepository.deleteAll();
+               // exercisesRepository.deleteAll();
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
-                addWorkoutsExercisesRoom();
                 addWorkoutsExercisesRoom();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -257,7 +260,7 @@ public class MyTrainingsFragment extends Fragment {
             public void run() {
                 String path = "workout/device_user_id&"; // obtengo workouts del user_id. REEMPLAZAR TOKEN por MAINACTIVITY.TOKEN
                 JSONObject ob = new JSONObject(); //
-                MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
+               // MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
                 try {
                     ob.put("x-access-token", MainActivity.TOKEN);
                     token = new JSONArray();
@@ -273,12 +276,6 @@ public class MyTrainingsFragment extends Fragment {
                 getBackendResponse(path, 0, workouts, null, null, null, getWorks());
             }
         });
-    }
-
-    private String formatDate(String date) throws ParseException {
-        Date d = new SimpleDateFormat("dd-MM-yyyy").parse(date);
-        String formatDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(d);
-        return formatDate.substring(0, 9);
     }
 
     private void newTraining(View root, int i, View.OnClickListener mListener) {
@@ -323,10 +320,10 @@ public class MyTrainingsFragment extends Fragment {
 
                     TextView tv1 = new TextView(root.getContext());
                     try {
-                        date = formatDate(workout.getString("creation_date"));
+                        date = PikerDate.Companion.toDateFormatView(workout.getString("creation_date"));
                         difficulty = workout.getInt("difficulty");
                         tv1.setText(Html.fromHtml("<b>" + workout.getString("name") + "</b>" + "<br><br>" + description));
-                    } catch (JSONException | ParseException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     //tv1.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 30);
@@ -469,7 +466,6 @@ public class MyTrainingsFragment extends Fragment {
     private void addWorkoutsRoom() throws JSONException {
         // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless.
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
-        //  workoutsRepository.deleteAll();
         List<Workouts> workouts_room = workoutsRepository.getAll();
       /*  System.out.println("TAM WORKOURS" + workouts_room.size());
         for(int k = 0 ; k<workouts_room.size();k++){
@@ -489,6 +485,10 @@ public class MyTrainingsFragment extends Fragment {
             System.out.println("ESTA EN ROOM? " + in_room);
             if (!in_room) {
                 int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                while (device_user_id_room == 0){
+                    System.out.println("DEVICE USER ID " + device_user_id_room);
+                    device_user_id_room = device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                }
                 System.out.println("DEVICE USER ID " + device_user_id_room);
                 int price = 0;
                 try {
@@ -517,7 +517,8 @@ public class MyTrainingsFragment extends Fragment {
         for (int i = 0; i < exercises.size(); i++) {
             int exercises_id = 0;
             try {
-                exercises_id = exercises.get(i).getInt("id");
+                while (exercises_id == 0)
+                    exercises_id = exercises.get(i).getInt("id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -550,15 +551,17 @@ public class MyTrainingsFragment extends Fragment {
 
     private void addWorkoutsExercisesRoom() {
         Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
-       // workoutsExercisesRepository.deleteAll();
+       //workoutsExercisesRepository.deleteAll();
         boolean in_room;
         for (Integer key : map.keySet()) {
             List<Integer> v = map.get(key);
             int workout_id_room = workoutsRepository.getWourkoutIdRoom(key);
             for (int i = 0; i < v.size(); i++) {
                 int exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
+                while (exercises_id_room == 0)
+                    exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
                 in_room = workoutsExercisesRepository.existExercisesWorkout(workout_id_room,exercises_id_room);
-                System.out.println("ESTA EN ROOM? : " + workout_id_room + "  " + exercises_id_room + " " + in_room);
+                System.out.println("ESTA EN ROOM? : WorkoutID " + workout_id_room + "  ExerciseID" + exercises_id_room + " " + in_room);
                 if (!in_room){
                     //System.out.println("ENTRO A INSERTAR EL WORKOUT: " + workout_id_room + exercises_id_room + "CON UN TIEMPO: " + times.get(key));
                     WorkoutExercises to_insert = new WorkoutExercises(workout_id_room,exercises_id_room, times.get(key));
