@@ -38,7 +38,6 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
 
     public void setDataset(List<WorkoutDone> dataset) {
         this.dataset = dataset;
-        Collections.sort(dataset, Collections.<WorkoutDone>reverseOrder());
         notifyDataSetChanged();
     }
 
@@ -58,7 +57,8 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
         holder.date.setText(Html.fromHtml("<b>" + TrainingHistoryFragment.fg.getResources().getString(R.string.date_executed) + "</b> " + String.valueOf(workout.getDate())));
         holder.difficulty.setText(Html.fromHtml("<b>" + TrainingHistoryFragment.fg.getResources().getString(R.string.rating) + "</b>"));
 
-
+        holder.linearLayout.removeAllViews();
+        System.out.println("RATING: " + workout.getRating());
         for (int i = 0; i < workout.getRating(); i++) {
             TextView tv = new TextView(holder.getContext());
             tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 0);
