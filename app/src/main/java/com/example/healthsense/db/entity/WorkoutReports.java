@@ -29,6 +29,9 @@ public class WorkoutReports {
     @ColumnInfo(name = "execution_date")
     private String execution_date;
 
+    @ColumnInfo(name = "sent")
+    private boolean sent;
+
 
     public WorkoutReports(int workout_id, @NotNull String execution_date) {
         this.workout_id = workout_id;
@@ -58,5 +61,13 @@ public class WorkoutReports {
 
     public void setExecution_date(@NotNull String execution_date) {
         this.execution_date = execution_date;
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 }

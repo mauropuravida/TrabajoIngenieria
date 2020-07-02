@@ -43,6 +43,14 @@ public class WorkoutsReportsRepository {
         return workoutsReportDAO.existWorkoutReport(id, date);
     }
 
+    public List<WorkoutReports> getUnsent(){
+        return workoutsReportDAO.getUnsent();
+    }
+
+    public boolean isSent(int id){
+        return workoutsReportDAO.isSent(id);
+    }
+
     private static class InsertUserAsyncTask extends AsyncTask<WorkoutReports, Void, Void> {
         private WorkoutsReportDAO workoutsReportDAODAO;
 

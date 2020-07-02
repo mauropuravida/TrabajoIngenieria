@@ -112,6 +112,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
             @Override
             public void onClick(View view) {
                 if (networkInfo != null && networkInfo.isConnected()) {
+                    Log.d(TAG, "onClick: refresh");
                     mProgressDialog.show();
                     getData();
                 }
@@ -209,7 +210,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                             Log.d(TAG, "run: obtengo report");
                             WorkoutReports wr = new WorkoutReports(workout_id,
                                     PikerDate.Companion.toDateFormatView(report.getString("execution_date")));
-
+                            wr.setSent(true);
                             //si no existe en la base de datos local, lo agrego
 
                             if (!workoutsReportsRepository.contains(wr.getWorkout_id(), wr.getExecution_date())) {
@@ -219,8 +220,9 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
 
                             //y actualizo el workout
-                            if (workout.getDone() == 0)
-                                workoutsRepository.updateDone(1, report.getInt("workout_id"), report.optInt("rating", 0));
+                            if (workout.getDone() == 0) {
+                                workoutsRepository.updateDone(1, report.getInt("workout_id"), workout.getRating());
+                            }
                         }
 
                     } catch (JSONException e) {
@@ -240,7 +242,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                     @Override
                     public void run() {
 
-                        MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3R1c2VyMTBAZ21haWwuY29tIiwiaWF0IjoxNTkyMDIwNjAyfQ.thkUtcbXqN__A327UA-NL8gwpoI5IDYaiT1SjRsesUc";
+                        //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3R1c2VyMTBAZ21haWwuY29tIiwiaWF0IjoxNTkyMDIwNjAyfQ.thkUtcbXqN__A327UA-NL8gwpoI5IDYaiT1SjRsesUc";
 
                         JSONObject ob = new JSONObject();
                         try {
@@ -296,6 +298,10 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                                 }
                                 func.run();
                             }
+                            else if(!report){
+                                String new_path = "workoutReport/";
+                                getBackendResponse(new_path, reports, getReports(), true);
+                            }
                         }
                     }
 
@@ -310,14 +316,29 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                         new TaskGetWorkoutReports(TrainingHistoryFragment.this).execute();
                         return false;
                     }
-                } else if (json.length() == AppDatabase.getAppDatabase(getContext()).workoutsDAO().getSize()) {
-                    String new_path = "workoutReport/";
-                    getBackendResponse(new_path, reports, getReports(), true);
-                    return false;
+                } else {
+                    if (json.length() == AppDatabase.getAppDatabase(getContext()).workoutsDAO().getSize()) {
+                        return false;
+                    }
                 }
                 return true;
             }
         });
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        //todo cargar lista si ya se creo anteriormente
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+        //todo guardar lista
     }
 
 

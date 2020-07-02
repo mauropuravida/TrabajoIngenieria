@@ -7,7 +7,7 @@ import androidx.room.Embedded;
 import java.text.ParseException;
 import java.util.Date;
 
-public class WorkoutDone implements Comparable<WorkoutDone> {
+public class WorkoutDone {
 
     @Embedded
     private Workouts workout;
@@ -59,18 +59,4 @@ public class WorkoutDone implements Comparable<WorkoutDone> {
         return workoutReport.getId_wr();
     }
 
-    @Override
-    public int compareTo(WorkoutDone workoutDone) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date1 = format.parse(this.getDate());
-            Date date2 = format.parse(workoutDone.getDate());
-
-            return date1.compareTo(date2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
 }

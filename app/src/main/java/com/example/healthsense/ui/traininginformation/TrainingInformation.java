@@ -620,6 +620,10 @@ public class TrainingInformation extends Fragment {
         System.out.println(sdf.format(currentDate.getTime()));
         String execution_date = PikerDate.Companion.toDateFormat(sdf.format(currentDate.getTime()));
         WorkoutReports report_to_insert = new WorkoutReports(workout_id, execution_date);
+        // agregue el campo sent para saber si existe el reporte en la api, se puede hacer una consulta para conocer la cantidad de no enviados
+        // y asi conocer cuales mandar cuando ya se tiene internet
+        report_to_insert.setSent(false);
+
         WorkoutsReportsRepository workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
         workoutsReportsRepository.insert(report_to_insert);
 
@@ -645,6 +649,9 @@ public class TrainingInformation extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
+
+        lp.gravity = Gravity.CENTER;
+
         rating.setLayoutParams(lp);
         rating.setNumStars(5);
         rating.setStepSize(0.1f);

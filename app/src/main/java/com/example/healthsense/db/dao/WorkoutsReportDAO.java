@@ -41,4 +41,10 @@ public interface WorkoutsReportDAO {
             " workout_id = :id_workout AND execution_date Like :execution_date)" +
             "THEN CAST(1 AS BIT)ELSE CAST(0 AS BIT) END")
     boolean existWorkoutReport(int id_workout, String execution_date);
+
+    @Query("SELECT sent FROM Workout_Reports WHERE workout_id = :workout_id")
+    boolean isSent(int workout_id);
+
+    @Query("SELECT * FROM Workout_Reports WHERE sent = 0")
+    List<WorkoutReports> getUnsent();
 }
