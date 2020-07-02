@@ -110,7 +110,6 @@ public class MyTrainingsFragment extends Fragment {
 
         //exercisesRepository.deleteAll();
         exercises_room = exercisesRepository.getAll();
-        System.out.println("TAMA " + exercises_room.size());
 
         View.OnClickListener mListener = new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
@@ -409,9 +408,11 @@ public class MyTrainingsFragment extends Fragment {
                     } else if (jsonType instanceof JSONArray) {// Si es JSONArray -> workoust/workout_exercise
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {
-                            if (hashObj == null && (int) json.getJSONObject(i).get("done") == 0 ) {
-                                listObj.add(json.getJSONObject(i));
-                                System.out.println("AGREGO WORKOUT");
+                            if (hashObj == null){
+                                System.out.println("VALOR DONE : " + (int) json.getJSONObject(i).get("done"));
+                                if ((int) json.getJSONObject(i).get("done") == 0 ) {
+                                    listObj.add(json.getJSONObject(i));
+                                }
                             } else {
                                 String time = json.getJSONObject(i).get("time").toString();
                                 int id = json.getJSONObject(i).getInt("exercise_id");

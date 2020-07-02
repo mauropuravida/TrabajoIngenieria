@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
+import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.AppDatabase;
@@ -51,9 +53,11 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,6 +65,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 import static com.example.healthsense.MainActivity.user;
@@ -76,7 +85,7 @@ public class TrainingInformation extends Fragment {
     private ExercisesRepository exercisesRepository;
     private WorkoutsRepository workoutsRepository;
     private WorkoutsExercisesRepository workoutsExercisesRepository;
-    private int workout_id, works_saved;
+    private int workout_id, work_id, works_saved;
     private View root;
     private boolean running = false;
     private long pauseOffset;
@@ -121,6 +130,7 @@ public class TrainingInformation extends Fragment {
         Bundle datosRecuperados = getArguments(); // Si es null quiere decir que se esta llamando desde HistoryFragment
         if (datosRecuperados != null) {          // Por lo que no interesa que entre aca.
             workout_id = datosRecuperados.getInt("Work_ID");
+            work_id = datosRecuperados.getInt("Work_ID");
             System.out.println("WORK ID LOAD INFORMATION " + workout_id);
             doAsync.execute(new Runnable() {
                 @Override
@@ -582,8 +592,12 @@ public class TrainingInformation extends Fragment {
             // Si hay conexión a Internet en este momento OkHttp
             //post y punto
             System.out.println("HAY INTERNET!");
-            sendReports();
-            updateWorkout();
+            doAsync.execute(new Runnable() {
+                @Override
+                public void run() {
+                    sendReports();
+                }
+            });
         } else {
             System.out.println("NO HAY INTERNET!");
             doAsync.execute(new Runnable() {
@@ -629,10 +643,66 @@ public class TrainingInformation extends Fragment {
 
     private void sendReports() {
         //todo post al backend del reporte.
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String url = MainActivity.PATH + "workoutReport/";
+        JSONObject js = new JSONObject();
+        try {
+            js.put("workout_id",work_id);
+            Calendar currentDate = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            String execution_date = PikerDate.Companion.toDateFormat(sdf.format(currentDate.getTime()));
+            js.put("execution_date",execution_date);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        request.POST(url, js, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("FAILURE", "NO ES POSIBLE ENVIAR DATOS");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("SUCCES", "DATOS ENVIADOS");
+            }
+        });
+
     }
 
     private void updateWorkout() {
         //todo actualizar campo done en el workout id del backend y rating tambien.
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String url = MainActivity.PATH + "workout/setDone/" + work_id;
+
+        System.out.println(url);
+        JSONObject json = new JSONObject();
+        try {
+            json.put("rating",rating);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONArray jarr = new JSONArray();
+        try {
+            JSONObject jobj = new JSONObject();
+            jobj.put("x-access-token", MainActivity.TOKEN);
+            jarr.put(jobj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("UPDATE PARA EL WORK " + work_id + "  RATING " + rating);
+        request.PUT(url, jarr, json, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("FAILURE", "NO ES POSIBLE ENVIAR DATOS");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("SUCCES", "DATOS ENVIADOS");
+            }
+        });
     }
 
     public void showDialogRating() {
@@ -673,6 +743,12 @@ public class TrainingInformation extends Fragment {
                         setStars((int) Math.ceil(rating.getProgress()) / 10);
                         dialog.dismiss();
                         addFinishTrainingNoInternet();
+                        doAsync.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateWorkout();
+                            }
+                        });
                     }
 
                 });
@@ -718,6 +794,5 @@ public class TrainingInformation extends Fragment {
             running = false;
         }
     }
-
 
 }
