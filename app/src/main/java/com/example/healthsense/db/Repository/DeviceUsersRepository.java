@@ -5,7 +5,10 @@ import android.os.AsyncTask;
 
 import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.dao.DeviceUsersDAO;
+import com.example.healthsense.db.dao.UsersDAO;
 import com.example.healthsense.db.entity.DeviceUsers;
+
+import java.util.concurrent.ExecutionException;
 
 public class DeviceUsersRepository {
     private DeviceUsersDAO deviceUsersDAO;
@@ -31,7 +34,16 @@ public class DeviceUsersRepository {
 
     public void decreaseWorks(int id){ deviceUsersDAO.decreaseWorks(id);}
 
-    public int getWorksSaved(int id){return deviceUsersDAO.getWorksSaved(id);}
+    public int getWorksSaved(int id){
+        try {
+            return new TaskGetWorksSaved(deviceUsersDAO,id).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     public void deleteAll(){ deviceUsersDAO.deleteAll();}
 
@@ -79,4 +91,20 @@ public class DeviceUsersRepository {
         }
     }
 
+    private static class TaskGetWorksSaved extends AsyncTask<Void, Void, Integer> {
+
+        private DeviceUsersDAO deviceUsersDAO;
+        private  int  user_id;
+
+        private TaskGetWorksSaved(DeviceUsersDAO deviceUsersDAO, int user_id) {
+            this.deviceUsersDAO = deviceUsersDAO;
+            this.user_id = user_id;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            return deviceUsersDAO.getWorksSaved(user_id);
+        }
+
+    }
 }

@@ -32,8 +32,9 @@ public class WorkoutsRepository {
         new UpdateUserAsyncTask(workoutsDAO).execute(workouts);
     }
 
-    public void update(boolean done, int id, int rating) {
-        workoutsDAO.updateDone(done, id, rating);
+    public void updateDone(int done, int id, int rating) {
+        System.out.println("done " + done + " id  " + id + "  rating" + rating);
+        new TaskUpdateDone(workoutsDAO,done,id,rating).execute();
     }
 
     public void delete(Workouts workouts) {
@@ -140,6 +141,26 @@ public class WorkoutsRepository {
         @Override
         protected List<Workouts> doInBackground(Void... voids) {
             return workoutsDAO.getAll();
+        }
+
+    }
+
+    private static class TaskUpdateDone extends AsyncTask<Void, Void, Void> {
+
+        private WorkoutsDAO workoutsDAO;
+        private int done,id,rating;
+
+        private TaskUpdateDone(WorkoutsDAO workoutsDAO, int done, int id, int rating) {
+            this.workoutsDAO = workoutsDAO;
+            this.done = done;
+            this.id = id;
+            this.rating = rating;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+             workoutsDAO.updateDone(done,id,rating);
+             return null;
         }
 
     }

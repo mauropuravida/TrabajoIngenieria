@@ -260,7 +260,7 @@ public class MyTrainingsFragment extends Fragment {
             public void run() {
                 String path = "workout/device_user_id&"; // obtengo workouts del user_id. REEMPLAZAR TOKEN por MAINACTIVITY.TOKEN
                 JSONObject ob = new JSONObject(); //
-               // MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
+                MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
                 try {
                     ob.put("x-access-token", MainActivity.TOKEN);
                     token = new JSONArray();
@@ -409,7 +409,7 @@ public class MyTrainingsFragment extends Fragment {
                     } else if (jsonType instanceof JSONArray) {// Si es JSONArray -> workoust/workout_exercise
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {
-                            if (hashObj == null) {
+                            if (hashObj == null && (int) json.getJSONObject(i).get("done") == 0 ) {
                                 listObj.add(json.getJSONObject(i));
                             } else {
                                 String time = json.getJSONObject(i).get("time").toString();

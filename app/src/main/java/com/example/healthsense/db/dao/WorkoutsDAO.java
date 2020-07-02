@@ -37,8 +37,8 @@ public interface WorkoutsDAO {
     @Query("SELECT * FROM Workouts WHERE medical_personnel_id = :id")
     List<Workouts> getWorkoutsMedical(int id);
 
-    @Query("UPDATE Workouts SET done = :done AND rating = :rating WHERE id = :id")
-    void updateDone(boolean done, int id, int rating);
+    @Query("UPDATE Workouts SET done = :done, rating = :rating WHERE id = :id")
+    void updateDone(int done, int id, int rating);
 
     @Query("Select id FROM Workouts where id_backend = :id_backend")
     int obtainWorkoutIdRoom(int id_backend);

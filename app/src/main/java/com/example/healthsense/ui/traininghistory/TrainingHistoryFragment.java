@@ -220,7 +220,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
                             //y actualizo el workout
                             if (workout.getDone() == 0)
-                                workoutsRepository.update(true, report.getInt("workout_id"), report.optInt("rating", 0));
+                                workoutsRepository.updateDone(1, report.getInt("workout_id"), report.optInt("rating", 0));
                         }
 
                     } catch (JSONException e) {

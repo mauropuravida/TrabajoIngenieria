@@ -76,13 +76,13 @@ public class TrainingInformation extends Fragment {
     private ExercisesRepository exercisesRepository;
     private WorkoutsRepository workoutsRepository;
     private WorkoutsExercisesRepository workoutsExercisesRepository;
-    private int workout_id;
+    private int workout_id, works_saved;
     private View root;
     private boolean running = false;
     private long pauseOffset;
-    private Map<String,Long> timers;
-    private Map<String,Long> offsets;
-    private Map<String,Boolean> first_time;
+    private Map<String, Long> timers;
+    private Map<String, Long> offsets;
+    private Map<String, Boolean> first_time;
 
 
     int rating = 0;
@@ -119,7 +119,7 @@ public class TrainingInformation extends Fragment {
 
 
         Bundle datosRecuperados = getArguments(); // Si es null quiere decir que se esta llamando desde HistoryFragment
-        if ( datosRecuperados != null){          // Por lo que no interesa que entre aca.
+        if (datosRecuperados != null) {          // Por lo que no interesa que entre aca.
             workout_id = datosRecuperados.getInt("Work_ID");
             System.out.println("WORK ID LOAD INFORMATION " + workout_id);
             doAsync.execute(new Runnable() {
@@ -171,7 +171,7 @@ public class TrainingInformation extends Fragment {
         jsonPut(json3, "URL", "Ks-lKvKQ8f4");
         jsonPut(json3, "instructions", jsonSteps.toString());
 
-        createNewExercise(root, json3,"History");
+        createNewExercise(root, json3, "History");
         System.out.println("EXERCISEES TAM " + exercisesList.size());
         System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
         mProgressDialog.dismiss();
@@ -382,9 +382,9 @@ public class TrainingInformation extends Fragment {
         bt3.setTag(tag);
         bt4.setTag(tag);
         chronometer.setTag(tag);
-        timers.put(tag,new Long(0));
-        offsets.put(tag,new Long(0));
-        first_time.put(tag,true);
+        timers.put(tag, new Long(0));
+        offsets.put(tag, new Long(0));
+        first_time.put(tag, true);
 
         bt3.setEnabled(false);
         bt4.setEnabled(false);
@@ -397,6 +397,7 @@ public class TrainingInformation extends Fragment {
                                    @Override
                                    public void onClick(View v) {
                                        if (!trainingWithoutConnection()) {
+                                           bt1.setEnabled(false);
                                            Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
                                        } else {
                                            startChronometer(chronometer);
@@ -451,7 +452,8 @@ public class TrainingInformation extends Fragment {
             @Override
             public void onClick(View v) {
                 bt1.setEnabled(false);
-                bt2.setEnabled(false);
+                //bt4.setEnabled(false);
+                bt3.setEnabled(false);
                 addToDatabase();
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
@@ -524,22 +526,21 @@ public class TrainingInformation extends Fragment {
         for (int i = 0; i < workoutsExercises.size(); i++) {
             exercisesList.add(exercisesRepository.getExercises(workoutsExercises.get(i).getExercise_id()));
         }
-        System.out.println("TAMAÑO " + exercisesList.size());
         for (int i = 0; i < exercisesList.size(); i++) {
             System.out.println(exercisesList.get(i));
             JSONObject json = new JSONObject();
             jsonPut(json, "name", workout.getName() + ":  " + "exercise " + i);
             int exercise_id = exercisesList.get(i).getId();
-           // String time = workoutsExercisesRepository.getTime(workout_id, exercise_id ); // obtener de workoutsExercises
+            // String time = workoutsExercisesRepository.getTime(workout_id, exercise_id ); // obtener de workoutsExercises
             jsonPut(json, "time", "Video");
             jsonPut(json, "difficulty", workout.getDifficulty());
-            jsonPut(json,"URL", exercisesList.get(i).getPath());
-           // jsonPut(json, "URL", "Ks-lKvKQ8f4"); // todo CAMBIAR ACA POR PATH.
+            jsonPut(json, "URL", exercisesList.get(i).getPath());
+            // jsonPut(json, "URL", "Ks-lKvKQ8f4"); // todo CAMBIAR ACA POR PATH.
             jsonPut(json, "instructions", exercisesList.get(i).getDescription());
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    createNewExercise(root, json,""+ exercise_id);
+                    createNewExercise(root, json, "" + exercise_id);
                 }
             });
         }
@@ -553,11 +554,15 @@ public class TrainingInformation extends Fragment {
         //Agregue un campo en device_users que es upload -> entrenamientos por subir.
         if (internetConnection())
             return true;
+
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
-        int user_id = userRepository.getId(MainActivity.email);
+        int user_id = userRepository.getIdTask(MainActivity.email);
+        while (user_id == 0)
+            user_id = userRepository.getIdTask(MainActivity.email);
+
         DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
-        int works_saved = deviceUsersRepository.getWorksSaved(user_id);
-        System.out.println("WORK SAVED " + works_saved);
+        works_saved = deviceUsersRepository.getWorksSaved(user_id);
+
         return works_saved < 5;
     }
 
@@ -576,26 +581,38 @@ public class TrainingInformation extends Fragment {
         if (internetConnection()) {
             // Si hay conexión a Internet en este momento OkHttp
             //post y punto
+            System.out.println("HAY INTERNET!");
+            sendReports();
+            updateWorkout();
         } else {
-            // No hay conexión a Internet en este momento Room
-            System.out.println("ENTRO A AGREGAR trainiings ");
-            addFinishTrainingNoInternet();
+            System.out.println("NO HAY INTERNET!");
+            doAsync.execute(new Runnable() {
+                @Override
+                public void run() {
+                    updateUpload();
+                }
+            });
+
         }
+    }
+
+    private void updateUpload() {
+        //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push. VER DONDE HACER ESTO.
+        UserRepository userRepository = new UserRepository(getActivity().getApplication());
+        int user_id = userRepository.getId(MainActivity.email);
+        System.out.println("USER " + user_id);
+        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
+        deviceUsersRepository.increaseWorks(user_id);
     }
 
     private void addFinishTrainingNoInternet() {
         //Es esta funcion agrego los datos del entrenamiento finalizado.
 
-        System.out.println("WORK ID " + workout_id);
         //Actualizo el workout como done.
+        System.out.println("WORK ID " + workout_id + "  RATING " + rating);
         WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
-        workoutsRepository.update(true, workout_id, rating); // actualizo campo done en workouts
-
-        //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push. VER DONDE HACER ESTO.
-        UserRepository userRepository = new UserRepository(getActivity().getApplication());
-        int user_id = userRepository.getId(MainActivity.email);
-        DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository((getActivity().getApplication()));
-        deviceUsersRepository.increaseWorks(user_id);
+        workoutsRepository.updateDone(1, workout_id, rating); // actualizo campo done en workouts
+        System.out.println("Se actualizo?? ");
 
         //Agregar reportes.
         Calendar currentDate = Calendar.getInstance();
@@ -610,9 +627,16 @@ public class TrainingInformation extends Fragment {
         //todo
     }
 
-    public void showDialogRating()
-    {
-        final AlertDialog.Builder popDialog = new AlertDialog.Builder(getContext(), R.style.AppCompatAlertDialogStyle);
+    private void sendReports() {
+        //todo post al backend del reporte.
+    }
+
+    private void updateWorkout() {
+        //todo actualizar campo done en el workout id del backend y rating tambien.
+    }
+
+    public void showDialogRating() {
+        AlertDialog.Builder popDialog = new AlertDialog.Builder(getContext(), R.style.AppCompatAlertDialogStyle);
 
         LinearLayout linearLayout = new LinearLayout(getContext());
         final RatingBar rating = new RatingBar(getContext());
@@ -631,6 +655,8 @@ public class TrainingInformation extends Fragment {
 
         popDialog.setView(linearLayout);
 
+        popDialog.setCancelable(false);
+
 
         rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -644,37 +670,37 @@ public class TrainingInformation extends Fragment {
         popDialog.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        setStars((int) Math.ceil(rating.getProgress())/10);
+                        setStars((int) Math.ceil(rating.getProgress()) / 10);
                         dialog.dismiss();
+                        addFinishTrainingNoInternet();
                     }
 
-                })
+                });
 
-                // Button Cancel
-                .setNegativeButton(android.R.string.cancel,
+        // Button Cancel
+               /* .setNegativeButton(android.R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
-                        });
+                        });*/
 
         popDialog.create();
         popDialog.show();
 
     }
 
-    public void setStars(int n){
+    public void setStars(int n) {
         this.rating = n;
     }
 
-    private void startChronometer(Chronometer chronometer){
-        if (!running){
-            if (first_time.get(chronometer.getTag())){
+    private void startChronometer(Chronometer chronometer) {
+        if (!running) {
+            if (first_time.get(chronometer.getTag())) {
                 chronometer.setBase(SystemClock.elapsedRealtime());
-                first_time.replace((String) chronometer.getTag(),false);
-            }
-            else{
-                chronometer.setBase(SystemClock.elapsedRealtime()  - offsets.get(chronometer.getTag()));
+                first_time.replace((String) chronometer.getTag(), false);
+            } else {
+                chronometer.setBase(SystemClock.elapsedRealtime() - offsets.get(chronometer.getTag()));
             }
 
             chronometer.start();
@@ -682,13 +708,13 @@ public class TrainingInformation extends Fragment {
         }
     }
 
-    private void stopChronometer(Chronometer chronometer){
-        if (running){
+    private void stopChronometer(Chronometer chronometer) {
+        if (running) {
             chronometer.stop();
-           // long base = SystemClock.elapsedRealtime() - timers.get(chronometer.getTag());
-           // timers.replace((String) chronometer.getTag(), timers.get(chronometer.getTag()) + base);
+            // long base = SystemClock.elapsedRealtime() - timers.get(chronometer.getTag());
+            // timers.replace((String) chronometer.getTag(), timers.get(chronometer.getTag()) + base);
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
-            offsets.replace((String)chronometer.getTag(),pauseOffset);
+            offsets.replace((String) chronometer.getTag(), pauseOffset);
             running = false;
         }
     }

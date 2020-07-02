@@ -7,6 +7,8 @@ import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.dao.UsersDAO;
 import com.example.healthsense.db.entity.Users;
 
+import java.util.concurrent.ExecutionException;
+
 public class UserRepository {
     private UsersDAO userDao;
 
@@ -28,6 +30,17 @@ public class UserRepository {
     }
 
     public int getId(String email){ return userDao.getID(email);}
+
+    public int getIdTask(String email){
+        try {
+            return new TaskGetId(userDao,email).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     public boolean exist(String email){ return userDao.exist(email);}
 
@@ -75,4 +88,20 @@ public class UserRepository {
         }
     }
 
+    private static class TaskGetId extends AsyncTask<Void, Void, Integer> {
+
+        private UsersDAO usersDAO;
+        private  String email;
+
+        private TaskGetId(UsersDAO usersDAO, String email) {
+            this.usersDAO = usersDAO;
+            this.email = email;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            return usersDAO.getID(email);
+        }
+
+    }
 }
