@@ -411,6 +411,7 @@ public class MyTrainingsFragment extends Fragment {
                         for (int i = 0; i < json.length(); i++) {
                             if (hashObj == null && (int) json.getJSONObject(i).get("done") == 0 ) {
                                 listObj.add(json.getJSONObject(i));
+                                System.out.println("AGREGO WORKOUT");
                             } else {
                                 String time = json.getJSONObject(i).get("time").toString();
                                 int id = json.getJSONObject(i).getInt("exercise_id");

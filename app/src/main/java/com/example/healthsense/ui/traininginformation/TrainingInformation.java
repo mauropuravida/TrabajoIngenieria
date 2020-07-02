@@ -171,9 +171,8 @@ public class TrainingInformation extends Fragment {
         jsonPut(json3, "URL", "Ks-lKvKQ8f4");
         jsonPut(json3, "instructions", jsonSteps.toString());
 
-        createNewExercise(root, json3, "History");
-        System.out.println("EXERCISEES TAM " + exercisesList.size());
-        System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
+        //createNewExercise(root, json3, "History");
+
         mProgressDialog.dismiss();
 
         return root;
@@ -452,9 +451,10 @@ public class TrainingInformation extends Fragment {
             @Override
             public void onClick(View v) {
                 bt1.setEnabled(false);
-                //bt4.setEnabled(false);
+                bt4.setEnabled(false);
                 bt3.setEnabled(false);
                 addToDatabase();
+                ll3.setVisibility(View.GONE);
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
                 //bt1.setVisibility(View.GONE);
