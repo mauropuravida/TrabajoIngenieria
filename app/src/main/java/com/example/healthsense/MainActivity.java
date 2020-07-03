@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     //nombre de archivo de preferencias
     public static final String PREFS_FILENAME = "data.prefs";
     public static boolean FIRST_TRAINING = true;
-    public static boolean FIRST_LOGIN = true;
     public static String email;
     public static String user;
     public static String TOKEN = "";
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         user = preferencesEditor.getString(email, "");
         System.out.println(email);
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
         //  DeviceUsersRepository deviceUsers = new DeviceUsersRepository( getActivity().getApplication());
         //  deviceUsers.deleteAll();;

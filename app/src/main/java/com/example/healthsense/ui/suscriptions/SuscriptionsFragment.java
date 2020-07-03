@@ -53,6 +53,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -501,7 +502,12 @@ public class SuscriptionsFragment extends Fragment {
     }
 
     private void getValues(ArrayList arr, String path){
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        OkHttpClient innerClient = new OkHttpClient.Builder()
+                .connectTimeout(2, TimeUnit.MINUTES) // connect timeout
+                .writeTimeout(2, TimeUnit.MINUTES) // write timeout
+                .readTimeout(2, TimeUnit.MINUTES) // read timeout
+                .build();
+        OkHttpRequest request = new OkHttpRequest(innerClient);
         String conexion = MainActivity.PATH+path;
 
         int numCall = addCall();

@@ -48,7 +48,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
-import static com.example.healthsense.MainActivity.FIRST_LOGIN;
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
 public class LoginActivity extends AppCompatActivity {
@@ -137,8 +136,6 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString(),act);
-                System.out.println("ENTRO EN EL LOGIN POSTA");
-
             }
         });
 
@@ -172,8 +169,6 @@ public class LoginActivity extends AppCompatActivity {
         if (!user.equals("")) {
             findViewById(R.id.loading).setVisibility(View.VISIBLE);
             loginViewModel.login(user, pass, act);
-            System.out.println("ENTRO EN EL IsLogged");
-
         }
     }
 
@@ -224,7 +219,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void getUserInformation() {
         //call al backend y llamada al addUser
-        System.out.println("ENTRO A AGREGAR EL USUARIO" + MainActivity.TOKEN);
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = (MainActivity.PROFILETYPE.equals("d")) ? MainActivity.PATH+"userinfo/" : MainActivity.PATH+"medicalinfo/";
 
