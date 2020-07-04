@@ -76,16 +76,6 @@ public class MainActivity extends AppCompatActivity {
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
-        //  DeviceUsersRepository deviceUsers = new DeviceUsersRepository( getActivity().getApplication());
-        //  deviceUsers.deleteAll();;
-        //   UserRepository userRepository = new UserRepository(getActivity().getApplication());
-        //   userRepository.deleteAll();
-        //-----------------------------
-     //   AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
-       // new ElimnarTodasLasTablasYDestroy(appDatabase).execute();
-        //testing data on local db
-        //  new TaskInsertWorkouts().execute();
-
     }
 
     private static class ElimnarTodasLasTablasYDestroy extends AsyncTask<Void, Void, Void> {
@@ -95,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            System.out.println("VORRO");
             db.clearAllTables();
             db.destroyInstance();
             return null;
@@ -117,47 +106,5 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-/*
-    //test inserts history
-    private class TaskInsertWorkouts extends AsyncTask<Void, Void, Void> {
 
-        private static final String TAG = "TaskInsertWorkouts";
-
-        List<Workout> wk = new ArrayList<>();
-        List<WorkoutReport> wkr = new ArrayList<>();
-
-        public TaskInsertWorkouts() {
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            AppDatabase appDatabase = AppDatabase.getAppDatabase(getBaseContext());
-
-            appDatabase.workoutDAO().deleteAll();
-            appDatabase.workoutReportDAO().deleteAll();
-
-            wk.add(new Workout(4, "Workout 4", "2020-04-11", 5, 0, 1));
-            wk.add(new Workout(5, "Workout 5", "2020-04-11", 2, 0, 1));
-            wk.add(new Workout(6, "Workout 6", "2020-04-11", 4, 0, 1));
-
-            wkr.add(new WorkoutReport(4, 3, "2020-05-29"));
-            wkr.add(new WorkoutReport(5, 5, "2020-04-28"));
-            wkr.add(new WorkoutReport(6, 4, "2020-06-02"));
-            wkr.add(new WorkoutReport(7, 6, "2020-06-12"));
-
-            appDatabase.workoutDAO().insertAll(wk);
-            appDatabase.workoutReportDAO().insertAll(wkr);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.d(TAG, "doInBackground: data added");
-            //Toast.makeText(getBaseContext(), "datos cargados", Toast.LENGTH_LONG).show();
-        }
-    }
-*/
 }

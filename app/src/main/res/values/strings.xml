@@ -33,6 +33,7 @@
     <string name="url">URL</string>
     <string name="time">Time</string>
     <string name="instructions">Instructions:</string>
+    <string name="desciptions">Descriptions:</string>
     <string name="save">Save</string>
     <string name="remove">Remove:</string>
     <string name="exercise_add_info">The exercise has been successfully added</string>

@@ -35,6 +35,8 @@ public class WorkoutsReportsRepository {
         return workoutsReportDAO.getWorkoutsId(id);
     }
 
+    public WorkoutReports getWorkoutReports(int id){ return workoutsReportDAO.getWorkoutReport(id);}
+
     public List<WorkoutReports> getWorkoutsReports() {
         return workoutsReportDAO.getWorkoutsReports();
     }

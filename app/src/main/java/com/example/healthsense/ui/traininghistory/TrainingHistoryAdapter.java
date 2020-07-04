@@ -1,6 +1,7 @@
 package com.example.healthsense.ui.traininghistory;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.healthsense.R;
@@ -114,8 +116,15 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
                     Toast.LENGTH_SHORT).show();
 
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
+            Bundle datosAEnviar = new Bundle();
+            datosAEnviar.putInt("Work_ID",(int) this.workout_id);
+            datosAEnviar.putInt("Report_ID",(int) this.report_id);
+            datosAEnviar.putString("Fragment","H");
+
+            Fragment fragment = new TrainingInformation();
+            fragment.setArguments(datosAEnviar);
             TrainingInformation.fg = TrainingHistoryFragment.fg;
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new TrainingInformation()).addToBackStack(null).commit();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,fragment).addToBackStack(null).commit();
 
         }
     }

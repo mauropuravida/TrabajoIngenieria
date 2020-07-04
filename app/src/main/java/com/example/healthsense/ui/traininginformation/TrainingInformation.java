@@ -85,13 +85,15 @@ public class TrainingInformation extends Fragment {
     private ExercisesRepository exercisesRepository;
     private WorkoutsRepository workoutsRepository;
     private WorkoutsExercisesRepository workoutsExercisesRepository;
-    private int workout_id, work_id, works_saved;
+    private WorkoutsReportsRepository workoutsReportsRepository;
+    private int workout_id, work_id, works_saved, report_id;
     private View root;
     private boolean running = false;
     private long pauseOffset;
     private Map<String, Long> timers;
     private Map<String, Long> offsets;
     private Map<String, Boolean> first_time;
+    private String fragment;
 
 
     int rating = 0;
@@ -107,6 +109,7 @@ public class TrainingInformation extends Fragment {
         workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
         exercisesRepository = new ExercisesRepository(getActivity().getApplication());
         workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
+        workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
 
         timers = new HashMap<>();
         first_time = new HashMap<>();
@@ -128,19 +131,30 @@ public class TrainingInformation extends Fragment {
 
 
         Bundle datosRecuperados = getArguments(); // Si es null quiere decir que se esta llamando desde HistoryFragment
-        if (datosRecuperados != null) {          // Por lo que no interesa que entre aca.
-            workout_id = datosRecuperados.getInt("Work_ID");
-            work_id = datosRecuperados.getInt("Work_ID");
-            System.out.println("WORK ID LOAD INFORMATION " + workout_id);
-            doAsync.execute(new Runnable() {
-                @Override
-                public void run() {
-                    loadInformation();
-                }
-            });
-
+        if (datosRecuperados != null) {
+            fragment = datosRecuperados.getString("Fragment");
+            if (fragment.equals("M")) {          // Por lo que no interesa que entre aca.
+                workout_id = datosRecuperados.getInt("Work_ID");
+                work_id = datosRecuperados.getInt("Work_ID");
+                System.out.println("WORK ID LOAD INFORMATION " + workout_id);
+                doAsync.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadInformation();
+                    }
+                });
+            } else {
+                workout_id = datosRecuperados.getInt("Work_ID");
+                report_id = datosRecuperados.getInt("Report_ID");
+                System.out.println("WORK ID : " + workout_id + " REPORT ID " + report_id);
+                doAsync.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadInformationHistory();
+                    }
+                });
+            }
         }
-
 
         JSONObject jsonSteps = new JSONObject();
         jsonPut(jsonSteps, "0", "dsfdsdads");
@@ -298,48 +312,43 @@ public class TrainingInformation extends Fragment {
         LinearLayout.LayoutParams lp5 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(70, root.getContext()));
         lp5.setMargins(0, dpToPx(10, root.getContext()), 0, 0);
 
-       /* EditText e4 = new EditText(root.getContext()); // Temporizador.
-        e4.setPadding(30, 0, 30, 0);
-        e4.setTextSize(dpToPx(24, root.getContext()));
-        e4.setTextColor(getResources().getColor(R.color.DarkGrayText));
-        e4.setText("00:00");
-        e4.setFocusable(false);
-        e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
-        e4.setGravity(Gravity.CENTER);
-        e4.setLayoutParams(lp5);*/
-
         Chronometer chronometer = new Chronometer(root.getContext());
-        chronometer.setPadding(30, 0, 30, 0);
-        chronometer.setTextSize(dpToPx(24, root.getContext()));
-        chronometer.setTextColor(getResources().getColor(R.color.DarkGrayText));
-        chronometer.setText("00:00");
-        chronometer.setBase(SystemClock.elapsedRealtime());
-        chronometer.setFormat("%s");
-        chronometer.setFocusable(false);
-        e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
-        chronometer.setGravity(Gravity.CENTER);
-        chronometer.setLayoutParams(lp5);
-
-
         YouTubePlayerView ypv = new YouTubePlayerView(root.getContext());
-        ypv.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
 
-            @Override
-            public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
-                String videoId = (String) jsonGet(json, "URL"); // PATH DEL EJERCICIO
-                youTubePlayer.cueVideo(videoId, 0);
-                //youTubePlayer.loadVideo(videoId, 0);
-            }
-        });
+        if(fragment.equals("M")) {
+            chronometer.setPadding(30, 0, 30, 0);
+            chronometer.setTextSize(dpToPx(24, root.getContext()));
+            chronometer.setTextColor(getResources().getColor(R.color.DarkGrayText));
+            chronometer.setText("00:00");
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.setFormat("%s");
+            chronometer.setFocusable(false);
+            e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
+            chronometer.setGravity(Gravity.CENTER);
+            chronometer.setLayoutParams(lp5);
 
-        you.add(ypv);
 
+            ypv.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
 
+                @Override
+                public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
+                    String videoId = (String) jsonGet(json, "URL"); // PATH DEL EJERCICIO
+                    youTubePlayer.cueVideo(videoId, 0);
+                    //youTubePlayer.loadVideo(videoId, 0);
+                }
+            });
+
+            you.add(ypv);
+
+        }
         LinearLayout.LayoutParams lp6 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(40, root.getContext()));
 
         TextView t1 = new TextView(root.getContext());
         t1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
-        t1.setText(root.getResources().getString(R.string.instructions));
+        if(fragment.equals("M")) {
+            t1.setText(root.getResources().getString(R.string.instructions));
+        }else
+            t1.setText(root.getResources().getString(R.string.desciptions));
         t1.setGravity(Gravity.CENTER_VERTICAL);
         t1.setTextSize(18);
         t1.setLayoutParams(lp6);
@@ -359,20 +368,19 @@ public class TrainingInformation extends Fragment {
         e5.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.Background));
         e5.setSingleLine(false);
 
-        JSONObject jo = null;
-        try {
-            jo = new JSONObject(((String) jsonGet(json, "instructions")));//INSTRUCCIONES -> DESCRIPCION.
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        // e5.setText("Step 1: "+jsonGet(jo,"0"));
-       /* for (int i=1 ; i<jo.length();i++){
+        if(fragment.equals("H")){
+            jsonPut(json, "price", workout.getPrice()+ " ");
+            jsonPut(json, "creation_date",workout.getCreation_date() );
+            e5.setText("Price:  "+(String)jsonGet(json,"price"));
             e5.append(Html.fromHtml("<br>").toString());
-           // e5.append("Step "+(i+1)+": "+(String)jsonGet(jo, i+""));
-            e5.append((String)jsonGet(jo, i+""));
-        }*/
-        e5.setText(Html.fromHtml("<br>").toString());
-        e5.append((String) jsonGet(json, "instructions"));
+            String date = PikerDate.Companion.toDateFormatView((String)jsonGet(json,"creation_date"));
+            e5.append("Creation Date:  "+ date);
+            e5.append(Html.fromHtml("<br>").toString());
+            e5.append("Rating:  "+(String)jsonGet(json,"rating"));
+        }else{
+            e5.setText(Html.fromHtml("<br>").toString());
+            e5.append((String) jsonGet(json, "instructions"));
+        }
         sc1.addView(e5);
 
         LinearLayout.LayoutParams lp8 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -382,39 +390,40 @@ public class TrainingInformation extends Fragment {
         ll2.setOrientation(LinearLayout.HORIZONTAL);
         ll2.setGravity(Gravity.CENTER);
         ll2.setLayoutParams(lp8);
+        if(fragment.equals("M")) {
 
-        Button bt1 = new Button(root.getContext()); //Start
-        Button bt3 = new Button(root.getContext()); //Stop
-        Button bt4 = new Button(root.getContext()); //EndUp
+            Button bt1 = new Button(root.getContext()); //Start
+            Button bt3 = new Button(root.getContext()); //Stop
+            Button bt4 = new Button(root.getContext()); //EndUp
 
-        bt1.setTag(tag);
-        bt3.setTag(tag);
-        bt4.setTag(tag);
-        chronometer.setTag(tag);
-        timers.put(tag, new Long(0));
-        offsets.put(tag, new Long(0));
-        first_time.put(tag, true);
+            bt1.setTag(tag);
+            bt3.setTag(tag);
+            bt4.setTag(tag);
+            chronometer.setTag(tag);
+            timers.put(tag, new Long(0));
+            offsets.put(tag, new Long(0));
+            first_time.put(tag, true);
 
-        bt3.setEnabled(false);
-        bt4.setEnabled(false);
+            bt3.setEnabled(false);
+            bt4.setEnabled(false);
 
-        bt1.setBackground(root.getResources().getDrawable(R.drawable.background_model_training));
-        bt1.setText(root.getResources().getString(R.string.start));
-        bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
+            bt1.setBackground(root.getResources().getDrawable(R.drawable.background_model_training));
+            bt1.setText(root.getResources().getString(R.string.start));
+            bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
-        bt1.setOnClickListener(new View.OnClickListener() {
-                                   @Override
-                                   public void onClick(View v) {
-                                       if (!trainingWithoutConnection()) {
-                                           bt1.setEnabled(false);
-                                           Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
-                                       } else {
-                                           startChronometer(chronometer);
-                                           bt1.setEnabled(false);
-                                           bt3.setEnabled(true);
-                                           bt4.setEnabled(false);
-                                           //comenzar cuenta regresiva.
-                                       }
+            bt1.setOnClickListener(new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View v) {
+                                           if (!trainingWithoutConnection()) {
+                                               bt1.setEnabled(false);
+                                               Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
+                                           } else {
+                                               startChronometer(chronometer);
+                                               bt1.setEnabled(false);
+                                               bt3.setEnabled(true);
+                                               bt4.setEnabled(false);
+                                               //comenzar cuenta regresiva.
+                                           }
                    /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                        createNewForm(root);
                        //bt1.setVisibility(View.GONE);
@@ -422,74 +431,74 @@ public class TrainingInformation extends Fragment {
                    }
                    Toast.makeText( root.getContext(), root.getResources().getString(R.string.exercise_add_info), Toast.LENGTH_SHORT).show();*/
 
+                                       }
                                    }
-                               }
-        );
+            );
 
-        bt3.setBackground(root.getResources().getDrawable(R.drawable.background_target_waiting_training));
-        bt3.setText(root.getResources().getString(R.string.stop));
-        bt3.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
+            bt3.setBackground(root.getResources().getDrawable(R.drawable.background_target_waiting_training));
+            bt3.setText(root.getResources().getString(R.string.stop));
+            bt3.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
-        bt3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //pausar cuenta regresiva, reactivar...
-                if (running)
-                    stopChronometer(chronometer);
-                else
-                    startChronometer(chronometer);
-                bt3.setEnabled(false);
-                bt1.setEnabled(true);
-                bt4.setEnabled(true);
+            bt3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //pausar cuenta regresiva, reactivar...
+                    if (running)
+                        stopChronometer(chronometer);
+                    else
+                        startChronometer(chronometer);
+                    bt3.setEnabled(false);
+                    bt1.setEnabled(true);
+                    bt4.setEnabled(true);
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
                 //bt1.setVisibility(View.GONE);
                 ll3.addView(ll4,0);
                 }
                 Toast.makeText( root.getContext(), root.getResources().getString(R.string.exercise_add_info), Toast.LENGTH_SHORT).show();*/
-            }
-        });
+                }
+            });
 
-        Space s4 = new Space(root.getContext());
-        s4.setMinimumWidth(dpToPx(30, root.getContext()));
+            Space s4 = new Space(root.getContext());
+            s4.setMinimumWidth(dpToPx(30, root.getContext()));
 
-        bt4.setBackground(root.getResources().getDrawable(R.drawable.background_model_training_history));
-        bt4.setText(root.getResources().getString(R.string.end_up));
-        bt4.setTextColor(root.getResources().getColor(R.color.White));
+            bt4.setBackground(root.getResources().getDrawable(R.drawable.background_model_training_history));
+            bt4.setText(root.getResources().getString(R.string.end_up));
+            bt4.setTextColor(root.getResources().getColor(R.color.White));
 
-        bt4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bt1.setEnabled(false);
-                bt4.setEnabled(false);
-                bt3.setEnabled(false);
-                addToDatabase();
-                ll3.setVisibility(View.GONE);
+            bt4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bt1.setEnabled(false);
+                    bt4.setEnabled(false);
+                    bt3.setEnabled(false);
+                    addToDatabase();
+                    ll3.setVisibility(View.GONE);
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
                 //bt1.setVisibility(View.GONE);
                 ll3.addView(ll4,0);
                 }
                 Toast.makeText( root.getContext(), root.getResources().getString(R.string.exercise_add_info), Toast.LENGTH_SHORT).show();*/
-            }
-        });
+                }
+            });
 
-        Space s3 = new Space(root.getContext());
-        s3.setMinimumWidth(dpToPx(10, root.getContext()));
+            Space s3 = new Space(root.getContext());
+            s3.setMinimumWidth(dpToPx(10, root.getContext()));
 
-        Space s5 = new Space(root.getContext());
-        s5.setMinimumWidth(dpToPx(30, root.getContext()));
-        Space s6 = new Space(root.getContext());
-        s6.setMinimumWidth(dpToPx(10, root.getContext()));
+            Space s5 = new Space(root.getContext());
+            s5.setMinimumWidth(dpToPx(30, root.getContext()));
+            Space s6 = new Space(root.getContext());
+            s6.setMinimumWidth(dpToPx(10, root.getContext()));
 
-        ll2.addView(s3);
-        ll2.addView(bt1);
-        ll2.addView(s4);
-        ll2.addView(bt3);
-        ll2.addView(s5);
-        ll2.addView(bt4);
-        ll2.addView(s6);
-
+            ll2.addView(s3);
+            ll2.addView(bt1);
+            ll2.addView(s4);
+            ll2.addView(bt3);
+            ll2.addView(s5);
+            ll2.addView(bt4);
+            ll2.addView(s6);
+        }
 
         LinearLayout.LayoutParams lp9 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -499,11 +508,13 @@ public class TrainingInformation extends Fragment {
 
         ll3.addView(e1);
         ll3.addView(ll1);
-        ll3.addView(ypv);
+        if(fragment.equals("M"))
+            ll3.addView(ypv);
         ll3.addView(t1);
         ll3.addView(sc1);
         //ll3.addView(e4);
-        ll3.addView(chronometer);
+        if(fragment.equals("M"))
+            ll3.addView(chronometer);
         ll3.addView(ll2);
 
         Space s7 = new Space(root.getContext());
@@ -557,6 +568,27 @@ public class TrainingInformation extends Fragment {
         System.out.println("EXERCISEES TAM " + exercisesList.size());
         System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
         //cargar datos de room, ya esta todo guardado ahi.
+    }
+
+    private  void loadInformationHistory(){
+        while (workout_id == 0)
+            workout_id = workoutsRepository.getWourkoutIdRoom(workout_id);
+        System.out.println("WORK ID ROOM LOAD INFORMATION " + workout_id);
+        workout = workoutsRepository.getWorkout(workout_id);
+        WorkoutReports report = workoutsReportsRepository.getWorkoutReports(report_id);
+        JSONObject json = new JSONObject();
+        jsonPut(json, "name", workout.getName() + ":  " + " Report. ");
+        jsonPut(json, "time", report.getExecution_date());
+        jsonPut(json, "difficulty", workout.getDifficulty());
+        jsonPut(json, "price", workout.getPrice()+ " ");
+        jsonPut(json,"rating",workout.getRating());
+        jsonPut(json, "creation_date", workout.getCreation_date());
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                createNewExercise(root, json, "");
+            }
+        });
     }
 
     private boolean trainingWithoutConnection() {

@@ -3,13 +3,9 @@ package com.example.healthsense.ui.mytrainings;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,8 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
@@ -46,41 +40,21 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
-import static com.example.healthsense.MainActivity.PREFS_FILENAME;
-
-//ESTO NO SE HACE MAS.
-// Obtener lista Device_User  /deviceUser/:fk&:0  -> fk es el user_id  ES UN USUARIO
-// Obtener lista Medical_Personnel /medicalPersonnel/:fk&:0 -> fk es el user_id ES UN MEDICO
-
-//AHORA
-// Obtener lista Workouts  /workout/:fk&:0 -> fk es el device_user_id o medical_personnel_id USAR UNA DE LAS 2 OPCIONES DE ARRIBA (POR AHORA USUARIO)
-// Obtener lista Workouts_exercises /workoutExercise/:workout_id&:id ->id es el fk de work_out
-// (cada uno de los ids de la lista aterior) lista con todos los workouts_exercises
-// Obtener lista Exercises /exercise/:id -> id es cada uno de los ids de Workouts_exercises.
-
 public class MyTrainingsFragment extends Fragment {
     private ArrayList<LinearLayout> listll;
     private ArrayList<JSONObject> workouts, exercises;
-    private HashMap<Integer,String> times;
+    private HashMap<Integer, String> times;
     private HashMap<Integer, ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
-    private final String URL_BASE = "https://healthsenseapi.herokuapp.com/";
     private JSONArray token;
     private ProgressDialog mProgressDialog;
     private View.OnClickListener listenerGeneral;
@@ -90,7 +64,7 @@ public class MyTrainingsFragment extends Fragment {
     private ExercisesRepository exercisesRepository;
     private WorkoutsRepository workoutsRepository;
     private WorkoutsExercisesRepository workoutsExercisesRepository;
-    private  DeviceUsersRepository deviceUsersRepository;
+    private DeviceUsersRepository deviceUsersRepository;
     public static Fragment fg;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -116,13 +90,14 @@ public class MyTrainingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // nuevo intent con la info del layout seleccionado.
-               // System.out.println("WORK ID: " + v.getTag());
+                // System.out.println("WORK ID: " + v.getTag());
                 Bundle datosAEnviar = new Bundle();
-                datosAEnviar.putInt("Work_ID",(int) v.getTag());
+                datosAEnviar.putInt("Work_ID", (int) v.getTag());
+                datosAEnviar.putString("Fragment", "M");
                 TrainingInformation.fg = fg;
                 Fragment fragment = new TrainingInformation();
                 fragment.setArguments(datosAEnviar);
-                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,fragment).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack(null).commit();
             }
         };
 
@@ -144,6 +119,7 @@ public class MyTrainingsFragment extends Fragment {
         } else {
             // No hay conexión a Internet en este momento levantar datos de Room (SERVERLESS)
         }
+
         return root;
     }
 
@@ -162,10 +138,10 @@ public class MyTrainingsFragment extends Fragment {
         depureExercises();
 
         if (MainActivity.FIRST_TRAINING) {
-            try{
+            try {
                 //workoutsExercisesRepository.deleteAll();
-               // workoutsRepository.deleteAll();
-               // exercisesRepository.deleteAll();
+                // workoutsRepository.deleteAll();
+                // exercisesRepository.deleteAll();
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
                 addWorkoutsExercisesRoom();
@@ -217,6 +193,13 @@ public class MyTrainingsFragment extends Fragment {
                 String path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
                 token = new JSONArray();
                 int i = 0;
+               /* JSONObject ob = new JSONObject();
+                try {
+                    ob.put("id",13);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                workouts.add(ob);*/
                 for (JSONObject o : workouts) {
                     try {
                         i++;
@@ -248,7 +231,6 @@ public class MyTrainingsFragment extends Fragment {
             }
         };
     }
-
 
     private void getData() {
         doAsync.execute(new Runnable() {
@@ -378,7 +360,7 @@ public class MyTrainingsFragment extends Fragment {
 
     private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener, Runnable func) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + path + id;
+        String url = MainActivity.PATH + path + id;
 
         int numCall = addCall();
         return request.GET(url, token, new Callback() {
@@ -405,15 +387,15 @@ public class MyTrainingsFragment extends Fragment {
                     } else if (jsonType instanceof JSONArray) {// Si es JSONArray -> workoust/workout_exercise
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {
-                            if (hashObj == null){
+                            if (hashObj == null) {
                                 //System.out.println("VALOR DONE : " + (int) json.getJSONObject(i).get("done"));
-                                if ((int) json.getJSONObject(i).get("done") == 0 ) {
+                                if ((int) json.getJSONObject(i).get("done") == 0) {
                                     listObj.add(json.getJSONObject(i));
                                 }
                             } else {
                                 String time = json.getJSONObject(i).get("time").toString();
                                 int id = json.getJSONObject(i).getInt("exercise_id");
-                                times.put(id,time);
+                                times.put(id, time);
                                 values.add(id);
                             }
                         }
@@ -435,7 +417,7 @@ public class MyTrainingsFragment extends Fragment {
 
     private Call getLastResponse(String path, int id, ArrayList<JSONObject> listObj) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = URL_BASE + path + id;
+        String url = MainActivity.PATH + path + id;
         int numCall = addCall();
 
         return request.GET(url, token, new Callback() {
@@ -484,7 +466,7 @@ public class MyTrainingsFragment extends Fragment {
             //System.out.println("ESTA EN ROOM? " + in_room);
             if (!in_room) {
                 int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
-                while (device_user_id_room == 0){
+                while (device_user_id_room == 0) {
                     //System.out.println("DEVICE USER ID " + device_user_id_room);
                     device_user_id_room = device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
                 }
@@ -550,7 +532,7 @@ public class MyTrainingsFragment extends Fragment {
 
     private void addWorkoutsExercisesRoom() {
         Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
-       //workoutsExercisesRepository.deleteAll();
+        //workoutsExercisesRepository.deleteAll();
         boolean in_room;
         for (Integer key : map.keySet()) {
             List<Integer> v = map.get(key);
@@ -559,11 +541,11 @@ public class MyTrainingsFragment extends Fragment {
                 int exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
                 while (exercises_id_room == 0)
                     exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
-                in_room = workoutsExercisesRepository.existExercisesWorkout(workout_id_room,exercises_id_room);
-               // System.out.println("ESTA EN ROOM? : WorkoutID " + workout_id_room + "  ExerciseID" + exercises_id_room + " " + in_room);
-                if (!in_room){
+                in_room = workoutsExercisesRepository.existExercisesWorkout(workout_id_room, exercises_id_room);
+                // System.out.println("ESTA EN ROOM? : WorkoutID " + workout_id_room + "  ExerciseID" + exercises_id_room + " " + in_room);
+                if (!in_room) {
                     //System.out.println("ENTRO A INSERTAR EL WORKOUT: " + workout_id_room + exercises_id_room + "CON UN TIEMPO: " + times.get(key));
-                    WorkoutExercises to_insert = new WorkoutExercises(workout_id_room,exercises_id_room, times.get(key));
+                    WorkoutExercises to_insert = new WorkoutExercises(workout_id_room, exercises_id_room, times.get(key));
                     workoutsExercisesRepository.insert(to_insert);
                 }
             }

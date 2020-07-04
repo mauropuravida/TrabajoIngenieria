@@ -47,4 +47,7 @@ public interface WorkoutsReportDAO {
 
     @Query("SELECT * FROM Workout_Reports WHERE sent = 0")
     List<WorkoutReports> getUnsent();
+
+    @Query("SELECT * FROM Workout_Reports WHERE id_wr = :id")
+    WorkoutReports getWorkoutReport(int id);
 }
