@@ -192,11 +192,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         );
 
+        //Si el usuario no esta en el Serverless lo agrego.
         String user = (preferencesEditor.getString("User","").equals("")) ? ((EditText) findViewById(R.id.username)).getText().toString() : preferencesEditor.getString("User","");
-       // userRepository.deleteAll();
-      //  deviceUsersRepository.deleteAll();
         if( !userRepository.exist(user)){
-            System.out.println("ENTRO A AGREGAR AL USUARIO" + user);
             doAsync.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -205,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
         else
-            System.out.println("El usuario SIIIII existe");
+            System.out.println("El usuario existe");
 
 
         Intent intent;
@@ -217,6 +215,9 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Call backend para obtener informacion del usuario y alta de user en base local.
+     */
     private void getUserInformation() {
         //call al backend y llamada al addUser
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());

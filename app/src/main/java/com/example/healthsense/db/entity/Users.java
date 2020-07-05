@@ -9,6 +9,11 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Tabla Users Room
+ */
+
+
 @Entity(tableName = "Users",  indices =
         {@Index(name ="fk_Users_Document_Types1_idx", value = {"document_type_id"}),
          @Index(name ="fk_cities_idx", value = {"city_id"}),

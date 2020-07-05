@@ -168,6 +168,9 @@ public class SignUpMedical extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Alta de medico en la base de datos local Serverless.
+     */
     private void addLocalDatabase(){
     //Primero se inserta como User.
         Users user_to_insert = new Users(((EditText) findViewById(R.id.name)).getText().toString(),
@@ -195,7 +198,7 @@ public class SignUpMedical extends AppCompatActivity {
             id = userRepository.getId(user_to_insert.getEmail());
             System.out.println("wait");
         }
-        //Se inserta como Medical Pesonnel. todo
+        //Se inserta como Medical Pesonnel.
         MedicalPersonnel medical_to_insert = new MedicalPersonnel(id,
                 ((int)((Spinner) findViewById(R.id.interal_medicine)).getSelectedItemId()+1));
 

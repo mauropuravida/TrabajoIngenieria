@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla DocumentType Room
+ */
+
+
 @Entity(tableName="Document_Types" ,
         indices = {@Index(name ="id_UNIQUE_document_type",value = {"id"}, unique = true)})
 public class DocumentType {

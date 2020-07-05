@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Countries Room
+ */
+
+
 @Entity(tableName = "Countries", indices =
         { @Index( name ="id_UNIQUE_countrie", value = {"id"}, unique = true)})
 public class Countries {

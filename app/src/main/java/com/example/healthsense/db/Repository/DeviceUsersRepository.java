@@ -10,6 +10,10 @@ import com.example.healthsense.db.entity.DeviceUsers;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Repositorio DeviceUsers encargado de comunicar DAO con fragment/activity.
+ */
+
 public class DeviceUsersRepository {
     private DeviceUsersDAO deviceUsersDAO;
 

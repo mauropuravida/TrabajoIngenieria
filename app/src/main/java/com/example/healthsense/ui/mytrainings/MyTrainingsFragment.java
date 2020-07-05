@@ -54,7 +54,7 @@ public class MyTrainingsFragment extends Fragment {
     private ArrayList<LinearLayout> listll;
     private ArrayList<JSONObject> workouts, exercises;
     private HashMap<Integer, String> times;
-    private HashMap<Integer, ArrayList<Integer>> workoutExercises;//La base de datos permite que un workoutid tenga varios exercises.
+    private HashMap<Integer, ArrayList<Integer>> workoutExercises;
     private JSONArray token;
     private ProgressDialog mProgressDialog;
     private View.OnClickListener listenerGeneral;
@@ -82,15 +82,14 @@ public class MyTrainingsFragment extends Fragment {
         exercisesRepository = new ExercisesRepository(getActivity().getApplication());
         workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
 
-        //exercisesRepository.deleteAll();
         exercises_room = exercisesRepository.getAll();
 
+        //Listener para cada uno de los workouts.
         View.OnClickListener mListener = new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
             public void onClick(View v) {
                 // nuevo intent con la info del layout seleccionado.
-                // System.out.println("WORK ID: " + v.getTag());
                 Bundle datosAEnviar = new Bundle();
                 datosAEnviar.putInt("Work_ID", (int) v.getTag());
                 datosAEnviar.putString("Fragment", "M");
@@ -123,25 +122,30 @@ public class MyTrainingsFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Aumento la cantidad de llamadas al backend.
+     */
     private synchronized int addCall() {
         calls.add(1);
         Log.d("CALLS", calls.size() + "");
         return calls.size() - 1;
     }
 
+    /**
+     * Disminuyo la cantidad de llamas al backend.
+     */
     private void finishCall(int i) {
         calls.set(i, 0);
         for (int j = 0; j < calls.size(); j++) {
             if (calls.get(j) == 1)
                 return;
         }
-        depureExercises();
 
+        depureExercises();
+        // Si finalizaron todas las llamadas del backend y es la primera vez que entro al fragment
+        // Agrego a la base de datos local los workouts y exercises que no esten.
         if (MainActivity.FIRST_TRAINING) {
             try {
-                //workoutsExercisesRepository.deleteAll();
-                // workoutsRepository.deleteAll();
-                // exercisesRepository.deleteAll();
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
                 addWorkoutsExercisesRoom();
@@ -154,7 +158,9 @@ public class MyTrainingsFragment extends Fragment {
         createExercises(rootGeneral, listenerGeneral);
     }
 
-
+    /**
+     * Chequeo de mensajes recibidos del backend.
+     */
     private void depureExercises() {
         List<Integer> values = new ArrayList<>();
         int contador = 0;
@@ -178,14 +184,19 @@ public class MyTrainingsFragment extends Fragment {
         }
     }
 
+    /**
+     * Creacion de Targets por cada workout.
+     */
     private void createExercises(View root, View.OnClickListener mListener) {
-        //Logica para obtener datos necesarios
-        for (int i = 0; i < workouts.size(); i++) { // desde i hasta cant workouts
-            newTraining(root, i, mListener); // ver que datos enviar
+        for (int i = 0; i < workouts.size(); i++) {
+            newTraining(root, i, mListener);
         }
         mProgressDialog.dismiss();
     }
 
+    /**
+     *  Consulta al backend por los trabajos asociados al usuario logueado.
+     */
     private Runnable getWorks() {
         return new Runnable() {
             @Override
@@ -213,6 +224,9 @@ public class MyTrainingsFragment extends Fragment {
         };
     }
 
+    /**
+     *  Consulta al backend por los ejercicios asociados a los trabajos obtenidos en getWorks.
+     */
     private Runnable getExercisesWorkout(int cant) {
         return new Runnable() {
             @Override
@@ -232,13 +246,16 @@ public class MyTrainingsFragment extends Fragment {
         };
     }
 
+    /**
+     * Funcion que lanza los llamados al backend.
+     */
     private void getData() {
         doAsync.execute(new Runnable() {
             @Override
             public void run() {
-                String path = "workout/device_user_id&"; // obtengo workouts del user_id. REEMPLAZAR TOKEN por MAINACTIVITY.TOKEN
+                String path = "workout/device_user_id&"; // obtengo workouts del user_id.
                 JSONObject ob = new JSONObject(); //
-                //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE";
+                //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE"; User de prueba.
                 try {
                     ob.put("x-access-token", MainActivity.TOKEN);
                     token = new JSONArray();
@@ -256,6 +273,12 @@ public class MyTrainingsFragment extends Fragment {
         });
     }
 
+    /**
+     *  Crea las vistas de los Workouts.
+     * @param root = This
+     * @param i = Workout
+     * @param mListener = Target
+     */
     private void newTraining(View root, int i, View.OnClickListener mListener) {
         //----programación de formato de la lista de trainings
         if (getActivity() != null) {
@@ -270,7 +293,6 @@ public class MyTrainingsFragment extends Fragment {
                     try {
                         ArrayList<Integer> values = workoutExercises.get(new Integer(workout.getInt("id")));
                         if (values != null && values.size() > 0) {
-                            // System.out.println("VALUES " + values.size());
                             int x = 0;
                             int k = 0;
                             boolean encontrado = false;
@@ -304,7 +326,6 @@ public class MyTrainingsFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    //tv1.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_star, 0, 0, 30);
                     tv1.setTextColor(root.getResources().getColor(R.color.GrayText));
                     tv1.setPadding(30, 30, 30, 30);
 
@@ -314,14 +335,12 @@ public class MyTrainingsFragment extends Fragment {
                     ll1.setOrientation(LinearLayout.HORIZONTAL);
                     ll1.setGravity(Gravity.CENTER_VERTICAL);
 
-                    //   System.out.println("DATE " + date);
                     TextView tv3 = new TextView(root.getContext());
                     tv3.setText(Html.fromHtml("<b>CREATED:</b>" + date + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>DIFFICULTY:</b> "));
                     tv3.setTextColor(root.getResources().getColor(R.color.GrayText));
                     tv3.setPadding(30, 30, 30, 30);
 
                     ll1.addView(tv3);
-
 
                     for (int j = 0; j < difficulty; j++) {
                         TextView tv4 = new TextView(root.getContext());
@@ -358,6 +377,17 @@ public class MyTrainingsFragment extends Fragment {
         }
     }
 
+    /**
+     * Realiza GET de la url solicitada para obtener los datos del backend.
+     * @param path = Url
+     * @param id = WorkoutId, Workout/Exercises ID
+     * @param listObj = Workouts/Exercises
+     * @param hashObj = Pair (Workout,List<Exercises>)
+     * @param root = This
+     * @param mListener = Target
+     * @param func = Next Call.
+     * @return
+     */
     private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener, Runnable func) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = MainActivity.PATH + path + id;
@@ -388,7 +418,6 @@ public class MyTrainingsFragment extends Fragment {
                         JSONArray json = new JSONArray(responseData);
                         for (int i = 0; i < json.length(); i++) {
                             if (hashObj == null) {
-                                //System.out.println("VALOR DONE : " + (int) json.getJSONObject(i).get("done"));
                                 if ((int) json.getJSONObject(i).get("done") == 0) {
                                     listObj.add(json.getJSONObject(i));
                                 }
@@ -415,6 +444,13 @@ public class MyTrainingsFragment extends Fragment {
         });
     }
 
+    /**
+     * Ultimo llamado al backend.
+     * @param path = Url
+     * @param id = ExerciseId
+     * @param listObj = ExercisesList
+     * @return
+     */
     private Call getLastResponse(String path, int id, ArrayList<JSONObject> listObj) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = MainActivity.PATH + path + id;
@@ -443,34 +479,30 @@ public class MyTrainingsFragment extends Fragment {
         });
     }
 
-
+    /**
+     * Creacion de Workouts locales para Serverless.
+     * @throws JSONException
+     */
     private void addWorkoutsRoom() throws JSONException {
         // En esta funcion guardo todos los exercises y los workouts_exercises para el serverless.
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
         List<Workouts> workouts_room = workoutsRepository.getAll();
-      /*  System.out.println("TAM WORKOURS" + workouts_room.size());
-        for(int k = 0 ; k<workouts_room.size();k++){
-            System.out.println("ID WORK " + workouts_room.get(k).getId());
-        }*/
         boolean in_room;
         for (int i = 0; i < workouts.size(); i++) {
             int workout_id = workouts.get(i).getInt("id");
             in_room = false;
             for (int j = 0; j < workouts_room.size(); j++) {
-                //System.out.println("ID DEL WORKOUT " + workout_id + "  ID DEL ROOM " + workouts_room.get(j).getId_backend());
                 if (workout_id == workouts_room.get(j).getId_backend()) {
                     in_room = true;
                     break;
                 }
             }
-            //System.out.println("ESTA EN ROOM? " + in_room);
+            // Se crea y agrega a la base de datos local si es que no existe aun.
             if (!in_room) {
                 int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
                 while (device_user_id_room == 0) {
-                    //System.out.println("DEVICE USER ID " + device_user_id_room);
                     device_user_id_room = device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
                 }
-                //System.out.println("DEVICE USER ID " + device_user_id_room);
                 int price = 0;
                 try {
                     price = workouts.get(i).getInt("price");
@@ -492,6 +524,11 @@ public class MyTrainingsFragment extends Fragment {
         }
     }
 
+    /**
+     * Creacion de Exercises locales para Serverless.
+     * @param exercises_room = Exercises de la base local.
+     * @throws JSONException
+     */
     private void addExercisesRoom(List<Exercises> exercises_room) throws JSONException {
         ExercisesRepository exercisesRepository = new ExercisesRepository(getActivity().getApplication());
         boolean in_room;
@@ -503,10 +540,9 @@ public class MyTrainingsFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            //  System.out.println("EXERCISES ID: " + exercises_id);
             in_room = false;
             for (int j = 0; j < exercises_room.size(); j++) {
-                //        System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
+                // System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
                 if (exercises_room.get(j).getId_backend() == exercises_id) {
                     in_room = true;
                     break;
@@ -521,15 +557,15 @@ public class MyTrainingsFragment extends Fragment {
                     e.printStackTrace();
                 }
                 exercises_to_insert.setId_backend(exercises_id);
-                //        System.out.println("EXERCISES ID BACK: " + exercises_to_insert.getId_backend());
-                //        System.out.println("EXERCISES DESCRIPTION: " + exercises_to_insert.getDescription());
-                //         System.out.println("EXERCISES PATH: " + exercises_to_insert.getPath());
                 exercisesRepository.insert(exercises_to_insert);
             }
         }
 
     }
 
+    /**
+     * Creacion Wrokout_Exercises para Serverless.
+     */
     private void addWorkoutsExercisesRoom() {
         Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
         //workoutsExercisesRepository.deleteAll();

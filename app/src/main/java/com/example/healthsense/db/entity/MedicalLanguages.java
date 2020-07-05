@@ -9,6 +9,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla MedicalLanguages Room
+ */
+
+
 @Entity(tableName="Medical_Languages" , indices =
         {@Index(name ="fk_Languages_has_Medical_Personnel_Medical_Personnel1_idx",value = {"medical_personnel_id"}),
          @Index(name ="fk_Languages_has_Medical_Personnel_Languages1_idx", value = {"language_id"}),

@@ -8,6 +8,10 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Cities Room
+ */
+
 @Entity(tableName = "Cities", indices =
         {@Index(name = "cities_test_ibfk_1",value = {"state_id"}),
          @Index(name = "id_UNIQUE_city",value = {"id"}, unique = true)})

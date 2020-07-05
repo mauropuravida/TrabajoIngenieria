@@ -11,6 +11,10 @@ import com.example.healthsense.db.entity.DocumentType;
 
 import java.util.List;
 
+/**
+ * Interfaz DocumentTypeDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
+
 @Dao
 public interface DocumentTypeDAO {
 

@@ -42,6 +42,9 @@ import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.WorkoutReports;
 import com.example.healthsense.db.entity.Workouts;
 
+/**
+ * Serverless programado bajo la tecnologia Room.
+ */
 
 //Agregar todas las tablas en entities
 @Database(entities = {
@@ -68,6 +71,11 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract WorkoutsReportDAO workoutsReportDAO();
     public abstract WorkoutDoneDAO workoutDoneDAO();
 
+    /**
+     * Instanciacion del objeto base de datos.
+     * @param context
+     * @return
+     */
     public static synchronized AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE =
@@ -79,13 +87,22 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
+    /**
+     * Destruir instancia de la base de datos.
+     */
     public static void destroyInstance() {
         INSTANCE = null;
     }
 
+    /**
+     * Eliminar toda la informacion de las tablas.
+     */
     public static void clearAll(){ INSTANCE.clearAllTables();}
 
 
+    /**
+     * Pre-cargar tipos de documentos.
+     */
     private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {

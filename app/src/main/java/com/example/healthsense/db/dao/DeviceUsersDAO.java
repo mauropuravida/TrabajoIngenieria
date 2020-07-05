@@ -8,6 +8,9 @@ import androidx.room.Update;
 
 import com.example.healthsense.db.entity.DeviceUsers;
 
+/**
+ * Interfaz DeviceUserDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
 
 @Dao
 public interface DeviceUsersDAO {

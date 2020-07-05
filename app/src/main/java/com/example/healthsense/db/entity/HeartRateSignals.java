@@ -8,6 +8,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla HeartRateSignals Room
+ */
+
+
 @Entity(tableName="Heart_Rate_Signals" , indices =
         {@Index(name = "fk_Heart_rate_signals_Workout_reports1_idx",value = {"workout_report_id"})})
 public class HeartRateSignals {

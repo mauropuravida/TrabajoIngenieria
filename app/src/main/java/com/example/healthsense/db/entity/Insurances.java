@@ -6,6 +6,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Insurances Room
+ */
+
+
 @Entity(tableName="Insurances")
 public class Insurances {
 

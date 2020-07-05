@@ -7,6 +7,10 @@ import androidx.room.Update;
 
 import com.example.healthsense.db.entity.MedicalPersonnel;
 
+/**
+ * Interfaz MedicalPersonnelDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
+
 @Dao
 public interface MedicalPersonnelDAO {
 

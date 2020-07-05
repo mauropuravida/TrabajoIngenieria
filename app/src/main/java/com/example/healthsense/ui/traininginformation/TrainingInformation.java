@@ -130,13 +130,13 @@ public class TrainingInformation extends Fragment {
         mProgressDialog.show();
 
 
-        Bundle datosRecuperados = getArguments(); // Si es null quiere decir que se esta llamando desde HistoryFragment
+        //Obtengo datos enviados desde otro fragment. M = MyTrainingsFragment - H = HistoryTrainingFragment.
+        Bundle datosRecuperados = getArguments();
         if (datosRecuperados != null) {
             fragment = datosRecuperados.getString("Fragment");
-            if (fragment.equals("M")) {          // Por lo que no interesa que entre aca.
+            if (fragment.equals("M")) {
                 workout_id = datosRecuperados.getInt("Work_ID");
                 work_id = datosRecuperados.getInt("Work_ID");
-                System.out.println("WORK ID LOAD INFORMATION " + workout_id);
                 doAsync.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -146,7 +146,6 @@ public class TrainingInformation extends Fragment {
             } else {
                 workout_id = datosRecuperados.getInt("Work_ID");
                 report_id = datosRecuperados.getInt("Report_ID");
-                System.out.println("WORK ID : " + workout_id + " REPORT ID " + report_id);
                 doAsync.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -156,52 +155,17 @@ public class TrainingInformation extends Fragment {
             }
         }
 
-        JSONObject jsonSteps = new JSONObject();
-        jsonPut(jsonSteps, "0", "dsfdsdads");
-        jsonPut(jsonSteps, "1", "dsfdsdads");
-        jsonPut(jsonSteps, "2", "dsfdsdads");
-        jsonPut(jsonSteps, "3", "dsfdsdads");
-        jsonPut(jsonSteps, "4", "dsfdsdads");
-        jsonPut(jsonSteps, "5", "dsfdsdads");
-
-
-        JSONObject json = new JSONObject();
-
-        jsonPut(json, "name", "Warm up");
-        jsonPut(json, "time", "10 Minutes");
-        jsonPut(json, "difficulty", "2");
-        jsonPut(json, "URL", "Ks-lKvKQ8f4");
-        jsonPut(json, "instructions", jsonSteps.toString());
-
-
-        // createNewExercise(root, json);
-
-        JSONObject json2 = new JSONObject();
-
-        jsonPut(json2, "name", "Test 2");
-        jsonPut(json2, "time", "30 Minutes");
-        jsonPut(json2, "difficulty", "5");
-        jsonPut(json2, "URL", "Ks-lKvKQ8f4");
-        jsonPut(json2, "instructions", jsonSteps.toString());
-
-
-        //  createNewExercise(root, json2);
-
-        JSONObject json3 = new JSONObject();
-
-        jsonPut(json3, "name", "Test 3");
-        jsonPut(json3, "time", "20 Minutes");
-        jsonPut(json3, "difficulty", "4");
-        jsonPut(json3, "URL", "Ks-lKvKQ8f4");
-        jsonPut(json3, "instructions", jsonSteps.toString());
-
-        //createNewExercise(root, json3, "History");
-
         mProgressDialog.dismiss();
 
         return root;
     }
 
+    /**
+     * Agrego datos a un objeto Json.
+     * @param json
+     * @param key
+     * @param value
+     */
     private void jsonPut(JSONObject json, String key, Object value) {
         try {
             json.put(key, value);
@@ -210,6 +174,12 @@ public class TrainingInformation extends Fragment {
         }
     }
 
+    /**
+     * Obtengo datos de un objeto Json.
+     * @param json
+     * @param key
+     * @return
+     */
     private Object jsonGet(JSONObject json, String key) {
         Object value = "";
         try {
@@ -220,6 +190,12 @@ public class TrainingInformation extends Fragment {
         return value;
     }
 
+    /**
+     * Creacion vista de entrenamientos/historicos.
+     * @param root
+     * @param json
+     * @param tag
+     */
     private void createNewExercise(View root, JSONObject json, String tag) {
 
         LinearLayout ll3 = new LinearLayout(root.getContext());
@@ -244,7 +220,6 @@ public class TrainingInformation extends Fragment {
         bt2.setText("X");
         bt2.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
         bt2.setLayoutParams(lp11);
-        //bt2.setTag("bt2");
 
         bt2.setOnClickListener(new View.OnClickListener() {
                                    @Override
@@ -411,6 +386,7 @@ public class TrainingInformation extends Fragment {
             bt1.setText(root.getResources().getString(R.string.start));
             bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
+            // Logica boton Comenzar entrenamiento (START)
             bt1.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View v) {
@@ -439,6 +415,7 @@ public class TrainingInformation extends Fragment {
             bt3.setText(root.getResources().getString(R.string.stop));
             bt3.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
+            // Logica boton Detener entrenamiento (STOP)
             bt3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -466,6 +443,7 @@ public class TrainingInformation extends Fragment {
             bt4.setText(root.getResources().getString(R.string.end_up));
             bt4.setTextColor(root.getResources().getColor(R.color.White));
 
+            // Logica boton Finalizar entrenamiento (ENDUP)
             bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -525,6 +503,12 @@ public class TrainingInformation extends Fragment {
         ((LinearLayout) root.findViewById(R.id.list)).addView(ll3, 0);
     }
 
+    /**
+     * Renderizado videos.
+     * @param dp
+     * @param c
+     * @return
+     */
     public static int dpToPx(int dp, Context c) {
         float density = c.getResources()
                 .getDisplayMetrics()
@@ -539,6 +523,10 @@ public class TrainingInformation extends Fragment {
             you.get(i).release();
     }
 
+    /**
+     * Obtengo datos del workout y exercises a realizar del Serverless.
+     * Evito llamar al backend nuevamente.
+     */
     private void loadInformation() {
         workout_id = workoutsRepository.getWourkoutIdRoom(workout_id);
         System.out.println("WORK ID ROOM LOAD INFORMATION " + workout_id);
@@ -565,11 +553,12 @@ public class TrainingInformation extends Fragment {
                 }
             });
         }
-        System.out.println("EXERCISEES TAM " + exercisesList.size());
-        System.out.println("WORKOUTSEXERCISE TAM " + workoutsExercises.size());
-        //cargar datos de room, ya esta todo guardado ahi.
     }
 
+    /**
+     * Obtengo datos del reporte generado correspondiente a un workout_exercises del Serverless.
+     * Evito llamar al backend nuevamente.
+     */
     private  void loadInformationHistory(){
         while (workout_id == 0)
             workout_id = workoutsRepository.getWourkoutIdRoom(workout_id);
@@ -591,6 +580,13 @@ public class TrainingInformation extends Fragment {
         });
     }
 
+    /**
+     * Chequeo si puedo realizar entrenamiento o no.
+     * Si hay internet -> true
+     * Si no hay internet -> Si la cantidad de trabajos guardados es < 5 -> True
+     * Si no hay internet -> Si la cantidad de trabajos guardados es > 5 -> False
+     * @return
+     */
     private boolean trainingWithoutConnection() {
         //Consulta con la base de datos local si puede realizar el training antes de que de play. Esto si es que no hay internet.
         //Agregue un campo en device_users que es upload -> entrenamientos por subir.
@@ -608,21 +604,28 @@ public class TrainingInformation extends Fragment {
         return works_saved < 5;
     }
 
+    /**
+     * Check conexion a internet.
+     * @return conectado? SI - NO
+     */
     private boolean internetConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
 
+    /**
+     * Agrego reporte de entrenamiento realizado a la base de datos local.
+     * Si hay internet envio los reportes, si no aumento la cantidad de realizados por ese usuario.
+     */
     private void addToDatabase() {
-        //todo agregar trainings al dar end up a la base de datos.
         //se agrega el training a la base local (para el serverless), al dar end up si no habia internet se aumentaria en uno la cantidad de entrenamientos almacenados.
 
+        // El usuario debe indicar el puntaje del ejercicio realizado.
         showDialogRating();
 
         if (internetConnection()) {
             // Si hay conexión a Internet en este momento OkHttp
-            //post y punto
             System.out.println("HAY INTERNET!");
             doAsync.execute(new Runnable() {
                 @Override
@@ -642,8 +645,11 @@ public class TrainingInformation extends Fragment {
         }
     }
 
+    /**
+     * Aumento la cantidad de trabajos realizados por el user.
+     */
     private void updateUpload() {
-        //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push. VER DONDE HACER ESTO.
+        //Actualizo en +1 los trabajos guardados sin conexion. Cuando vuelva la conexion pregunto por este valor y si es > 0 hago push.
         UserRepository userRepository = new UserRepository(getActivity().getApplication());
         int user_id = userRepository.getId(MainActivity.email);
         System.out.println("USER " + user_id);
@@ -651,6 +657,9 @@ public class TrainingInformation extends Fragment {
         deviceUsersRepository.increaseWorks(user_id);
     }
 
+    /**
+     * Almaceno reportes en el Serverless
+     */
     private void addFinishTrainingNoInternet() {
         //Es esta funcion agrego los datos del entrenamiento finalizado.
 
@@ -673,12 +682,12 @@ public class TrainingInformation extends Fragment {
         WorkoutsReportsRepository workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
         workoutsReportsRepository.insert(report_to_insert);
 
-        //Agregar HeartRateSignals valores que obtenemos de conexion de dispositivos cada x tiempo.
-        //todo
     }
 
+    /**
+     * Conexion con backend y envio de reportes.
+     */
     private void sendReports() {
-        //todo post al backend del reporte.
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = MainActivity.PATH + "workoutReport/";
         JSONObject js = new JSONObject();
@@ -705,6 +714,9 @@ public class TrainingInformation extends Fragment {
 
     }
 
+    /**
+     * Conexion con backend y update del workout realizado (DONE-RATING).
+     */
     private void updateWorkout() {
         //todo actualizar campo done en el workout id del backend y rating tambien.
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
@@ -741,6 +753,9 @@ public class TrainingInformation extends Fragment {
         });
     }
 
+    /**
+     * Creacion pop-up para setear rating del ejercicio finalizado.
+     */
     public void showDialogRating() {
         AlertDialog.Builder popDialog = new AlertDialog.Builder(getContext(), R.style.AppCompatAlertDialogStyle);
 
@@ -805,10 +820,18 @@ public class TrainingInformation extends Fragment {
 
     }
 
+    /**
+     * Seteo rating del ejercicio finalizado.
+     * @param n = rating.
+     */
     public void setStars(int n) {
         this.rating = n;
     }
 
+    /**
+     * Comienza/continua cuenta del cronometo.
+     * @param chronometer
+     */
     private void startChronometer(Chronometer chronometer) {
         if (!running) {
             if (first_time.get(chronometer.getTag())) {
@@ -823,6 +846,10 @@ public class TrainingInformation extends Fragment {
         }
     }
 
+    /**
+     * Se detiene y guarda el estado del cronometro.
+     * @param chronometer
+     */
     private void stopChronometer(Chronometer chronometer) {
         if (running) {
             chronometer.stop();

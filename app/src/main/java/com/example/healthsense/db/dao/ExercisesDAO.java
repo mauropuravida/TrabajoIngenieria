@@ -1,6 +1,5 @@
 package com.example.healthsense.db.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -10,6 +9,10 @@ import androidx.room.Update;
 import com.example.healthsense.db.entity.Exercises;
 
 import java.util.List;
+
+/**
+ * Interfaz ExercisesDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
 
 @Dao
 public interface ExercisesDAO {

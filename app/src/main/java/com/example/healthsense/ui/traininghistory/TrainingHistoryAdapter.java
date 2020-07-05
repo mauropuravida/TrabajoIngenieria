@@ -115,6 +115,7 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
                     "Click on workout: " + String.valueOf(this.workout_id) + " - report: " + String.valueOf(this.report_id),
                     Toast.LENGTH_SHORT).show();
 
+            //Envio informacion a TrainingFragment para cargar datos desde el serverless.
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             Bundle datosAEnviar = new Bundle();
             datosAEnviar.putInt("Work_ID",(int) this.workout_id);

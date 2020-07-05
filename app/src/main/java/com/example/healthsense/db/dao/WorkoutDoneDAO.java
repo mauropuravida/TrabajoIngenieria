@@ -7,6 +7,10 @@ import com.example.healthsense.db.entity.WorkoutDone;
 
 import java.util.List;
 
+/**
+ * Interfaz WorkoutDoneDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
+
 @Dao
 public interface WorkoutDoneDAO {
 

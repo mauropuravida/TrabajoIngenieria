@@ -7,6 +7,10 @@ import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.dao.MedicalPersonnelDAO;
 import com.example.healthsense.db.entity.MedicalPersonnel;
 
+/**
+ * Repositorio MedicalPersonnel encargado de comunicar DAO con fragment/activity.
+ */
+
 public class MedicalPersonnelRepository {
     private MedicalPersonnelDAO medicalPersonnelDAO;
 

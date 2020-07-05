@@ -10,6 +10,10 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Workout_Exercises Room
+ */
+
 
 @Entity(tableName="Workout_Exercises" , indices =
         {@Index(name ="fk_Workouts_has_Exercise_Exercise1_idx", value = {"exercise_id"}),

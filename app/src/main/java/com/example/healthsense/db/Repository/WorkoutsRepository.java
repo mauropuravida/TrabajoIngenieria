@@ -10,6 +10,10 @@ import com.example.healthsense.db.entity.Workouts;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Repositorio Workouts encargado de comunicar DAO con fragment/activity.
+ */
+
 public class WorkoutsRepository {
     private WorkoutsDAO workoutsDAO;
     private List<Workouts> workouts;

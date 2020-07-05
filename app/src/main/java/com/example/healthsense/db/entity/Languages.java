@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Languages Room
+ */
+
+
 @Entity(tableName="Languages" ,
         indices = {@Index(name ="name_UNIQUE_language", value = {"name"}, unique = true)})
 public class Languages {

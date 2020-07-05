@@ -6,10 +6,13 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.WorkoutExercises;
 
 import java.util.List;
+
+/**
+ * Interfaz WorkoutsExercisesDAO encargada de comunicarse con el Serverless y obtener resultados.
+ */
 
 @Dao
 public interface WorkoutsExercisesDAO {

@@ -158,7 +158,9 @@ public class SignUpUser extends AppCompatActivity {
         finish();
     }
 
-
+    /**
+     * Alta de Usuario en la base de datos local Serverless.
+     */
     private void addLocalDatabase(){
         //Primero se inserta como User.
         Users user_to_insert = new Users(((EditText) findViewById(R.id.name)).getText().toString(),

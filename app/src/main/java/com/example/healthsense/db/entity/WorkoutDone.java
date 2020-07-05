@@ -1,11 +1,12 @@
 package com.example.healthsense.db.entity;
 
-import android.icu.text.SimpleDateFormat;
 
 import androidx.room.Embedded;
 
-import java.text.ParseException;
-import java.util.Date;
+/**
+ * Clase auxiliar interna WorkoutDone
+ */
+
 
 public class WorkoutDone {
 

@@ -8,11 +8,14 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla Exercises Room
+ */
+
+
 @Entity(tableName="Exercises" ,
         indices = {@Index( name ="id_UNIQUE_exercice", value = {"id"}, unique = true)})
 public class Exercises{
-
-
 
     @NotNull
     @PrimaryKey(autoGenerate = true)

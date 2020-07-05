@@ -11,6 +11,10 @@ import com.example.healthsense.db.entity.DocumentType;
 
 import java.util.List;
 
+/**
+ * Repositorio DocumentTypeRepository encargado de comunicar DAO con fragment/activity.
+ */
+
 public class DocumentTypeRepository {
     private DocumentTypeDAO documentTypeDAO;
     private LiveData<List<DocumentType>> allDocumentsTypes;

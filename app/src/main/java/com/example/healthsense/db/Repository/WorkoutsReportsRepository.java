@@ -9,6 +9,10 @@ import com.example.healthsense.db.entity.WorkoutReports;
 
 import java.util.List;
 
+/**
+ * Repositorio WorkoutsReports encargado de comunicar DAO con fragment/activity.
+ */
+
 public class WorkoutsReportsRepository {
     private WorkoutsReportDAO workoutsReportDAO;
 

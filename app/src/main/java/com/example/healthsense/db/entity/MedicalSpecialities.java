@@ -8,6 +8,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla MedicalSpecialities Room
+ */
+
+
 @Entity(tableName="Medical_Specialities" ,
         indices = {@Index(name ="id_UNIQUE_medical_specialities",value = {"id"}, unique = true)})
 public class MedicalSpecialities {

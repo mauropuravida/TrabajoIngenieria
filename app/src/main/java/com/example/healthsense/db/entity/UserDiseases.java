@@ -8,6 +8,11 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Tabla UserDiseases Room
+ */
+
+
 @Entity(tableName="User_Diseases" , indices =
         {@Index(name ="fk_Device_users_has_Diseases_Diseases1_idx", value = {"disease_id"}),
                 @Index(name ="fk_Device_users_has_Diseases_Device_users1_idx", value = {"device_user_id"}),
