@@ -338,6 +338,7 @@ public class TrainingInformation extends Fragment {
         e5.setTextColor(getResources().getColor(R.color.DarkGrayText));
         e5.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.Background));
         e5.setSingleLine(false);
+        e5.setEnabled(false);
 
         if (fragment.equals("H")) {
             jsonPut(json, "price", workout.getPrice() + " ");
