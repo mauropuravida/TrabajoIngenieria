@@ -19,6 +19,11 @@
             android:icon="@drawable/ic_action_payment"
             android:title="@string/menu_payment_methods" />
 
+        <item
+            android:id="@+id/nav_urgency_medical"
+            android:icon="@drawable/ic_action_hear"
+            android:title="@string/urgency" />
+
     </group>
 
     <item android:title="">

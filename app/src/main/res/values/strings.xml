@@ -53,6 +53,11 @@
     <string name="credential_type">Credent. Type</string>
     <string name="e200">operation successfully</string>
     <string name="diseases">Diseases</string>
+    <string name="urgency">Urgency</string>
+    <string name="social_situation">Social situation</string>
+    <string name="add">Add</string>
+    <string name="age_range">Age range</string>
+    <string name="schedule_available">Schedule available</string>
 
     <string name="close_session">Log out</string>
 
@@ -83,7 +88,6 @@
     <string name="total_hours">TOTAL HOURS:</string>
     <string name="date_executed">Date:</string>
     <string name="rating">Rating:</string>
-
 
 
     <!-- Strings related first sign up and profile -->
