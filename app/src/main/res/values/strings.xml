@@ -31,7 +31,7 @@
     <string name="edit">EDIT</string>
     <string name="difficulty">Difficulty</string>
     <string name="url">URL</string>
-    <string name="time">Time</string>
+    <string name="time">Time 00:00:00</string>
     <string name="instructions">Instructions:</string>
     <string name="desciptions">Descriptions:</string>
     <string name="save">Save</string>
@@ -143,6 +143,7 @@
     <string name="e417">The email is already associated with another user.</string>
     <string name="e500">Server error. An error has occurred. Please try again.</string>
     <string name="eGeneric">Unknow error</string>
+    <string name="expires">EXPIRES:</string>
 
 
 </resources>
