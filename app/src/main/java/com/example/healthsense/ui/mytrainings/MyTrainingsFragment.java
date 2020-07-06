@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -152,7 +153,7 @@ public class MyTrainingsFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            MainActivity.FIRST_TRAINING = false;
+            //MainActivity.FIRST_TRAINING = false;
         }
 
         createExercises(rootGeneral, listenerGeneral);
@@ -187,15 +188,29 @@ public class MyTrainingsFragment extends Fragment {
     /**
      * Creacion de Targets por cada workout.
      */
+    //todo descomentar first training arriba, sacar de aca, dejar el toast si workoutsize == 0;
     private void createExercises(View root, View.OnClickListener mListener) {
-        for (int i = 0; i < workouts.size(); i++) {
-            newTraining(root, i, mListener);
+        if (MainActivity.FIRST_TRAINING) {
+            for (int i = 0; i < workouts.size(); i++) {
+                newTraining(root, i, mListener);
+            }
+            MainActivity.FIRST_TRAINING = false;
+        } else {
+            workouts.clear();
+            if (workouts.size() == 0) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(root.getContext(), root.getResources().getString(R.string.no_workouts), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
         mProgressDialog.dismiss();
     }
 
     /**
-     *  Consulta al backend por los trabajos asociados al usuario logueado.
+     * Consulta al backend por los trabajos asociados al usuario logueado.
      */
     private Runnable getWorks() {
         return new Runnable() {
@@ -204,13 +219,8 @@ public class MyTrainingsFragment extends Fragment {
                 String path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
                 token = new JSONArray();
                 int i = 0;
-               /* JSONObject ob = new JSONObject();
-                try {
-                    ob.put("id",13);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                workouts.add(ob);*/
+                JSONObject ob = new JSONObject(); //quitar
+                
                 for (JSONObject o : workouts) {
                     try {
                         i++;
@@ -225,7 +235,7 @@ public class MyTrainingsFragment extends Fragment {
     }
 
     /**
-     *  Consulta al backend por los ejercicios asociados a los trabajos obtenidos en getWorks.
+     * Consulta al backend por los ejercicios asociados a los trabajos obtenidos en getWorks.
      */
     private Runnable getExercisesWorkout(int cant) {
         return new Runnable() {
@@ -255,7 +265,7 @@ public class MyTrainingsFragment extends Fragment {
             public void run() {
                 String path = "workout/device_user_id&"; // obtengo workouts del user_id.
                 JSONObject ob = new JSONObject(); //
-                //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE"; User de prueba.
+                //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBydWViYTNAZ21haWwuY29tIiwiaWF0IjoxNTkxOTcyODMzfQ.PARzs0fB4Iz2l2H5RTWoRdrPBCGZR6dcB-y2YoC77XE"; //User de prueba.
                 try {
                     ob.put("x-access-token", MainActivity.TOKEN);
                     token = new JSONArray();
@@ -274,9 +284,10 @@ public class MyTrainingsFragment extends Fragment {
     }
 
     /**
-     *  Crea las vistas de los Workouts.
-     * @param root = This
-     * @param i = Workout
+     * Crea las vistas de los Workouts.
+     *
+     * @param root      = This
+     * @param i         = Workout
      * @param mListener = Target
      */
     private void newTraining(View root, int i, View.OnClickListener mListener) {
@@ -379,13 +390,14 @@ public class MyTrainingsFragment extends Fragment {
 
     /**
      * Realiza GET de la url solicitada para obtener los datos del backend.
-     * @param path = Url
-     * @param id = WorkoutId, Workout/Exercises ID
-     * @param listObj = Workouts/Exercises
-     * @param hashObj = Pair (Workout,List<Exercises>)
-     * @param root = This
+     *
+     * @param path      = Url
+     * @param id        = WorkoutId, Workout/Exercises ID
+     * @param listObj   = Workouts/Exercises
+     * @param hashObj   = Pair (Workout,List<Exercises>)
+     * @param root      = This
      * @param mListener = Target
-     * @param func = Next Call.
+     * @param func      = Next Call.
      * @return
      */
     private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener, Runnable func) {
@@ -425,6 +437,7 @@ public class MyTrainingsFragment extends Fragment {
                                 String time = json.getJSONObject(i).get("time").toString();
                                 int id = json.getJSONObject(i).getInt("exercise_id");
                                 times.put(id, time);
+                                System.out.println("Value " + id);
                                 values.add(id);
                             }
                         }
@@ -446,8 +459,9 @@ public class MyTrainingsFragment extends Fragment {
 
     /**
      * Ultimo llamado al backend.
-     * @param path = Url
-     * @param id = ExerciseId
+     *
+     * @param path    = Url
+     * @param id      = ExerciseId
      * @param listObj = ExercisesList
      * @return
      */
@@ -481,6 +495,7 @@ public class MyTrainingsFragment extends Fragment {
 
     /**
      * Creacion de Workouts locales para Serverless.
+     *
      * @throws JSONException
      */
     private void addWorkoutsRoom() throws JSONException {
@@ -526,6 +541,7 @@ public class MyTrainingsFragment extends Fragment {
 
     /**
      * Creacion de Exercises locales para Serverless.
+     *
      * @param exercises_room = Exercises de la base local.
      * @throws JSONException
      */
