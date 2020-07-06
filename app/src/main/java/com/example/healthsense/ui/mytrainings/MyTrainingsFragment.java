@@ -33,6 +33,7 @@ import com.example.healthsense.db.Repository.WorkoutsRepository;
 import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.Workouts;
+import com.example.healthsense.ui.traininginformation.EditFragment;
 import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
@@ -67,6 +68,9 @@ public class MyTrainingsFragment extends Fragment {
     private WorkoutsExercisesRepository workoutsExercisesRepository;
     private DeviceUsersRepository deviceUsersRepository;
     public static Fragment fg;
+    private Bundle datosAEnviar = new Bundle();
+    private String fragment_previous = null;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,17 +89,21 @@ public class MyTrainingsFragment extends Fragment {
 
         exercises_room = exercisesRepository.getAll();
 
+
         //Listener para cada uno de los workouts.
         View.OnClickListener mListener = new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
             public void onClick(View v) {
                 // nuevo intent con la info del layout seleccionado.
-                Bundle datosAEnviar = new Bundle();
                 datosAEnviar.putInt("Work_ID", (int) v.getTag());
-                datosAEnviar.putString("Fragment", "M");
                 TrainingInformation.fg = fg;
-                Fragment fragment = new TrainingInformation();
+                Fragment fragment;
+                if(fragment_previous.equals("M"))
+                    datosAEnviar.putString("Fragment", "M");
+                else
+                    datosAEnviar.putString("Fragment", "S");
+                fragment = new TrainingInformation();
                 fragment.setArguments(datosAEnviar);
                 getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack(null).commit();
             }
@@ -112,13 +120,21 @@ public class MyTrainingsFragment extends Fragment {
         mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
         mProgressDialog.setCancelable(false);
 
-        if (networkInfo != null && networkInfo.isConnected()) {
-            // Si hay conexión a Internet en este momento OkHttp
-            mProgressDialog.show();
-            getData();
+        Bundle datosRecuperados = getArguments();
+        mProgressDialog.show();
+        if (datosRecuperados != null && datosRecuperados.getString("Fragment").equals("S")) {
+            fragment_previous = "S";
+            getData(datosRecuperados.getInt("device_user_id"));
         } else {
-            // No hay conexión a Internet en este momento levantar datos de Room (SERVERLESS)
+            fragment_previous = "M";
+            if (networkInfo != null && networkInfo.isConnected()) {
+                // Si hay conexión a Internet en este momento OkHttp
+                getData(0);
+            } else {
+                // No hay conexión a Internet en este momento levantar datos de Room (SERVERLESS)
+            }
         }
+
 
         return root;
     }
@@ -145,7 +161,7 @@ public class MyTrainingsFragment extends Fragment {
         depureExercises();
         // Si finalizaron todas las llamadas del backend y es la primera vez que entro al fragment
         // Agrego a la base de datos local los workouts y exercises que no esten.
-        if (MainActivity.FIRST_TRAINING) {
+        if (getActivity() != null) {
             try {
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
@@ -153,8 +169,8 @@ public class MyTrainingsFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            MainActivity.FIRST_TRAINING = false;
         }
+
 
         createExercises(rootGeneral, listenerGeneral);
     }
@@ -219,6 +235,7 @@ public class MyTrainingsFragment extends Fragment {
                 int i = 0;
                 for (JSONObject o : workouts) {
                     try {
+                        System.out.println("WORKOUT " + o.get("id"));
                         i++;
                         getBackendResponse(path, o.getInt("id"), null, workoutExercises, null, null, getExercisesWorkout(i));
                     } catch (JSONException e) {
@@ -241,6 +258,7 @@ public class MyTrainingsFragment extends Fragment {
                 Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
                 for (ArrayList<Integer> value : map.values()) {
                     for (int i = 0; i < value.size(); i++) {
+                        System.out.println("VALUES " + value.get(i));
                         if ((i == map.values().size() - 1) && cant == workouts.size()) {
                             getLastResponse(finalPath, value.get(i).intValue(), exercises);
                         } else {
@@ -255,7 +273,7 @@ public class MyTrainingsFragment extends Fragment {
     /**
      * Funcion que lanza los llamados al backend.
      */
-    private void getData() {
+    private void getData(int device_user_id) {
         doAsync.execute(new Runnable() {
             @Override
             public void run() {
@@ -274,7 +292,7 @@ public class MyTrainingsFragment extends Fragment {
                 workoutExercises = new HashMap<Integer, ArrayList<Integer>>();
                 listll = new ArrayList<>();
 
-                getBackendResponse(path, 0, workouts, null, null, null, getWorks());
+                getBackendResponse(path, device_user_id, workouts, null, null, null, getWorks());
             }
         });
     }
@@ -312,12 +330,17 @@ public class MyTrainingsFragment extends Fragment {
                                         break;
                                     }
                                 }
+                                if (encontrado)
+                                    break;
                                 x++;
                                 k = 0;
                             }
-                            System.out.println("ENCONTRE L VALOr " + k);
-                            exercise = exercises.get(x);
-                            description = exercise.getString("description");
+                            System.out.println("ENCONTRE L VALOr " + x);
+                            if (x <= exercises.size()) {
+                                exercise = exercises.get(x);
+                                description = exercise.getString("description");
+                            } else
+                                description = "No description.";
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -423,6 +446,7 @@ public class MyTrainingsFragment extends Fragment {
                     if (jsonType instanceof JSONObject) { //Si es JSONOBject -> exercices
                         JSONObject json = new JSONObject((responseData));
                         if (listObj != null) {
+                            System.out.println("EXERCISES " + json.get("id"));
                             listObj.add(json);
 
                         }
@@ -603,4 +627,5 @@ public class MyTrainingsFragment extends Fragment {
             }
         }
     }
+
 }

@@ -124,11 +124,11 @@ public class TrainingInformation extends Fragment {
         mProgressDialog.show();
 
 
-        //Obtengo datos enviados desde otro fragment. M = MyTrainingsFragment - H = HistoryTrainingFragment.
+        //Obtengo datos enviados desde otro fragment. M = MyTrainingsFragment - H = HistoryTrainingFragment. - S = SubscribersFragment
         Bundle datosRecuperados = getArguments();
         if (datosRecuperados != null) {
             fragment = datosRecuperados.getString("Fragment");
-            if (fragment.equals("M")) {
+            if (fragment.equals("M") || fragment.equals("S")) {
                 workout_id = datosRecuperados.getInt("Work_ID");
                 work_id = datosRecuperados.getInt("Work_ID");
                 doAsync.execute(new Runnable() {
@@ -290,7 +290,7 @@ public class TrainingInformation extends Fragment {
         Chronometer chronometer = new Chronometer(root.getContext());
         YouTubePlayerView ypv = new YouTubePlayerView(root.getContext());
 
-        if (fragment.equals("M")) {
+        if (fragment.equals("M") || fragment.equals("S")) {
             chronometer.setPadding(30, 0, 30, 0);
             chronometer.setTextSize(dpToPx(24, root.getContext()));
             chronometer.setTextColor(getResources().getColor(R.color.DarkGrayText));
@@ -472,6 +472,32 @@ public class TrainingInformation extends Fragment {
             ll2.addView(s5);
             ll2.addView(bt4);
             ll2.addView(s6);
+        }
+
+        if (fragment.equals("S")){
+            Button bt5 = new Button(root.getContext()); //EDIT
+
+            bt5.setBackground(root.getResources().getDrawable(R.drawable.button_state));
+            bt5.setText(root.getResources().getString(R.string.edit));
+            bt5.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
+
+            Space s3 = new Space(root.getContext());
+            s3.setMinimumWidth(dpToPx(10, root.getContext()));
+
+            Space s4 = new Space(root.getContext());
+            s4.setMinimumWidth(dpToPx(30, root.getContext()));
+
+            bt5.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+
+            ll2.addView(s3);
+            ll2.addView(bt5);
+            ll2.addView(s4);
+
         }
 
         LinearLayout.LayoutParams lp9 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

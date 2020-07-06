@@ -219,7 +219,7 @@ public class SuscribersFragment extends Fragment {
         });
     }
 
-    private void newSuscriber(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility){
+    private void newSuscriber(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility,int device_user_id){
         String created = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             created = LocalDate.now().toString();
@@ -287,8 +287,15 @@ public class SuscribersFragment extends Fragment {
         llR.addView(bton);
         llR.setPadding(0,30,30,30);
 
-        if (viewVisibility == View.GONE) {
-            Button btest = createButton(root, R.string.edit, new MyTrainingsFragment(), "", 0);
+        if (viewVisibility == View.GONE) { // cambiar fragment
+
+            Bundle datosAEnviar = new Bundle();
+            datosAEnviar.putString("Fragment", "S");
+            datosAEnviar.putInt("device_user_id",device_user_id);
+            System.out.println("DEVICE USER " + device_user_id);
+            Fragment fragment = new MyTrainingsFragment();
+            fragment.setArguments(datosAEnviar);
+            Button btest = createButton(root, R.string.edit, fragment, "", 0);
             Space s2 = new Space(root.getContext());
             s2.setMinimumHeight(30);
             llR.addView(s2);
@@ -435,7 +442,7 @@ public class SuscribersFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         try {
-                                            newSuscriber(root, jsonSend, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null, json.getString("Device_Users_id"), pos),View.VISIBLE);
+                                            newSuscriber(root, jsonSend, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null, json.getString("Device_Users_id"), pos),View.VISIBLE,0);
                                         } catch (Exception e) {
                                             msjToast(e, response.code());
                                         }
@@ -454,7 +461,7 @@ public class SuscribersFragment extends Fragment {
                                                 TrainingInformation.fg = fg;
                                                 Fragment fragment = new CreateTraining();
                                                 fragment.setArguments(datosAEnviar);
-                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training, fragment, json.getString("Device_Users_id"), pos),View.GONE);
+                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training, fragment, json.getString("Device_Users_id"), pos),View.GONE,json.getInt("Device_Users_id"));
                                             } catch (Exception e) {
                                                 msjToast(e, response.code());
                                             }
