@@ -37,6 +37,7 @@
     <string name="save">Save</string>
     <string name="remove">Remove:</string>
     <string name="no_workouts">No workouts to do.</string>
+    <string name="cant_train">Impossible to save more trainings.</string>
     <string name="exercise_add_info">The exercise has been successfully added</string>
     <string name="exercise_finish">The exercise has been successfully finished</string>
     <string name="exercise_remove_info">The exercise has been successfully deleted</string>

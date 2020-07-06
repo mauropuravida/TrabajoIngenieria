@@ -388,7 +388,7 @@ public class TrainingInformation extends Fragment {
                                        public void onClick(View v) {
                                            if (!trainingWithoutConnection()) {
                                                bt1.setEnabled(false);
-                                               Toast.makeText(root.getContext(), "IMPOSIBLE GUARDAR MAS ENTRENAMIENTOS", Toast.LENGTH_LONG).show();
+                                               Toast.makeText(root.getContext(), root.getResources().getString(R.string.cant_train), Toast.LENGTH_LONG).show();
                                            } else {
                                                startChronometer(chronometer);
                                                bt1.setEnabled(false);
