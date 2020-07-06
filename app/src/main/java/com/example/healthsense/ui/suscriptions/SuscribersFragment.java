@@ -18,7 +18,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,7 +33,9 @@ import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.ui.login.LoginActivity;
+import com.example.healthsense.ui.mytrainings.MyTrainingsFragment;
 import com.example.healthsense.ui.traininginformation.CreateTraining;
+import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +43,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -85,44 +85,6 @@ public class SuscribersFragment extends Fragment {
             }
         });
 
-        JSONObject json = new JSONObject();
-
-        jsonPut(json,"name", "Juan Domingo");
-        jsonPut(json,"DNI", "34564367");
-        jsonPut(json,"Weight", "85 kg");
-        jsonPut(json,"Height", "180 cm");
-        jsonPut(json,"Patologies", "None");
-
-        LinearLayout list1 = root.findViewById(R.id.list1);
-        root.findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   if (list1.getVisibility() == View.GONE){
-                       list1.setVisibility(View.VISIBLE);
-                   }else{
-                       list1.setVisibility(View.GONE);
-                   }
-
-                   root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.button_option_press));
-
-                   Handler handler = new Handler();
-                   handler.postDelayed(new Runnable() {
-                       public void run() {
-                           root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.background_model_training));
-                       }
-                   }, 170);
-
-               }
-           }
-        );
-
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-
-        ((TextView)root.findViewById(R.id.count1)).setText("0");
-
         LinearLayout list2 = root.findViewById(R.id.list2);
         root.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
                @Override
@@ -144,10 +106,6 @@ public class SuscribersFragment extends Fragment {
                }
            }
         );
-
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
 
         ((TextView)root.findViewById(R.id.count2)).setText("0");
 
@@ -173,13 +131,6 @@ public class SuscribersFragment extends Fragment {
            }
         );
         fg = this;
-
-        /*newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);*/
 
         ((TextView)root.findViewById(R.id.count3)).setText("0");
 
@@ -259,11 +210,9 @@ public class SuscribersFragment extends Fragment {
                         arr.add(json.getString("name"));
                     }
 
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
+                } finally {
                     finishCall(numCall);
                 }
             }
@@ -294,6 +243,7 @@ public class SuscribersFragment extends Fragment {
                 "<br> City: "+jsonGet(json,"city")+
                 "<br> Address: "+jsonGet(json,"address")+
                 "<br> Email: "+jsonGet(json,"email")+
+                "<br> Languages: "+jsonGet(json,"languages")+
                 "<br> Patologies: "+jsonGet(json,"Patologies")+
                 "<br><br> <b>EXPIRED: </b>"+ jsonGet(json,"subs")));
 
@@ -336,6 +286,14 @@ public class SuscribersFragment extends Fragment {
         llR.addView(s1);
         llR.addView(bton);
         llR.setPadding(0,30,30,30);
+
+        if (viewVisibility == View.GONE) {
+            Button btest = createButton(root, R.string.edit, new MyTrainingsFragment(), "", 0);
+            Space s2 = new Space(root.getContext());
+            s2.setMinimumHeight(30);
+            llR.addView(s2);
+            llR.addView(btest);
+        }
 
         //LAYOUT HORIZONTAL PARA TEXTO Y BOTON
         LinearLayout llSub = new LinearLayout(root.getContext());
@@ -425,6 +383,30 @@ public class SuscribersFragment extends Fragment {
                             String g =  (json.getString("gender").equals("M") )? "Male": ((json.getString("gender").equals("F")) ? "Female" : "");
                             int pos = i;
 
+                            String dss = "";
+                            JSONArray jarr = json.getJSONArray("diseases");
+                            for (int q= 0; q< jarr.length();q++) {
+                                JSONObject jo = jarr.getJSONObject(q);
+                                dss += jo.getString("name");
+
+                                if(q == jarr.length()-1)
+                                    dss+= ".";
+                                else
+                                    dss+= ", ";
+                            }
+
+                            String lgs = "";
+                            JSONArray jarr2 = json.getJSONArray("languages");
+                            for (int q= 0; q< jarr2.length();q++) {
+                                JSONObject jo = jarr2.getJSONObject(q);
+                                lgs += jo.getString("name");
+
+                                if(q == jarr2.length()-1)
+                                    lgs+= ".";
+                                else
+                                    lgs+= ", ";
+                            }
+
                             JSONObject jsonSend = new JSONObject();
                             jsonPut(jsonSend, "name", json.get("name").toString());
                             jsonPut(jsonSend, "gender", g);
@@ -434,8 +416,8 @@ public class SuscribersFragment extends Fragment {
                             jsonPut(jsonSend, "address", add);
                             jsonPut(jsonSend,"Weight", json.get("weight").toString());
                             jsonPut(jsonSend,"Height", json.get("height").toString());
-                            jsonPut(jsonSend,"Patologies", "None");
-
+                            jsonPut(jsonSend,"languages", lgs);
+                            jsonPut(jsonSend,"Patologies", dss);
 
                             String expires = (json.getString("expires").equals("null"))? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
 
@@ -461,12 +443,18 @@ public class SuscribersFragment extends Fragment {
                                 });
                                 cantSubs3++;
                             }else{
-                                if(!(json.getString("expires").equals("null"))){
+                                //No es null, quiere decir que el pago ha sido efectuado
+                                if((!json.getString("expires").equals("null"))){
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining(), json.getString("Device_Users_id"), pos),View.GONE);
+                                                Bundle datosAEnviar = new Bundle();
+                                                datosAEnviar.putInt("Device_Users_id", json.getInt("Device_Users_id"));
+                                                TrainingInformation.fg = fg;
+                                                Fragment fragment = new CreateTraining();
+                                                fragment.setArguments(datosAEnviar);
+                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training, fragment, json.getString("Device_Users_id"), pos),View.GONE);
                                             } catch (Exception e) {
                                                 msjToast(e, response.code());
                                             }
@@ -494,11 +482,9 @@ public class SuscribersFragment extends Fragment {
                         //getMedicalList();
                     }
 
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
+                } finally {
                     mProgressDialog.dismiss();
                     //finishCall(numCall);
                 }
@@ -517,7 +503,7 @@ public class SuscribersFragment extends Fragment {
 
     private void setPriceWorkout(String id, int p){
 
-        String textedit = amountViews.get(p).getText().toString();
+        String textedit = amountViews.get(p-1).getText().toString();
 
         Log.d("TESTING ",textedit);
         JSONObject js = new JSONObject();

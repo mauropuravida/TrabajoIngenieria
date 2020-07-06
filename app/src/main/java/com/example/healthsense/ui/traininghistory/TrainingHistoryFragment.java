@@ -124,29 +124,49 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                 getData();
             } else {
                 Log.d(TAG, "onCreateView: No hay conexion a internet");
+                new TaskGetWorkoutReports(this).execute();
             }
         }
 
         return root;
     }
 
+    /**
+     * Cargo en la vista los reportes de los workourts realizados, o un cartel vacio de no haber ninguno.
+     * @param workouts = lista con la union de los reportes y la informacion de los entrenamientos
+     **/
     @Override
     public void setWorkoutReportsFromDB(List<WorkoutDone> workouts) {
         mProgressDialog.dismiss();
         first = false;
-        if (workouts.isEmpty()) {
-            workoutsCompleted.setText("0");
-            recyclerView.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
+        if (workouts == null) {
+            setEmpty();
         } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
-            adapter.setDataset(workouts);
-            workoutsCompleted.setText(String.valueOf(workouts.size()));
+            if (!workouts.isEmpty()) {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+                adapter.setDataset(workouts);
+                workoutsCompleted.setText(String.valueOf(workouts.size()));
+            } else {
+                setEmpty();
+            }
         }
     }
 
+    /**
+     *En caso de no haber reportes se muestra un cartel advirtiendo esto mismo
+     **/
+    public void setEmpty() {
+        workoutsCompleted.setText("0");
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+    }
 
+    /**
+     * Metodo run() que luego de obtener la lista de entrenamientos desde el backend, agrega a los que no se
+     * encuentren en la base de datos local. Por ultimo, ejecuta el metodo getBackendResponse(...) para obtener los reportes
+     * @return Runnable
+     */
     private Runnable getWorkouts() {
         return new Runnable() {
             @Override
@@ -190,12 +210,20 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
     }
 
+    /**
+     * Metodo run() que luego de obtener la lista de reportes desde el backend, agrega a los que no se
+     * encuentren en la base de datos local. Por ultimo, ejecuta un nuevo TaskGetWorkoutReports para mostrar
+     * los reportes en la vista
+     * @return Runnable
+     */
     private Runnable getReports() {
         return new Runnable() {
             @Override
             public void run() {
                 WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
+
                 WorkoutsReportsRepository workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
+
 
                 for (JSONObject report : reports) {
                     try {
@@ -234,13 +262,15 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     }
 
 
+    /**
+     * AsyncTask que ejecuta el primer GET al backend.
+     * Obtiene el token del usuario y lo agrega al header que sera enviado en el GET
+     */
     private void getData() {
         doAsync.execute(
                 new Runnable() {
                     @Override
                     public void run() {
-
-                        //MainActivity.TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3R1c2VyMTBAZ21haWwuY29tIiwiaWF0IjoxNTkyMDIwNjAyfQ.thkUtcbXqN__A327UA-NL8gwpoI5IDYaiT1SjRsesUc";
 
                         JSONObject ob = new JSONObject();
                         try {
@@ -264,6 +294,14 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     }
 
 
+    /**
+     * Metodo que realiza un GET de la url solicitada para almacenar los resultados en listObj y luego ejecuta
+     * el runnable func.
+     * @param path = path para completar la url
+     * @param listObj = lista de JSONObjects obtenido del GET
+     * @param func = metodo a ejecutar al obtener respuesta, siguiente paso
+     * @param report = variable booleana que advierte si se estan obteniendo los entrenamientos o reportes
+     */
     private void getBackendResponse(String path, List<JSONObject> listObj, Runnable func, boolean report) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = MainActivity.PATH + path;
@@ -281,12 +319,10 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
             public void onResponse(Call call, Response response) {
                 String responseData = null;
                 Log.d(TAG, "onResponse: got response");
-                try {
-                    if (response.body() != null) {
-                        responseData = response.body().string();
-                        Object jsonType = new JSONTokener(responseData).nextValue();
-
-                        if (jsonType instanceof JSONArray) {
+                if (response.code() == 200)
+                    try {
+                        if (response.body() != null) {
+                            responseData = response.body().string();
                             JSONArray json = new JSONArray(responseData);
 
                             if (readData(report, json)) {
@@ -295,17 +331,19 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                                     listObj.add(json.getJSONObject(i));
                                 }
                                 func.run();
-                            }
-                            else if(!report){
+                            } else if (!report) {
+                                Log.d(TAG, "onResponse: workouts on the local db, searching reports");
                                 String new_path = "workoutReport/";
                                 getBackendResponse(new_path, reports, getReports(), true);
+                            } else {
+                                setWorkoutReportsFromDB(null);
                             }
-                        }
-                    }
 
-                } catch (JSONException | IOException e) {
-                    e.printStackTrace();
-                }
+                        }
+
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
             }
 
             private boolean readData(boolean report, JSONArray json) {
@@ -325,21 +363,10 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume");
-        //todo cargar lista si ya se creo anteriormente
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop");
-        //todo guardar lista
-    }
-
-
+    /**
+     * Tarea que obtiene la lista de la union de los entrenamientos realizados y sus reportes
+     * desde la base de datos local, para luego mostrarlos por pantalla
+     */
     @SuppressLint("StaticFieldLeak")
     private class TaskGetWorkoutReports extends AsyncTask<Void, Void, List<WorkoutDone>> {
 

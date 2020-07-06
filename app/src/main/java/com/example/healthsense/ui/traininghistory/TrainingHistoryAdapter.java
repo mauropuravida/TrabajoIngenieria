@@ -38,6 +38,10 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
         return dataset;
     }
 
+    /**
+     * Metodo que carga el nuevo dataset y avisa que se realizaron cambios a este para recargar la lista
+     * @param dataset = datos a mostrar
+     */
     public void setDataset(List<WorkoutDone> dataset) {
         this.dataset = dataset;
         notifyDataSetChanged();
@@ -50,6 +54,11 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
         return new ViewHolder(view);
     }
 
+    /**
+     * Metodo que vincula los textos a mostrar en pantalla con los datos de cada elemento del dataset
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         WorkoutDone workout = dataset.get(position);
@@ -92,6 +101,10 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
         int report_id;
 
 
+        /**
+         * Vinculacion de vistas con variables internas
+         * @param itemView
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
@@ -108,6 +121,12 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
             return itemView.getContext();
         }
 
+        /**
+         * Codigo a ejecutar cuando se hace un click sobre cierto elemento del dataset mostrado por pantalla
+         * Se envia la informacion al fragmento TrainingInformation para visualizar este con los datos del reporte
+         * seleccionado
+         * @param view
+         */
         @Override
         public void onClick(View view) {
             Log.d(TAG, "onClick: " + getAdapterPosition());
@@ -115,7 +134,7 @@ public class TrainingHistoryAdapter extends RecyclerView.Adapter<TrainingHistory
                     "Click on workout: " + String.valueOf(this.workout_id) + " - report: " + String.valueOf(this.report_id),
                     Toast.LENGTH_SHORT).show();
 
-            //Envio informacion a TrainingFragment para cargar datos desde el serverless.
+            //Envio informacion a TrainingInformation para cargar datos desde el serverless.
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             Bundle datosAEnviar = new Bundle();
             datosAEnviar.putInt("Work_ID",(int) this.workout_id);

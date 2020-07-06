@@ -770,8 +770,6 @@ public class TrainingInformation extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-        lp.gravity = Gravity.CENTER;
-
         rating.setLayoutParams(lp);
         rating.setNumStars(5);
         rating.setStepSize(0.1f);
@@ -809,14 +807,6 @@ public class TrainingInformation extends Fragment {
                     }
 
                 });
-
-        // Button Cancel
-               /* .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });*/
 
         popDialog.create();
         popDialog.show();

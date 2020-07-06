@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public static String TOKEN = "";
     public static String PROFILETYPE = "";
     public static String PATH = "https://healthsenseapi.herokuapp.com/";
+    public static TextView name;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -81,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        ((TextView)findViewById(R.id.nameMenu)).setText(user);
+        name = findViewById(R.id.nameMenu);
+        name.setText(user);
         ((TextView)findViewById(R.id.emailMenu)).setText(email);
         return true;
     }

@@ -13,6 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.healthsense.db.dao.DeviceUsersDAO;
 import com.example.healthsense.db.dao.DocumentTypeDAO;
 import com.example.healthsense.db.dao.ExercisesDAO;
+import com.example.healthsense.db.dao.MedicDAO;
 import com.example.healthsense.db.dao.MedicalPersonnelDAO;
 import com.example.healthsense.db.dao.UsersDAO;
 import com.example.healthsense.db.dao.WorkoutsDAO;
@@ -29,6 +30,7 @@ import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.HeartRateSignals;
 import com.example.healthsense.db.entity.Insurances;
 import com.example.healthsense.db.entity.Languages;
+import com.example.healthsense.db.entity.Medic;
 import com.example.healthsense.db.entity.MedicalLanguages;
 import com.example.healthsense.db.entity.MedicalPersonnel;
 import com.example.healthsense.db.entity.MedicalSpecialities;
@@ -52,8 +54,8 @@ import com.example.healthsense.db.entity.Workouts;
         DocumentType.class, Exercises.class, HeartRateSignals.class, Insurances.class,
         Languages.class, MedicalLanguages.class, MedicalPersonnel.class, MedicalSpecialities.class,
         Patients.class, PhoneNumbers.class, States.class, UserDiseases.class, Users.class, WorkoutExercises.class,
-        WorkoutReports.class, Workouts.class
-}, version = 8, exportSchema = false)
+        WorkoutReports.class, Workouts.class, Medic.class
+}, version = 11, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "com.example.healthsense";
@@ -70,6 +72,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExercisesDAO exercisesDAO();
     public abstract WorkoutsReportDAO workoutsReportDAO();
     public abstract WorkoutDoneDAO workoutDoneDAO();
+    public abstract MedicDAO medicDAO();
 
     /**
      * Instanciacion del objeto base de datos.

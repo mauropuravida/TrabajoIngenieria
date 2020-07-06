@@ -60,4 +60,8 @@ public class WorkoutDone {
         return workoutReport.getId_wr();
     }
 
+    public int getMedic(){
+        return workout.getMedical_personnel_id();
+    }
+
 }

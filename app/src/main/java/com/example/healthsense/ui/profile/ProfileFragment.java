@@ -2,12 +2,14 @@ package com.example.healthsense.ui.profile;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -22,6 +24,8 @@ import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.ui.login.LoginActivity;
+import com.google.gson.JsonObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +38,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+import static com.example.healthsense.MainActivity.PREFS_FILENAME;
+
 /*
 Clase que se encarga de consultar los datos de perfil de el usuario o medico, dependiendo el tipo que sea el pefil.
 Tambien se ocupa de enviar la información modificada al endpoint de backend
@@ -44,12 +50,18 @@ public class ProfileFragment extends Fragment {
     private ArrayList<String> idsCountries= new ArrayList<>();
     private ArrayList<String> idsStates= new ArrayList<>();
     private ArrayList<String> idsCities= new ArrayList<>();
+    private ArrayList<String> idsLanguages= new ArrayList<>();
+    private ArrayList<String> idsDiseases= new ArrayList<>();
 
     private ArrayList<String> valuesCity = new ArrayList<>();
     private ArrayList<String> valuesState = new ArrayList<>();
     private ArrayList<String> valuesCountry = new ArrayList<>();
     private ArrayList<String> valuesLanguage = new ArrayList<>();
     private ArrayList<String> valuesInsurance = new ArrayList<>();
+    private ArrayList<String> valuesDiseases = new ArrayList<>();
+
+    private ArrayList<String> idsLanguagesTalked = new ArrayList<>();
+    private ArrayList<String> idsDiseasesSuffrered = new ArrayList<>();
     private ArrayList<String> valuesSpeciality;
 
     private int stateId = -1;
@@ -114,9 +126,18 @@ public class ProfileFragment extends Fragment {
             @Override
             public void run() {
                 //consulta idiomas
-                inicSpinner(root,MainActivity.PATH+"language/", null, valuesLanguage);
+                inicSpinner(root,MainActivity.PATH+"language/", idsLanguages, valuesLanguage);
             }
         });
+
+        doAsync.execute(new Runnable() {
+            @Override
+            public void run() {
+                //consulta enfermedades
+                inicSpinner(root,MainActivity.PATH+"disease/", idsDiseases, valuesDiseases);
+            }
+        });
+
 
         //consulta la lista de provincias para el pais seleccionado
         Spinner sp = root.findViewById(R.id.country);
@@ -184,6 +205,9 @@ public class ProfileFragment extends Fragment {
         return 0;
     }
 
+    /*
+    obtener toda la información del perfil de usuario
+     */
     private void getInfoUser(View root){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = (MainActivity.PROFILETYPE.equals("d")) ? MainActivity.PATH+"userinfo/" : MainActivity.PATH+"medicalinfo/";
@@ -214,13 +238,29 @@ public class ProfileFragment extends Fragment {
                     JSONObject json = new JSONObject(responseData);
 
                     name = json.getString("name");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MainActivity.name.setText(name);
+                        }
+                    });
                     lastname = json.getString("last_name");
                     email = json.getString("email");
+                    SharedPreferences preferencesEditor = getActivity().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
+                    preferencesEditor.edit().putString(email,name).apply();
                     document = json.getString("document_number");
                     birtdate = PikerDate.Companion.toDateFormatView(json.getString("birth_date"));
 
                     if (!json.getString("address").equals("null"))
                         ddrss = json.getString("address");
+
+
+                    JSONArray lgs = json.getJSONArray("languages");
+                    for (int i =0 ; i< lgs.length(); i++){
+                        JSONObject jo = (JSONObject) lgs.get(i);
+                        idsLanguagesTalked.add(jo.getString("language_id"));
+                    }
+
 
                     if (MainActivity.PROFILETYPE.equals("m")){
                         medSpeciality = Integer.parseInt(json.getString("medical_speciality_id"))-1;
@@ -247,6 +287,14 @@ public class ProfileFragment extends Fragment {
                                 inicSpinner(root, MainActivity.PATH + "insurance/", null, valuesInsurance);
                             }
                         });
+
+
+                        JSONArray dss = json.getJSONArray("diseases");
+                        for (int i =0 ; i< dss.length(); i++){
+                            JSONObject jo = (JSONObject) dss.get(i);
+                            idsDiseasesSuffrered.add(jo.getString("disease_id"));
+                        }
+
                     }
 
                     ct = Integer.parseInt((json.getString("city_id").equals("null")) ? "1" : json.getString("city_id"));
@@ -424,6 +472,7 @@ public class ProfileFragment extends Fragment {
         arrayAdapter3.setDropDownViewResource(R.layout.spinner_color);
 
         ArrayList<StateV0> listVOs = new ArrayList<>();
+        ArrayList<StateV0> listVOs2 = new ArrayList<>();
 
         StateV0 st = new StateV0();
         st.setTitle(getResources().getString(R.string.language));
@@ -438,6 +487,20 @@ public class ProfileFragment extends Fragment {
         }
 
         MyAdapter myAdapter = new MyAdapter(root.getContext(), R.layout.spinner_color, listVOs);
+
+        StateV0 st2 = new StateV0();
+        st2.setTitle(getResources().getString(R.string.diseases));
+        st2.setSelected(false);
+        listVOs2.add(st2);
+
+        for (int i = 0; i < valuesDiseases.size(); i++) {
+            StateV0 stateVO = new StateV0();
+            stateVO.setTitle(valuesDiseases.get(i));
+            stateVO.setSelected(false);
+            listVOs2.add(stateVO);
+        }
+
+        MyAdapter myAdapter2 = new MyAdapter(root.getContext(), R.layout.spinner_color, listVOs2);
 
         ArrayAdapter<String> arrayAdapter4 = new ArrayAdapter<String>(root.getContext(), R.layout.spinner_color, valuesInsurance);
         arrayAdapter4.setDropDownViewResource(R.layout.spinner_color);
@@ -473,12 +536,38 @@ public class ProfileFragment extends Fragment {
                         ((TextView)root.findViewById(R.id.insurance_numb)).setText(nsrnc);
                         ((Spinner) root.findViewById(R.id.gender)).setSelection(gdr);
                         ((Spinner)root.findViewById(R.id.insurance_id)).setSelection(nsrncID);
+                        ((Spinner) root.findViewById(R.id.disease)).setAdapter(myAdapter2);
+
+
+                        //tildar las enfermedades padecidad
+                        for(int i=0;i< idsDiseasesSuffrered.size();i++){
+                            for (int j=0;j< idsDiseases.size();j++){
+                                if (idsDiseases.get(j).equals(idsDiseasesSuffrered.get(i))){
+                                    Adapter adapter = ((Spinner)root.findViewById(R.id.disease)).getAdapter();
+                                    StateV0 stv0 = ((StateV0)adapter.getItem(j+1));
+                                    stv0.setSelected(true);
+                                }
+                            }
+                        }
                     }
 
                     ((TextView)getActivity().findViewById(R.id.credential_type)).setText(docType);
                     ((Spinner)root.findViewById(R.id.country)).setSelection((int)(countryActual-1));
                     ((Spinner)root.findViewById(R.id.state)).setSelection(getIndex(stateId,idsStates));
                     ((Spinner)root.findViewById(R.id.city)).setSelection(getIndex(ct,idsCities));
+
+
+                    //tildar los idiomas hablados
+                    for(int i=0;i< idsLanguagesTalked.size();i++){
+                        for (int j=0;j< idsLanguages.size();j++){
+                            if (idsLanguages.get(j).equals(idsLanguagesTalked.get(i))){
+                                Adapter adapter = ((Spinner)root.findViewById(R.id.language)).getAdapter();
+                                StateV0 stv0 = ((StateV0)adapter.getItem(j+1));
+                                stv0.setSelected(true);
+                                break;
+                            }
+                        }
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -504,6 +593,22 @@ public class ProfileFragment extends Fragment {
                 gender = "F";
         }
 
+
+        JSONArray lg = new JSONArray();
+        Adapter adapter = ((Spinner)root.findViewById(R.id.language)).getAdapter();
+        for (int i=1; i<adapter.getCount();i++){
+            StateV0 stv0 = (StateV0)adapter.getItem(i);
+            if (stv0.isSelected()) {
+                JSONObject jo = new JSONObject();
+                try {
+                    jo.put("id", (Integer.parseInt(idsLanguages.get(i-1))));
+                    lg.put(jo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         JSONObject js = new JSONObject();
 
         try {
@@ -517,6 +622,7 @@ public class ProfileFragment extends Fragment {
             js.put("password", "");
             js.put("city_id", idsCities.get((int) ((Spinner) root.findViewById(R.id.city)).getSelectedItemId()));
             js.put("address", ((EditText)root.findViewById(R.id.address)).getText().toString());
+            js.put("languages", lg);
 
             if (MainActivity.PROFILETYPE.equals("m")){
                 js.put("medical_speciality", (((Spinner) root.findViewById(R.id.interal_medicine)).getSelectedItemId()+1)+"");
@@ -525,6 +631,23 @@ public class ProfileFragment extends Fragment {
                 js.put("height", ((EditText)root.findViewById(R.id.height)).getText().toString());
                 js.put("insurance_id", (((Spinner) root.findViewById(R.id.insurance_id)).getSelectedItemId()+1)+"");
                 js.put("insurance_number", ((EditText)root.findViewById(R.id.insurance_numb)).getText().toString());
+
+                JSONArray ds = new JSONArray();
+                Adapter adapterds = ((Spinner)root.findViewById(R.id.disease)).getAdapter();
+                for (int i=1; i<adapterds.getCount();i++){
+                    StateV0 stv0 = (StateV0)adapterds.getItem(i);
+                    if (stv0.isSelected()) {
+                        JSONObject jo = new JSONObject();
+                        try {
+                            jo.put("id", idsDiseases.get(i-1));
+                            ds.put(jo);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                js.put("diseases", ds);
             }
 
         } catch (JSONException e) {

@@ -101,7 +101,7 @@ public class SignUpMedical extends AppCompatActivity {
                 if (((EditText) findViewById(R.id.password)).getText().toString().equals(((EditText) findViewById(R.id.confirm_password)).getText().toString())) {
 
                     OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-                    String conexion = "https://healthsenseapi.herokuapp.com/signupmedical/";
+                    String conexion = MainActivity.PATH+"signupmedical/";
 
                     try {
                         JSONObject js = new JSONObject();
@@ -214,7 +214,7 @@ public class SignUpMedical extends AppCompatActivity {
 
     private void getDocumentTypes(Context v){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = "https://healthsenseapi.herokuapp.com/documenttype/";
+        String conexion = MainActivity.PATH+"documenttype/";
 
         request.GET(conexion,new JSONArray(), new Callback(){
             @Override
@@ -274,7 +274,7 @@ public class SignUpMedical extends AppCompatActivity {
 
     private void getMedicalSpecialities(Context v){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = "https://healthsenseapi.herokuapp.com/medicalspeciality/";
+        String conexion = MainActivity.PATH+"medicalspeciality/";
 
         request.GET(conexion,new JSONArray(), new Callback(){
             @Override
