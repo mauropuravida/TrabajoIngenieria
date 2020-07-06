@@ -59,6 +59,7 @@ public class CreateTraining extends Fragment {
     private int device_id_user = -1;
     private String workout_name;
     private boolean sent = false;
+    private Button done;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,7 +73,8 @@ public class CreateTraining extends Fragment {
         View root = inflater.inflate(R.layout.fragment_create_training, container, false);
         Fragment me = this;
 
-        Button done = root.findViewById(R.id.button_done);
+        done = root.findViewById(R.id.button_done);
+        done.setEnabled(false);
 
         done.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,6 +312,7 @@ public class CreateTraining extends Fragment {
         }
 
         map_exercises.put(id_ex, json);
+        done.setEnabled(true);
 
         return String.valueOf(id_ex);
     }
@@ -321,6 +324,8 @@ public class CreateTraining extends Fragment {
     public void deleteExercise(int id) {
         map_exercises.remove(id);
         Log.d(TAG, "deleteexercise: remove: " + id);
+        if (map_exercises.isEmpty())
+            done.setEnabled(false);
     }
 
 
@@ -411,7 +416,7 @@ public class CreateTraining extends Fragment {
 
             JSONObject json_wk_ex = new JSONObject();
             try {
-                json_wk_ex.put("time", json.getString("time"));
+                json_wk_ex.put("time", "00:00:00");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
