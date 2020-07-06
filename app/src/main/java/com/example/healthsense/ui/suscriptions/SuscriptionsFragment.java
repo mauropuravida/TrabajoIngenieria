@@ -34,6 +34,9 @@ import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
+import com.example.healthsense.db.AppDatabase;
+import com.example.healthsense.db.Repository.MedicRepository;
+import com.example.healthsense.db.entity.Medic;
 import com.example.healthsense.ui.login.LoginActivity;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.model.Payment;
@@ -51,6 +54,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -67,6 +71,8 @@ Ademas tambien se inicializa la lista de medicos que aceptaron la suscripción d
  */
 public class SuscriptionsFragment extends Fragment {
 
+    private static final String TAG = "SuscriptionsFragment";
+
     public static Fragment fg;
     private ArrayList<Integer> calls = new ArrayList<>();
     private View root;
@@ -75,11 +81,8 @@ public class SuscriptionsFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private Context cont;
     private ArrayList<View> views = new ArrayList<>();
-    //private String textPriceButton ="-1";
-    private ArrayList<String> medicalSubscriptions = new ArrayList<>();
-    private String textEmail = "";
-    private String textName = "";
-    private String medicalPayID;
+
+    private int medicalPayID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,7 +92,7 @@ public class SuscriptionsFragment extends Fragment {
         cont = root.getContext();
         fg = this;
 
-        mProgressDialog = new ProgressDialog(root.getContext(),R.style.AppCompatAlertDialogStyle);
+        mProgressDialog = new ProgressDialog(root.getContext(), R.style.AppCompatAlertDialogStyle);
         mProgressDialog.setTitle(R.string.loading);
         mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
         mProgressDialog.setCancelable(false);
@@ -132,7 +135,7 @@ public class SuscriptionsFragment extends Fragment {
            }
         );
 
-        ((TextView)root.findViewById(R.id.count1)).setText("0");
+        ((TextView) root.findViewById(R.id.count1)).setText("0");
 
         LinearLayout list2 = root.findViewById(R.id.list2);
         root.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
@@ -156,7 +159,7 @@ public class SuscriptionsFragment extends Fragment {
            }
         );
 
-        ((TextView)root.findViewById(R.id.count2)).setText("0");
+        ((TextView) root.findViewById(R.id.count2)).setText("0");
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
@@ -173,7 +176,7 @@ public class SuscriptionsFragment extends Fragment {
 
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         //Funciones de regargar y quitar vistas si se realizó el pago
@@ -181,7 +184,16 @@ public class SuscriptionsFragment extends Fragment {
     }
 
 
-    private void newSuscription(View root, JSONObject json, LinearLayout list, int backgroundColor , Button bton, int viewVisibility, String amount){
+    /**
+     * Creacion de nueva tarjeta con los datos del medico
+     * @param root
+     * @param medic = datos del medico
+     * @param list = lista a la que pertenece la tarjeta
+     * @param backgroundColor
+     * @param bton = boton asociado (suscribirse o pagar)
+     * @param viewVisibility
+     */
+    private void newSuscription(View root, Medic medic, LinearLayout list, int backgroundColor, Button bton, int viewVisibility) {
         String created = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             created = LocalDate.now().toString();
@@ -197,17 +209,18 @@ public class SuscriptionsFragment extends Fragment {
 
         TextView tv1 = new TextView(root.getContext());
 
-        tv1.setText(Html.fromHtml("<b>"+jsonGet(json,"name")+"</b><br><br> DNI: "+
-                jsonGet(json,"DNI")+
-                "<br> Gender: "+jsonGet(json,"Gender")+
-                "<br> Speciality: "+jsonGet(json,"Speciality")+
-                "<br> Email: "+jsonGet(json,"Email")+
-                "<br> City: "+jsonGet(json,"City")+
-                "<br> Address: "+jsonGet(json,"Address")+
-                "<br><br> <b>"+jsonGet(json,"Action")+" </b>"+ jsonGet(json,"date")));
+        tv1.setText(Html.fromHtml("<b>" + medic.getName() + " " + medic.getLast_name() +
+                "</b><br><br> DNI: " + medic.getDocument_number() +
+                "<br> Gender: " + medic.getGender() +
+                "<br> Speciality: " + valuesSpeciality.get(medic.getMedical_speciality_id()) +
+                "<br> Email: " + medic.getEmail() +
+                "<br> City: " + valuesCity.get(medic.getCity_id()) +
+                "<br> Address: " + medic.getAddress() +
+                "<br><br> <b>" + getString(R.string.expires) + " </b>" + medic.getExpires()));
+
 
         tv1.setTextColor(root.getResources().getColor(android.R.color.white));
-        tv1.setPadding(30,30,0,30);
+        tv1.setPadding(30, 30, 0, 30);
 
         ll.addView(tv1);
 
@@ -230,7 +243,7 @@ public class SuscriptionsFragment extends Fragment {
         price.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
         price.setClickable(false);
         price.setEnabled(false);
-        price.setText(amount);
+        price.setText(medic.getPrice());
         price.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         price.setTextColor(getResources().getColor(android.R.color.black));
         price.setVisibility(viewVisibility);
@@ -244,12 +257,12 @@ public class SuscriptionsFragment extends Fragment {
         llR.setLayoutParams(lp2);
 
         //if (Integer.parseInt(textPriceButton) <= 0)
-            //bton.setEnabled(false);
+        //bton.setEnabled(false);
 
         llR.addView(price);
         llR.addView(s1);
         llR.addView(bton);
-        llR.setPadding(0,30,30,30);
+        llR.setPadding(0, 30, 30, 30);
 
         //LAYOUT HORIZONTAL PARA TEXTO Y BOTON
         LinearLayout llSub = new LinearLayout(root.getContext());
@@ -270,69 +283,87 @@ public class SuscriptionsFragment extends Fragment {
         //------fin de programación del formato
     }
 
-    private Button createButton(View root, int text , Fragment fragment, String id, int pos, String price){
+    /**
+     * Creacion del boton y funcionalidad al clickearlo
+     * @param root
+     * @param text = mensaje del boton
+     * @param fragment
+     * @param id = id del personal medico de la tarjeta
+     * @param pos = posicion de la tarjeta en la lista
+     * @param price = precio por el servicio
+     * @param email = email del medico
+     * @param name = nombre del medico
+     * @return
+     */
+    private Button createButton(View root, int text, Fragment fragment, int id, int pos, String price, String email, String name) {
         Button bt = new Button(root.getContext());
         bt.setText(text);
         bt.setBackground(getResources().getDrawable(R.drawable.button_state));
         bt.setTextColor(getResources().getColor(android.R.color.white));
         bt.setOnClickListener(new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                bt.setEnabled(false);
+                                  @Override
+                                  public void onClick(View v) {
+                                      bt.setEnabled(false);
 
-                if (text == R.string.suscribe) {
-                    Log.d("TESTEO", pos+"");
-                    suscribe(id);
-                    ((LinearLayout)root.findViewById(R.id.list2)).removeView(views.get(2*pos));
-                    ((LinearLayout)root.findViewById(R.id.list2)).removeView(views.get((2*pos)+1));
+                                      if (text == R.string.suscribe) {
+                                          Log.d(TAG, pos + "");
+                                          suscribe(id);
+                                          ((LinearLayout) root.findViewById(R.id.list2)).removeView(views.get(2 * pos));
+                                          ((LinearLayout) root.findViewById(R.id.list2)).removeView(views.get((2 * pos) + 1));
 
-                    TextView count2 = root.findViewById(R.id.count2);
-                    count2.setText((Integer.parseInt(count2.getText().toString())-1)+"");
-                    //Log.d("TESTEO", ((LinearLayout)root.findViewById(R.id.list2)).get),
-                }
-                else
-                    pay(price, id);
-              }
-          }
+                                          TextView count2 = root.findViewById(R.id.count2);
+                                          count2.setText((Integer.parseInt(count2.getText().toString()) - 1) + "");
+                                          //Log.d(TAG, ((LinearLayout)root.findViewById(R.id.list2)).get),
+                                      } else {
+                                          pay(price, id, email, name);
+                                      }
+
+                                    }
+                              }
         );
         return bt;
     }
 
-    private void finishCall(int i){
-        calls.set(i,0);
-        for (int j = 0; j< calls.size();j++) {
+    private void finishCall(int i) {
+        calls.set(i, 0);
+        for (int j = 0; j < calls.size(); j++) {
             if (calls.get(j) == 1)
                 return;
         }
         //loadProfile();
         //mProgressDialog.dismiss();
-        if (valuesCity.size()>0) {
-            getSubscriptions(1);
+        if (valuesCity.size() > 0) {
+            getMedicalList();
         }
     }
 
-    private synchronized int addCall(){
+    private synchronized int addCall() {
         calls.add(1);
-        //Log.d("CALLS",calls.size()+"");
-        return calls.size()-1;
+        //Log.d(TAG,calls.size()+"");
+        return calls.size() - 1;
     }
 
-    private void getMedicalList(){
+    /**
+     * Obtencion de la lista de medicos desde backend mediante metodo GET. Luego de obtenerlos y almacenarlos en la base de
+     * datos local (si no se encontraban en esta), se ejecuta el metodo para la obtencion de las suscripciones
+     */
+    private void getMedicalList() {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = MainActivity.PATH+"medicallist/";
+        String conexion = MainActivity.PATH + "medicallist/";
 
         //int numCall = addCall();
-        request.GET(conexion,new JSONArray(), new Callback(){
+        request.GET(conexion, new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                msjToast(e, 4000);
+                mProgressDialog.dismiss();
                 //finishCall(numCall);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
 
-                Log.d("TESTTT", "CONSULTÓ MEDICOS");
+                Log.d(TAG, "CONSULTÓ MEDICOS");
 
                 try {
                     String responseData = response.body().string();
@@ -342,76 +373,108 @@ public class SuscriptionsFragment extends Fragment {
 
                     int cantSubs = 0;
 
-                    for (int i=0;i< jsonArray.length(); i++) {
+                    MedicRepository medicRepository = new MedicRepository(getActivity().getApplication());
 
-                        JSONObject json = new JSONObject(jsonArray.get(i).toString());
+                    if (jsonArray.length() == AppDatabase.getAppDatabase(getContext()).medicDAO().size()) {
+                        addMedicViews(medicRepository.getAll());
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
 
-                        if (!medicalSubscriptions.contains(json.getString("medical_personnel_id"))) {
+                            JSONObject json = new JSONObject(jsonArray.get(i).toString());
 
-                            int c = (json.getString("city_id").equals("null")) ? 1 : Integer.parseInt(json.getString("city_id"));
-                            int s = (json.getString("medical_speciality_id").equals("null")) ? 1 : Integer.parseInt(json.getString("medical_speciality_id"));
-                            String add = (json.getString("address").equals("null")) ? "" : json.getString("address");
-                            String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
-                            int pos = cantSubs;
-                            cantSubs++;
+                            if (!medicRepository.contains(json.getInt("medical_personnel_id"))) {
+                                int c = (json.getString("city_id").equals("null")) ? 1 : Integer.parseInt(json.getString("city_id"));
+                                int s = (json.getString("medical_speciality_id").equals("null")) ? 1 : Integer.parseInt(json.getString("medical_speciality_id"));
+                                String add = (json.getString("address").equals("null")) ? "" : json.getString("address");
+                                String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
 
+                                Medic medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("medical_personnel_id"));
+                                medic.setExpires("--/--/----");
+                                medic.setPrice("-1");
+                                medicRepository.insert(medic);
 
-                            JSONObject jsonSend = new JSONObject();
-                            jsonPut(jsonSend, "name", json.getString("name"));
-                            jsonPut(jsonSend, "Gender", g);
-                            jsonPut(jsonSend, "DNI", json.getString("document_number"));
-                            jsonPut(jsonSend, "Email", json.getString("email"));
-                            jsonPut(jsonSend, "City", valuesCity.get(c));
-                            jsonPut(jsonSend, "Address", add);
-                            jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
-                            jsonPut(jsonSend, "Action", "EXPIRES :");
+                                int pos = cantSubs;
+                                cantSubs++;
 
-                            jsonPut(jsonSend, "date", "--/--/----");
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
 
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
+                                            newSuscription(root, medic, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, medic.getMedical_personnel_id(), pos, "0", medic.getEmail(), medic.getFullName()), View.GONE);
 
-                                        newSuscription(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, json.getString("medical_personnel_id"), pos, "0"), View.GONE, "0");
-
-                                    } catch (Exception e) {
-                                        msjToast(e, response.code());
+                                        } catch (Exception e) {
+                                            msjToast(e, response.code());
+                                        }
                                     }
-                                }
-                            });
-                        }
-                    }
-
-                    String cantSubString = cantSubs+"";
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ((TextView)root.findViewById(R.id.count2)).setText(cantSubString);
-                            }catch (Exception e){
-                                msjToast(e,response.code());
+                                });
                             }
                         }
-                    });
 
+                        String cantSubString = cantSubs + "";
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ((TextView) root.findViewById(R.id.count2)).setText(cantSubString);
+                                } catch (Exception e) {
+                                    msjToast(e, response.code());
+                                }
+                            }
+                        });
+                    }
+                    getSubscriptions();
 
-                } catch (IOException e) {
-                    msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
-                    mProgressDialog.dismiss();
-                    //finishCall(numCall);
+                } catch (IOException | JSONException e) {
+                    msjToast(e, response.code());
                 }
+
             }
         });
     }
 
-    private void getSubscriptions(int action){
-        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String conexion = MainActivity.PATH+"subscriptions/get";
 
+    /**
+     * Se muestran los datos de los medicos ya almacenados en la base de datos local
+     * @param medics = Lista de metodos obtenida de la base de datos
+     */
+    private void addMedicViews(List<Medic> medics) {
+        Log.d(TAG, "addMedicViews: muestro ya cargados");
+        int cantSubs = 0;
+        LinearLayout list2 = root.findViewById(R.id.list2);
+        for (Medic medic : medics) {
+            int pos = cantSubs;
+
+            if (Integer.parseInt(medic.getPrice()) < 0) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        newSuscription(root, medic, list2, R.drawable.background_target_waiting_training, createButton(root, R.string.suscribe, null, medic.getMedical_personnel_id(), pos, "0", medic.getEmail(), medic.getFullName()), View.GONE);
+                    }
+                });
+                cantSubs++;
+            }
+        }
+        String cantSubsString = cantSubs + "";
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) root.findViewById(R.id.count2)).setText(cantSubsString);
+            }
+        });
+
+    }
+
+
+    /**
+     * Obtencion mediante metodo GET de la lista de suscripciones. Se realiza la actualizacion de precios y vencimientos
+     */
+    private void getSubscriptions(){
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = MainActivity.PATH + "subscriptions/get";
+
+        Log.d(TAG, "getSubscriptions: ");
         //int numCall = addCall();
 
         JSONArray jarr = new JSONArray();
@@ -423,10 +486,10 @@ public class SuscriptionsFragment extends Fragment {
             e.printStackTrace();
         }
 
-        request.GET(conexion,jarr, new Callback(){
+        request.GET(conexion, jarr, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                msjToast(e, 4000);
                 //finishCall(numCall);
             }
 
@@ -435,7 +498,7 @@ public class SuscriptionsFragment extends Fragment {
 
                 try {
                     String responseData = response.body().string();
-
+                    Log.d(TAG, "onResponse: get subscriptions: " + response.code());
                     if (response.code() == 200) {
                         JSONArray jsonArray = new JSONArray(responseData);
 
@@ -443,46 +506,51 @@ public class SuscriptionsFragment extends Fragment {
 
                         int cantSubs = 0;
 
+                        MedicRepository medicRepository = new MedicRepository(getActivity().getApplication());
+
                         for (int i = 0; i < jsonArray.length(); i++) {
 
                             JSONObject json = new JSONObject(jsonArray.get(i).toString());
 
-                            int c = (json.getString("city_id").equals("null"))? 1: Integer.parseInt(json.getString("city_id"));
-                            int s = (json.getString("medical_speciality_id").equals("null"))? 1: Integer.parseInt(json.getString("medical_speciality_id"));
-                            String add = (json.getString("address").equals("null"))? "": json.getString("address");
-                            String g =  (json.getString("gender").equals("M") )? "Male": ((json.getString("gender").equals("F")) ? "Female" : "");
-                            int pos = i;
+                            Medic medic;
+                            String expires;
 
-                            JSONObject jsonSend = new JSONObject();
-                            jsonPut(jsonSend, "name", json.get("name").toString());
-                            jsonPut(jsonSend, "Gender", g);
-                            jsonPut(jsonSend, "DNI", json.get("document_number").toString());
-                            jsonPut(jsonSend, "Email", json.get("email").toString());
-                            jsonPut(jsonSend, "City", valuesCity.get(c));
-                            jsonPut(jsonSend, "Address", add);
-                            jsonPut(jsonSend, "Speciality", valuesSpeciality.get(s));
-                            jsonPut(jsonSend, "Action", "EXPIRES: ");
+                            if (!medicRepository.contains(json.getInt("Medical_Personnel_id"))) {
+                                int c = (json.getString("city_id").equals("null")) ? 1 : Integer.parseInt(json.getString("city_id"));
+                                int s = (json.getString("medical_speciality_id").equals("null")) ? 1 : Integer.parseInt(json.getString("medical_speciality_id"));
+                                String add = (json.getString("address").equals("null")) ? "" : json.getString("address");
+                                String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
 
-                            String expires = (json.getString("expires").equals("null")) ? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
 
-                            jsonPut(jsonSend, "date", expires);
+                                medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("Medical_Personnel_id"));
+                                expires = (json.getString("expires").equals("null")) ? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
+                                medic.setExpires(expires);
+                                medic.setPrice(json.get("amount").toString());
+                                medicRepository.insert(medic);
 
+                            } else {
+                                medic = medicRepository.getMedic(json.getInt("Medical_Personnel_id"));
+                                expires = (json.getString("expires").equals("null")) ? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
+                                medic.setExpires(expires);
+                                medic.setPrice(json.get("amount").toString());
+                                medicRepository.update(medic);
+                            }
+                            int pos = cantSubs;
+
+
+                            Log.d(TAG, "onResponse: expires: " + expires);
 
                             final String textPriceButton = json.get("amount").toString();
-                            textEmail = json.get("email").toString();
-                            textName = json.get("name").toString();
 
-                            medicalSubscriptions.add(json.getString("Medical_Personnel_id"));
+                            int visibilidad = (json.getString("expires").equals("null") ? View.VISIBLE : View.VISIBLE);
 
-                            int visibilidad = (json.getString("expires").equals("null")? View.VISIBLE : View.VISIBLE);
-
-                            if (Integer.parseInt(textPriceButton)>0) {
+                            if (Integer.parseInt(textPriceButton) > 0) {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
 
-                                            newSuscription(root, jsonSend, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, json.getString("Medical_Personnel_id"), pos, textPriceButton), visibilidad, textPriceButton);
+                                            newSuscription(root, medic, list1, R.drawable.background_model_training_history, createButton(root, R.string.pay, null, medic.getMedical_personnel_id(), pos, textPriceButton, medic.getEmail(), medic.getFullName()), visibilidad);
 
                                         } catch (Exception e) {
                                             msjToast(e, response.code());
@@ -491,51 +559,50 @@ public class SuscriptionsFragment extends Fragment {
                                 });
                                 cantSubs++;
                             }
+
                         }
 
-                        String cantSubsString = cantSubs+"";
+                        String cantSubsString = cantSubs + "";
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    ((TextView)root.findViewById(R.id.count1)).setText(cantSubsString);
-                                }catch (Exception e){
-                                    msjToast(e,response.code());
+                                    ((TextView) root.findViewById(R.id.count1)).setText(cantSubsString);
+                                } catch (Exception e) {
+                                    msjToast(e, response.code());
                                 }
                             }
                         });
 
-                        //if (action == 1)
-                            getMedicalList();
+//                        getMedicalList();
                     }
 
-                } catch (IOException e) {
-                    msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
-                    //mProgressDialog.dismiss();
+                } catch (IOException | JSONException e) {
+                    msjToast(e, response.code());
+                } finally {
+                    mProgressDialog.dismiss();
                     //finishCall(numCall);
                 }
             }
         });
     }
 
-    private void getValues(ArrayList arr, String path){
+
+    private void getValues(ArrayList arr, String path) {
         OkHttpClient innerClient = new OkHttpClient.Builder()
                 .connectTimeout(2, TimeUnit.MINUTES) // connect timeout
                 .writeTimeout(2, TimeUnit.MINUTES) // write timeout
                 .readTimeout(2, TimeUnit.MINUTES) // read timeout
                 .build();
         OkHttpRequest request = new OkHttpRequest(innerClient);
-        String conexion = MainActivity.PATH+path;
+        String conexion = MainActivity.PATH + path;
 
         int numCall = addCall();
 
-        request.GET(conexion,new JSONArray(), new Callback(){
+        request.GET(conexion, new JSONArray(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                msjToast(e, 4000);
                 finishCall(numCall);
             }
 
@@ -546,31 +613,31 @@ public class SuscriptionsFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONArray jsonArray = new JSONArray(responseData);
 
-                    for (int i=0;i< jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject json = new JSONObject(jsonArray.get(i).toString());
                         arr.add(json.getString("name"));
                     }
 
-                } catch (IOException e) {
-                    msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
+                } catch (IOException | JSONException e) {
+                    msjToast(e, response.code());
+                } finally {
                     finishCall(numCall);
                 }
             }
         });
     }
 
-    private void suscribe(String id){
+    /**
+     * Metodo POST para registrar la suscricion al servicio de un medico
+     * @param id = id del personal medico
+     */
+    private void suscribe(int id) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
 
-
-        Log.d("testing ", id);
-        Log.d("TOKEN ", MainActivity.TOKEN);
+        Log.d(TAG, "id: " + id);
         JSONObject js = new JSONObject();
         try {
-            js.put("medical_personnel_id", Integer.parseInt(id));
+            js.put("medical_personnel_id", id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -586,37 +653,45 @@ public class SuscriptionsFragment extends Fragment {
 
         header.put(jsAux);
 
-        String conexion = MainActivity.PATH+"subscriptions/subscribe";
+        String conexion = MainActivity.PATH + "subscriptions/subscribe";
 
 
         request.POST(conexion, header, js, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                msjToast(e,4000);
+                msjToast(e, 4000);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
-                msjToast(null,response.code());
-
+                msjToast(null, response.code());
             }
         });
     }
 
-    private void msjToast(Exception e, int code){
+
+    private void msjToast(Exception e, int code) {
         mProgressDialog.dismiss();
         if (e != null)
             e.printStackTrace();
         Looper.prepare();
-        Toast.makeText(root.getContext(), LoginActivity.error(cont,code), Toast.LENGTH_SHORT).show();
+        Toast.makeText(root.getContext(), LoginActivity.error(cont, code), Toast.LENGTH_SHORT).show();
         Looper.loop();
     }
 
-    private void pay(String price ,String id){
+
+    private void pay(String price, int id, String textEmail, String textName) {
+
+
+        Bundle datosAEnviar = new Bundle();
+        datosAEnviar.putString("email", textEmail);
+        datosAEnviar.putFloat("price", Float.parseFloat(price));
+        datosAEnviar.putString("title", "Workout By " + textName);
+
         Map<String, Object> preferenceMap = new HashMap<>();
         preferenceMap.put("id", "1");
-        preferenceMap.put("title", "Workout By "+textName);
+        preferenceMap.put("title", "Workout By " + textName);
         preferenceMap.put("quantity", 1);
         preferenceMap.put("currency_id", "ARS");
         preferenceMap.put("unit_price", Float.parseFloat(price));
@@ -636,28 +711,12 @@ public class SuscriptionsFragment extends Fragment {
 
             @Override
             public void failure(ApiException apiException) {
-                Log.d("ERROR DE SALIDA", apiException.getMessage());
+                Log.d(TAG, "ERROR EN LA SALIDA: " + apiException.getMessage());
             }
         });
     }
 
-    private void jsonPut(JSONObject json, String key, String value){
-        try {
-            json.put(key,value);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private String jsonGet(JSONObject json, String key){
-        String value= "";
-        try{
-            value = json.getString(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return value;
-    }
 
     private static String pk = "TEST-7d36b114-d09c-4884-8b5c-d9e9575533b3";
     private static final int REQUEST_CODE = 1;
@@ -694,10 +753,13 @@ public class SuscriptionsFragment extends Fragment {
         }
     }
 
-    //actualizar la subscripcion
-    private void inicSubscription(String id) {
+    /**
+     * Actualizacion de la suscripcion mediante metodo PUT
+     * @param id = id del personal medico
+     */
+    private void inicSubscription(int id) {
 
-        Log.d("TESTING MEDICAL ",id);
+        Log.d(TAG, "TESTING MEDICAL " +id);
         JSONArray jarr = new JSONArray();
         try {
             JSONObject jobj = new JSONObject();
@@ -719,6 +781,7 @@ public class SuscriptionsFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) {
                 msjToast(null, response.code());
+                //reload
             }
         });
     }

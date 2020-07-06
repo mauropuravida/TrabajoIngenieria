@@ -156,6 +156,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Agrego datos a un objeto Json.
+     *
      * @param json
      * @param key
      * @param value
@@ -170,6 +171,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Obtengo datos de un objeto Json.
+     *
      * @param json
      * @param key
      * @return
@@ -186,6 +188,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Creacion vista de entrenamientos/historicos.
+     *
      * @param root
      * @param json
      * @param tag
@@ -232,13 +235,12 @@ public class TrainingInformation extends Fragment {
         ll4.addView(bt2);
 
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(40, root.getContext()));
-        lp1.setMargins(0, dpToPx(10, root.getContext()), 0, 0);
+        lp1.setMargins(0, dpToPx(0, root.getContext()), 0, 0);
 
         EditText e1 = new EditText(root.getContext());
         e1.setPadding(30, 0, 30, 0);
         e1.setText((String) jsonGet(json, "name")); // NOMBRE DEL EJERCICIO
         e1.setTextColor(getResources().getColor(R.color.DarkGrayText));
-        e1.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
         e1.setEnabled(false);
         e1.setGravity(Gravity.CENTER_VERTICAL);
         e1.setLayoutParams(lp1);
@@ -256,8 +258,8 @@ public class TrainingInformation extends Fragment {
         EditText e2 = new EditText(root.getContext());
         e2.setText((String) jsonGet(json, "time")); // DURACION DEL EJERCICIO
         e2.setTextColor(getResources().getColor(R.color.DarkGrayText));
+        e2.setPadding(30, 0, 30, 10);
         e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
-        e2.setPadding(30, 0, 30, 0);
         e2.setEnabled(false);
         e2.setGravity(Gravity.CENTER_VERTICAL);
         e2.setLayoutParams(lp3);
@@ -288,7 +290,7 @@ public class TrainingInformation extends Fragment {
         Chronometer chronometer = new Chronometer(root.getContext());
         YouTubePlayerView ypv = new YouTubePlayerView(root.getContext());
 
-        if(fragment.equals("M")) {
+        if (fragment.equals("M")) {
             chronometer.setPadding(30, 0, 30, 0);
             chronometer.setTextSize(dpToPx(24, root.getContext()));
             chronometer.setTextColor(getResources().getColor(R.color.DarkGrayText));
@@ -296,7 +298,6 @@ public class TrainingInformation extends Fragment {
             chronometer.setBase(SystemClock.elapsedRealtime());
             chronometer.setFormat("%s");
             chronometer.setFocusable(false);
-            e2.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
             chronometer.setGravity(Gravity.CENTER);
             chronometer.setLayoutParams(lp5);
 
@@ -318,15 +319,12 @@ public class TrainingInformation extends Fragment {
 
         TextView t1 = new TextView(root.getContext());
         t1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
-        if(fragment.equals("M")) {
-            t1.setText(root.getResources().getString(R.string.instructions));
-        }else
-            t1.setText(root.getResources().getString(R.string.desciptions));
+        t1.setText(root.getResources().getString(R.string.desciptions));
         t1.setGravity(Gravity.CENTER_VERTICAL);
         t1.setTextSize(18);
         t1.setLayoutParams(lp6);
 
-        LinearLayout.LayoutParams lp7 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(150, root.getContext()));
+        LinearLayout.LayoutParams lp7 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(50, root.getContext()));
         lp7.setMargins(0, dpToPx(10, root.getContext()), 0, 0);
 
         ScrollView sc1 = new ScrollView(root.getContext());
@@ -341,16 +339,16 @@ public class TrainingInformation extends Fragment {
         e5.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.Background));
         e5.setSingleLine(false);
 
-        if(fragment.equals("H")){
-            jsonPut(json, "price", workout.getPrice()+ " ");
-            jsonPut(json, "creation_date",workout.getCreation_date() );
-            e5.setText("Price:  "+(String)jsonGet(json,"price"));
+        if (fragment.equals("H")) {
+            jsonPut(json, "price", workout.getPrice() + " ");
+            jsonPut(json, "creation_date", workout.getCreation_date());
+            e5.setText("Price:  " + (String) jsonGet(json, "price"));
             e5.append(Html.fromHtml("<br>").toString());
-            String date = PikerDate.Companion.toDateFormatView((String)jsonGet(json,"creation_date"));
-            e5.append("Creation Date:  "+ date);
+            String date = PikerDate.Companion.toDateFormatView((String) jsonGet(json, "creation_date"));
+            e5.append("Creation Date:  " + date);
             e5.append(Html.fromHtml("<br>").toString());
-            e5.append("Rating:  "+(String)jsonGet(json,"rating"));
-        }else{
+            e5.append("Rating:  " + (String) jsonGet(json, "rating"));
+        } else {
             e5.setText(Html.fromHtml("<br>").toString());
             e5.append((String) jsonGet(json, "instructions"));
         }
@@ -363,7 +361,7 @@ public class TrainingInformation extends Fragment {
         ll2.setOrientation(LinearLayout.HORIZONTAL);
         ll2.setGravity(Gravity.CENTER);
         ll2.setLayoutParams(lp8);
-        if(fragment.equals("M")) {
+        if (fragment.equals("M")) {
 
             Button bt1 = new Button(root.getContext()); //Start
             Button bt3 = new Button(root.getContext()); //Stop
@@ -483,13 +481,17 @@ public class TrainingInformation extends Fragment {
         ll3.setLayoutParams(lp9);
 
         ll3.addView(e1);
+        EditText es = new EditText(root.getContext());
+        es.setBackgroundTintList(ContextCompat.getColorStateList(root.getContext(), R.color.DarkerButton));
+        es.setPadding(0,0,0,0);
+        ll3.addView(es);
         ll3.addView(ll1);
-        if(fragment.equals("M"))
+        if (fragment.equals("M"))
             ll3.addView(ypv);
         ll3.addView(t1);
         ll3.addView(sc1);
         //ll3.addView(e4);
-        if(fragment.equals("M"))
+        if (fragment.equals("M"))
             ll3.addView(chronometer);
         ll3.addView(ll2);
 
@@ -503,6 +505,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Renderizado videos.
+     *
      * @param dp
      * @param c
      * @return
@@ -536,7 +539,7 @@ public class TrainingInformation extends Fragment {
         for (int i = 0; i < exercisesList.size(); i++) {
             System.out.println(exercisesList.get(i));
             JSONObject json = new JSONObject();
-            jsonPut(json, "name", workout.getName() + ":  " + "exercise " + i);
+            jsonPut(json, "name", workout.getName());
             int exercise_id = exercisesList.get(i).getId();
             // String time = workoutsExercisesRepository.getTime(workout_id, exercise_id ); // obtener de workoutsExercises
             jsonPut(json, "time", "Video");
@@ -557,7 +560,7 @@ public class TrainingInformation extends Fragment {
      * Obtengo datos del reporte generado correspondiente a un workout_exercises del Serverless.
      * Evito llamar al backend nuevamente.
      */
-    private  void loadInformationHistory(){
+    private void loadInformationHistory() {
         while (workout_id == 0)
             workout_id = workoutsRepository.getWourkoutIdRoom(workout_id);
         System.out.println("WORK ID ROOM LOAD INFORMATION " + workout_id);
@@ -567,8 +570,8 @@ public class TrainingInformation extends Fragment {
         jsonPut(json, "name", workout.getName() + ":  " + " Report. ");
         jsonPut(json, "time", report.getExecution_date());
         jsonPut(json, "difficulty", workout.getDifficulty());
-        jsonPut(json, "price", workout.getPrice()+ " ");
-        jsonPut(json,"rating",workout.getRating());
+        jsonPut(json, "price", workout.getPrice() + " ");
+        jsonPut(json, "rating", workout.getRating());
         jsonPut(json, "creation_date", workout.getCreation_date());
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -583,6 +586,7 @@ public class TrainingInformation extends Fragment {
      * Si hay internet -> true
      * Si no hay internet -> Si la cantidad de trabajos guardados es < 5 -> True
      * Si no hay internet -> Si la cantidad de trabajos guardados es > 5 -> False
+     *
      * @return
      */
     private boolean trainingWithoutConnection() {
@@ -604,6 +608,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Check conexion a internet.
+     *
      * @return conectado? SI - NO
      */
     private boolean internetConnection() {
@@ -690,11 +695,11 @@ public class TrainingInformation extends Fragment {
         String url = MainActivity.PATH + "workoutReport/";
         JSONObject js = new JSONObject();
         try {
-            js.put("workout_id",work_id);
+            js.put("workout_id", work_id);
             Calendar currentDate = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String execution_date = PikerDate.Companion.toDateFormat(sdf.format(currentDate.getTime()));
-            js.put("execution_date",execution_date);
+            js.put("execution_date", execution_date);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -723,7 +728,7 @@ public class TrainingInformation extends Fragment {
         System.out.println(url);
         JSONObject json = new JSONObject();
         try {
-            json.put("rating",rating);
+            json.put("rating", rating);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -765,8 +770,6 @@ public class TrainingInformation extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-        lp.gravity = Gravity.CENTER;
-
         rating.setLayoutParams(lp);
         rating.setNumStars(5);
         rating.setStepSize(0.1f);
@@ -805,14 +808,6 @@ public class TrainingInformation extends Fragment {
 
                 });
 
-        // Button Cancel
-               /* .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });*/
-
         popDialog.create();
         popDialog.show();
 
@@ -820,14 +815,17 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Seteo rating del ejercicio finalizado.
+     *
      * @param n = rating.
      */
     public void setStars(int n) {
         this.rating = n;
+        Toast.makeText(root.getContext(), root.getResources().getString(R.string.exercise_finish), Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Comienza/continua cuenta del cronometo.
+     *
      * @param chronometer
      */
     private void startChronometer(Chronometer chronometer) {
@@ -846,6 +844,7 @@ public class TrainingInformation extends Fragment {
 
     /**
      * Se detiene y guarda el estado del cronometro.
+     *
      * @param chronometer
      */
     private void stopChronometer(Chronometer chronometer) {

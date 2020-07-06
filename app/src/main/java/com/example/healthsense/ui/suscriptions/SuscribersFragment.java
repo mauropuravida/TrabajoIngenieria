@@ -35,6 +35,7 @@ import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.ui.login.LoginActivity;
 import com.example.healthsense.ui.traininginformation.CreateTraining;
+import com.example.healthsense.ui.traininginformation.TrainingInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,14 +86,6 @@ public class SuscribersFragment extends Fragment {
             }
         });
 
-        JSONObject json = new JSONObject();
-
-        jsonPut(json,"name", "Juan Domingo");
-        jsonPut(json,"DNI", "34564367");
-        jsonPut(json,"Weight", "85 kg");
-        jsonPut(json,"Height", "180 cm");
-        jsonPut(json,"Patologies", "None");
-
         LinearLayout list1 = root.findViewById(R.id.list1);
         root.findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
                @Override
@@ -115,11 +108,6 @@ public class SuscribersFragment extends Fragment {
                }
            }
         );
-
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list1, R.drawable.background_model_training_history, createButton(root,R.string.edit,new CreateTraining()),View.GONE);
 
         ((TextView)root.findViewById(R.id.count1)).setText("0");
 
@@ -145,10 +133,6 @@ public class SuscribersFragment extends Fragment {
            }
         );
 
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-        //newSuscriber(root, json, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining()),View.GONE);
-
         ((TextView)root.findViewById(R.id.count2)).setText("0");
 
         LinearLayout list3 = root.findViewById(R.id.list3);
@@ -173,13 +157,6 @@ public class SuscribersFragment extends Fragment {
            }
         );
         fg = this;
-
-        /*newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);
-        newSuscriber(root, json, list3, R.drawable.background_target_price, createButton(root,R.string.set_price, null),View.VISIBLE);*/
 
         ((TextView)root.findViewById(R.id.count3)).setText("0");
 
@@ -259,11 +236,9 @@ public class SuscribersFragment extends Fragment {
                         arr.add(json.getString("name"));
                     }
 
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
+                } finally {
                     finishCall(numCall);
                 }
             }
@@ -461,12 +436,17 @@ public class SuscribersFragment extends Fragment {
                                 });
                                 cantSubs3++;
                             }else{
-                                if(!(json.getString("expires").equals("null"))){
+                                if((json.getString("expires").equals("null"))){
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training,new CreateTraining(), json.getString("Device_Users_id"), pos),View.GONE);
+                                                Bundle datosAEnviar = new Bundle();
+                                                datosAEnviar.putInt("Device_Users_id", json.getInt("Device_Users_id"));
+                                                TrainingInformation.fg = fg;
+                                                Fragment fragment = new CreateTraining();
+                                                fragment.setArguments(datosAEnviar);
+                                                newSuscriber(root, jsonSend, list2, R.drawable.background_target_waiting_training, createButton(root,R.string.add_training, fragment, json.getString("Device_Users_id"), pos),View.GONE);
                                             } catch (Exception e) {
                                                 msjToast(e, response.code());
                                             }
@@ -475,6 +455,8 @@ public class SuscribersFragment extends Fragment {
                                     cantSubs2++;
                                 }
                             }
+
+                            //todo lista de edits
                         }
 
                         String cantSubsString3 = cantSubs3+"";
@@ -494,11 +476,9 @@ public class SuscribersFragment extends Fragment {
                         //getMedicalList();
                     }
 
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     msjToast(e,response.code());
-                } catch (JSONException e) {
-                    msjToast(e,response.code());
-                }finally {
+                } finally {
                     mProgressDialog.dismiss();
                     //finishCall(numCall);
                 }
@@ -517,7 +497,7 @@ public class SuscribersFragment extends Fragment {
 
     private void setPriceWorkout(String id, int p){
 
-        String textedit = amountViews.get(p).getText().toString();
+        String textedit = amountViews.get(p-1).getText().toString();
 
         Log.d("TESTING ",textedit);
         JSONObject js = new JSONObject();
