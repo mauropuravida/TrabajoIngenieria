@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 /**
  * Clase auxiliar interna Medic para almacenar la lista de medicos
  */
@@ -57,8 +59,11 @@ public class Medic {
     @ColumnInfo(name = "price")
     private String price;
 
+    @ColumnInfo(name = "languages")
+    private String languages;
 
-    public Medic(@NotNull String name, @NotNull String last_name, String gender, @NotNull String email, String document_number, String address, int city_id, int medical_speciality_id, int medical_personnel_id) {
+
+    public Medic(@NotNull String name, @NotNull String last_name, String gender, @NotNull String email, String document_number, String address, int city_id, int medical_speciality_id, int medical_personnel_id, String languages) {
         this.name = name;
         this.last_name = last_name;
         this.gender = gender;
@@ -69,6 +74,7 @@ public class Medic {
         this.medical_speciality_id = medical_speciality_id;
         this.medical_personnel_id = medical_personnel_id;
         this.available = false;
+        this.languages = languages;
     }
 
     public void setId(int id) {
@@ -79,6 +85,9 @@ public class Medic {
         return id;
     }
 
+    public void setLanguages(String lg){ languages = lg; }
+
+    public String getLanguages(){ return languages; }
 
     @NotNull
     public String getName() {

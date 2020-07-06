@@ -82,6 +82,9 @@ public class SuscriptionsFragment extends Fragment {
     private Context cont;
     private ArrayList<View> views = new ArrayList<>();
 
+    private ArrayList<String> idsLanguages= new ArrayList<>();
+    private ArrayList<String> valuesLanguages = new ArrayList<>();
+
     private int medicalPayID;
 
     @Override
@@ -101,14 +104,21 @@ public class SuscriptionsFragment extends Fragment {
         doAsync.execute(new Runnable() {
             @Override
             public void run() {
-                getValues(valuesCity, "city/");
+                getValues(valuesCity, "city/", null);
             }
         });
 
         doAsync.execute(new Runnable() {
             @Override
             public void run() {
-                getValues(valuesSpeciality, "medicalspeciality/");
+                getValues(valuesSpeciality, "medicalspeciality/", null);
+            }
+        });
+
+        doAsync.execute(new Runnable() {
+            @Override
+            public void run() {
+                getValues(valuesLanguages, "language/", idsLanguages);
             }
         });
 
@@ -216,6 +226,7 @@ public class SuscriptionsFragment extends Fragment {
                 "<br> Email: " + medic.getEmail() +
                 "<br> City: " + valuesCity.get(medic.getCity_id()) +
                 "<br> Address: " + medic.getAddress() +
+                "<br> Languages: " + medic.getLanguages()+
                 "<br><br> <b>" + getString(R.string.expires) + " </b>" + medic.getExpires()));
 
 
@@ -388,7 +399,23 @@ public class SuscriptionsFragment extends Fragment {
                                 String add = (json.getString("address").equals("null")) ? "" : json.getString("address");
                                 String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
 
-                                Medic medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("medical_personnel_id"));
+                                String lgs = "";
+                                /*JSONArray lgsArr = json.getJSONArray("languages");
+                                for (int h =0 ; h< lgsArr.length(); h++){
+                                    JSONObject jo = (JSONObject) lgsArr.get(h);
+
+                                    for (int k=0;k< idsLanguages.size();k++){
+                                        if (idsLanguages.get(k).equals(jo.getString("language_id"))){
+                                            lgs+= valuesLanguages.get(k);
+                                            break;
+                                        }
+                                    }
+                                }*/
+
+                                Log.d("TESTLAN", lgs);
+
+
+                                Medic medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("medical_personnel_id"), lgs);
                                 medic.setExpires("--/--/----");
                                 medic.setPrice("-1");
                                 medicRepository.insert(medic);
@@ -522,7 +549,7 @@ public class SuscriptionsFragment extends Fragment {
                                 String g = (json.getString("gender").equals("M")) ? "Male" : ((json.getString("gender").equals("F")) ? "Female" : "");
 
 
-                                medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("Medical_Personnel_id"));
+                                medic = new Medic(json.getString("name"), json.getString("last_name"), g, json.getString("email"), json.getString("document_number"), add, c, s, json.getInt("Medical_Personnel_id"),"");
                                 expires = (json.getString("expires").equals("null")) ? "--/--/----" : PikerDate.Companion.toDateFormatView(json.getString("expires"));
                                 medic.setExpires(expires);
                                 medic.setPrice(json.get("amount").toString());
@@ -588,7 +615,7 @@ public class SuscriptionsFragment extends Fragment {
     }
 
 
-    private void getValues(ArrayList arr, String path) {
+    private void getValues(ArrayList arr, String path, ArrayList ids) {
         OkHttpClient innerClient = new OkHttpClient.Builder()
                 .connectTimeout(2, TimeUnit.MINUTES) // connect timeout
                 .writeTimeout(2, TimeUnit.MINUTES) // write timeout
@@ -616,6 +643,9 @@ public class SuscriptionsFragment extends Fragment {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject json = new JSONObject(jsonArray.get(i).toString());
                         arr.add(json.getString("name"));
+
+                        if(ids != null)
+                            ids.add(json.getString("id"));
                     }
 
                 } catch (IOException | JSONException e) {

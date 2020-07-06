@@ -78,7 +78,6 @@ public class CreateTraining extends Fragment {
             @Override
             public void onClick(View view) {
                 showDialogDone();
-                //todo volver a la vista anterior
             }
         });
 
@@ -360,6 +359,9 @@ public class CreateTraining extends Fragment {
                         workout_name = name.getText().toString();
                         dialog.dismiss();
                         postExercises();
+                        getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, SuscribersFragment.fg).addToBackStack(null).commit();
+                        Toast.makeText(getContext(), getResources().getString(R.string.e200), Toast.LENGTH_SHORT).show();
+
                     }
 
                 });
