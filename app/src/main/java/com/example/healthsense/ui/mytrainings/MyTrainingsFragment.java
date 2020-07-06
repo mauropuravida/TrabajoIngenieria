@@ -153,7 +153,7 @@ public class MyTrainingsFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            //MainActivity.FIRST_TRAINING = false;
+            MainActivity.FIRST_TRAINING = false;
         }
 
         createExercises(rootGeneral, listenerGeneral);
@@ -190,14 +190,12 @@ public class MyTrainingsFragment extends Fragment {
      */
     //todo descomentar first training arriba, sacar de aca, dejar el toast si workoutsize == 0;
     private void createExercises(View root, View.OnClickListener mListener) {
-        if (MainActivity.FIRST_TRAINING) {
-            for (int i = 0; i < workouts.size(); i++) {
-                newTraining(root, i, mListener);
-            }
-            MainActivity.FIRST_TRAINING = false;
-        } else {
-            workouts.clear();
-            if (workouts.size() == 0) {
+        for (int i = 0; i < workouts.size(); i++) {
+            newTraining(root, i, mListener);
+        }
+
+        if (workouts.size() == 0) {
+            if (getActivity() != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -219,8 +217,6 @@ public class MyTrainingsFragment extends Fragment {
                 String path = "workoutExercise/workout_id&"; // obtengo por cada workout_id el workout_exercice asociado
                 token = new JSONArray();
                 int i = 0;
-                JSONObject ob = new JSONObject(); //quitar
-                
                 for (JSONObject o : workouts) {
                     try {
                         i++;
@@ -307,16 +303,20 @@ public class MyTrainingsFragment extends Fragment {
                             int x = 0;
                             int k = 0;
                             boolean encontrado = false;
-                            while (exercise.length() < x && !encontrado) {
+                            while (exercises.size() > x && !encontrado) {
                                 while (k < values.size()) {
-                                    if (exercises.get(i).getInt("id") != values.get(x).intValue())
+                                    if (exercises.get(x).getInt("id") != values.get(k).intValue()) {
                                         k++;
-                                    else
+                                    } else {
                                         encontrado = true;
+                                        break;
+                                    }
                                 }
                                 x++;
+                                k = 0;
                             }
-                            exercise = exercises.get(k);
+                            System.out.println("ENCONTRE L VALOr " + k);
+                            exercise = exercises.get(x);
                             description = exercise.getString("description");
                         }
                     } catch (JSONException e) {
