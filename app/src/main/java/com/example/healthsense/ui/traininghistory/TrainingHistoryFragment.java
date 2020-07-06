@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +35,6 @@ import com.example.healthsense.db.Repository.WorkoutsRepository;
 import com.example.healthsense.db.entity.Workouts;
 import com.example.healthsense.db.entity.WorkoutDone;
 import com.example.healthsense.db.entity.WorkoutReports;
-import com.example.healthsense.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -85,7 +83,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
-                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new HomeFragment()).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fg).addToBackStack(null).commit();
             }
         };
 

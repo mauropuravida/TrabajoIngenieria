@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Html;
@@ -28,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -37,7 +34,6 @@ import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.Resquest.doAsync;
 import com.example.healthsense.data.PikerDate;
-import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.Repository.DeviceUsersRepository;
 import com.example.healthsense.db.Repository.ExercisesRepository;
 import com.example.healthsense.db.Repository.UserRepository;
@@ -48,7 +44,6 @@ import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.WorkoutReports;
 import com.example.healthsense.db.entity.Workouts;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
@@ -64,16 +59,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
-import static com.example.healthsense.MainActivity.PREFS_FILENAME;
-import static com.example.healthsense.MainActivity.user;
-
+/*
+Clase que se encarga de manejar la imformación que posee la plantilla que contiene cada entrenamiento junto con su funcionalidad
+ */
 public class TrainingInformation extends Fragment {
 
     public static Fragment fg;
@@ -198,6 +192,10 @@ public class TrainingInformation extends Fragment {
      * @param root
      * @param json
      * @param tag
+     */
+
+    /*
+    Plantilla de datos para la creación de un ejercicio
      */
     private void createNewExercise(View root, JSONObject json, String tag) {
 
@@ -380,7 +378,7 @@ public class TrainingInformation extends Fragment {
             bt3.setEnabled(false);
             bt4.setEnabled(false);
 
-            bt1.setBackground(root.getResources().getDrawable(R.drawable.background_model_training));
+            bt1.setBackground(root.getResources().getDrawable(R.drawable.button_state));
             bt1.setText(root.getResources().getString(R.string.start));
             bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
@@ -409,7 +407,7 @@ public class TrainingInformation extends Fragment {
                                    }
             );
 
-            bt3.setBackground(root.getResources().getDrawable(R.drawable.background_target_waiting_training));
+            bt3.setBackground(root.getResources().getDrawable(R.drawable.button_state_red));
             bt3.setText(root.getResources().getString(R.string.stop));
             bt3.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 
@@ -437,7 +435,7 @@ public class TrainingInformation extends Fragment {
             Space s4 = new Space(root.getContext());
             s4.setMinimumWidth(dpToPx(30, root.getContext()));
 
-            bt4.setBackground(root.getResources().getDrawable(R.drawable.background_model_training_history));
+            bt4.setBackground(root.getResources().getDrawable(R.drawable.button_state_green));
             bt4.setText(root.getResources().getString(R.string.end_up));
             bt4.setTextColor(root.getResources().getColor(R.color.White));
 

@@ -22,6 +22,10 @@ import okhttp3.Response;
 public class LoginDataSource {
 
     public void login(String username, String password, LoginActivity la) {
+        /*
+        Se realiza la consulta de datos de logeo al endpoint de backend para validar los datos
+        Si la consulta es valida "200" se procede a logear.
+         */
 
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
 

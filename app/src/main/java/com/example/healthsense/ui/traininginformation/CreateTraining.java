@@ -25,7 +25,7 @@ import com.example.healthsense.R;
 import com.example.healthsense.ui.suscriptions.SuscribersFragment;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Inicialización de plantilla de creación de entrenamientos
  */
 public class CreateTraining extends Fragment {
 
@@ -50,6 +50,9 @@ public class CreateTraining extends Fragment {
         return root;
     }
 
+    /*
+    Creacion de plantilla que se rellena con los datos que provienen del backend de cada entrenamiento
+     */
     private void createNewForm(View root){
 
         LinearLayout ll3 = new LinearLayout(root.getContext());
@@ -70,7 +73,7 @@ public class CreateTraining extends Fragment {
         LinearLayout.LayoutParams lp11 = new LinearLayout.LayoutParams(dpToPx(30,root.getContext()), dpToPx(30,root.getContext()));
 
         Button bt2 = new Button(root.getContext());
-        bt2.setBackground(root.getResources().getDrawable(R.drawable.background_target_waiting_training));
+        bt2.setBackground(root.getResources().getDrawable(R.drawable.button_state_red));
         bt2.setText("X");
         bt2.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
         bt2.setLayoutParams(lp11);
@@ -176,7 +179,7 @@ public class CreateTraining extends Fragment {
         ll2.setLayoutParams(lp8);
 
         Button bt1 = new Button(root.getContext());
-        bt1.setBackground(root.getResources().getDrawable(R.drawable.background_model_training));
+        bt1.setBackground(root.getResources().getDrawable(R.drawable.button_state));
         bt1.setText(root.getResources().getString(R.string.save));
         bt1.setTextColor(root.getResources().getColor(R.color.DarkGrayText));
 

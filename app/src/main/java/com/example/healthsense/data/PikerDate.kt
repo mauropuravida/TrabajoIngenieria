@@ -7,6 +7,10 @@ import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.*
 
+/*
+Se utilizó esta clase para formatear el tipo DATE que es devuelto por los endpoint y poder mostrarlo en los layout,
+como para formatear los datos de tipo fecha que se toman del layout y mandarlos a los endpoint de backend
+ */
 class PikerDate(context :Context) {
 
     companion object{

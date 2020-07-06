@@ -9,6 +9,9 @@ import com.example.healthsense.R;
 
 public class ChangePass extends Fragment {
 
+    /*
+    Se inicializa el fragmento y la vista de layout para cambio de contraseña
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

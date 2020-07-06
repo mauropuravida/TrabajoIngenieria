@@ -27,6 +27,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/*
+Fragmento que actua como clase principal para la implementación de funcionamiento de conección de devices
+ */
 public class DeviceFragment extends Fragment implements AdapterView.OnItemClickListener{
 
     private static final String TAG = "DeviceActivity";

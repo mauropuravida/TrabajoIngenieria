@@ -331,7 +331,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginBottom="24dp"
-        android:background="@color/Button"
+        android:background="@drawable/button_state"
         android:text="@string/save_info"
         android:textColor="@color/GrayText"
         android:textSize="24sp"

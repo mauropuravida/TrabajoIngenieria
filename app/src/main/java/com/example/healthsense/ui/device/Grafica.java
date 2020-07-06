@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import com.example.healthsense.R;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+/*
+Clase que implementa una grafica con el fin de graficar los datos obtenidos de el sensor de ritmo cardiaco
+ */
 public class Grafica extends AppCompatActivity {
         private LineChart lineChart;
         private LineDataSet lineDataSet;

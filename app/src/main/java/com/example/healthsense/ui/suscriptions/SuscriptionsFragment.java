@@ -9,13 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
@@ -62,8 +61,9 @@ import okhttp3.Response;
 
 import static android.app.Activity.RESULT_CANCELED;
 
-/**
- * A simple {@link Fragment} subclass.
+/*
+Se realiza la consulta e inicialización del fragmento que contiene la lista de medicos disponibles para que el usuario se suscriba,
+Ademas tambien se inicializa la lista de medicos que aceptaron la suscripción del usuario.
  */
 public class SuscriptionsFragment extends Fragment {
 
@@ -79,6 +79,7 @@ public class SuscriptionsFragment extends Fragment {
     private ArrayList<String> medicalSubscriptions = new ArrayList<>();
     private String textEmail = "";
     private String textName = "";
+    private String medicalPayID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +118,16 @@ public class SuscriptionsFragment extends Fragment {
                    }else{
                        list1.setVisibility(View.GONE);
                    }
+
+
+                   root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.button_option_press));
+
+                   Handler handler = new Handler();
+                   handler.postDelayed(new Runnable() {
+                       public void run() {
+                           root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.background_model_training));
+                       }
+                   }, 170);
                }
            }
         );
@@ -132,6 +143,15 @@ public class SuscriptionsFragment extends Fragment {
                    }else{
                        list2.setVisibility(View.GONE);
                    }
+
+                   root.findViewById(R.id.llayout2).setBackground(getResources().getDrawable(R.drawable.button_option_press));
+
+                   Handler handler = new Handler();
+                   handler.postDelayed(new Runnable() {
+                       public void run() {
+                           root.findViewById(R.id.llayout2).setBackground(getResources().getDrawable(R.drawable.background_model_training));
+                       }
+                   }, 170);
                }
            }
         );
@@ -157,6 +177,7 @@ public class SuscriptionsFragment extends Fragment {
         super.onStart();
 
         //Funciones de regargar y quitar vistas si se realizó el pago
+        //getSubscriptions(2);
     }
 
 
@@ -252,7 +273,7 @@ public class SuscriptionsFragment extends Fragment {
     private Button createButton(View root, int text , Fragment fragment, String id, int pos, String price){
         Button bt = new Button(root.getContext());
         bt.setText(text);
-        bt.setBackground(getResources().getDrawable(R.drawable.background_model_training));
+        bt.setBackground(getResources().getDrawable(R.drawable.button_state));
         bt.setTextColor(getResources().getColor(android.R.color.white));
         bt.setOnClickListener(new View.OnClickListener() {
               @Override
@@ -271,8 +292,6 @@ public class SuscriptionsFragment extends Fragment {
                 }
                 else
                     pay(price, id);
-
-                Toast.makeText(root.getContext(), "The operation was done" , Toast.LENGTH_SHORT).show();
               }
           }
         );
@@ -288,7 +307,7 @@ public class SuscriptionsFragment extends Fragment {
         //loadProfile();
         //mProgressDialog.dismiss();
         if (valuesCity.size()>0) {
-            getSubscriptions();
+            getSubscriptions(1);
         }
     }
 
@@ -389,7 +408,7 @@ public class SuscriptionsFragment extends Fragment {
         });
     }
 
-    private void getSubscriptions(){
+    private void getSubscriptions(int action){
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String conexion = MainActivity.PATH+"subscriptions/get";
 
@@ -486,7 +505,8 @@ public class SuscriptionsFragment extends Fragment {
                             }
                         });
 
-                        getMedicalList();
+                        //if (action == 1)
+                            getMedicalList();
                     }
 
                 } catch (IOException e) {
@@ -594,11 +614,6 @@ public class SuscriptionsFragment extends Fragment {
     }
 
     private void pay(String price ,String id){
-        Bundle datosAEnviar = new Bundle();
-        datosAEnviar.putString("email",textEmail);
-        datosAEnviar.putFloat("price",Float.parseFloat(price));
-        datosAEnviar.putString("title","Workout By "+textName);
-
         Map<String, Object> preferenceMap = new HashMap<>();
         preferenceMap.put("id", "1");
         preferenceMap.put("title", "Workout By "+textName);
@@ -607,12 +622,16 @@ public class SuscriptionsFragment extends Fragment {
         preferenceMap.put("unit_price", Float.parseFloat(price));
         preferenceMap.put("email", textEmail);
 
+        medicalPayID = id;
 
         CustomServer.createCheckoutPreference(root.getContext(), "https://mauropuravida.000webhostapp.com", "preference.php", preferenceMap, new com.mercadopago.callbacks.Callback<CheckoutPreference>() {
 
             @Override
             public void success(CheckoutPreference checkoutPreference) {
                 startMercadoPagoCheckout(checkoutPreference.getId());
+
+                //ONLY TESTING
+                inicSubscription(id);
             }
 
             @Override
@@ -655,8 +674,12 @@ public class SuscriptionsFragment extends Fragment {
         if (requestCode == REQUEST_CODE) {
             if (resultCode == MercadoPagoCheckout.PAYMENT_RESULT_CODE) {
                 final Payment payment = (Payment) data.getSerializableExtra(MercadoPagoCheckout.EXTRA_PAYMENT_RESULT);
-                //((TextView) findViewById(R.id.mp_results)).setText("Resultado del pago: " + payment.getPaymentStatus());
 
+                //actualizar la subscripcion
+                inicSubscription(medicalPayID);
+                Looper.prepare();
+                Toast.makeText(root.getContext(), "The operation was done" , Toast.LENGTH_SHORT).show();
+                Looper.loop();
 
                 //Done!
             } else if (resultCode == RESULT_CANCELED) {
@@ -669,6 +692,35 @@ public class SuscriptionsFragment extends Fragment {
                 }
             }
         }
+    }
+
+    //actualizar la subscripcion
+    private void inicSubscription(String id) {
+
+        Log.d("TESTING MEDICAL ",id);
+        JSONArray jarr = new JSONArray();
+        try {
+            JSONObject jobj = new JSONObject();
+            jobj.put("x-access-token", MainActivity.TOKEN);
+            jarr.put(jobj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
+        String conexion = MainActivity.PATH + "subscriptions/renew/"+id;
+
+        request.PUT(conexion, jarr, new JSONObject(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                msjToast(e, 4000);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                msjToast(null, response.code());
+            }
+        });
     }
 
 }

@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import com.example.healthsense.R;
 
+/*
+inicializa la pantalla donde se determina el tipo de perfil que se va a registrar
+ */
 public class ChoiseProfile extends AppCompatActivity {
 
     @Override

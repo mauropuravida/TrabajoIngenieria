@@ -11,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -48,6 +50,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+/*
+se consultan los subscriptores que contiene cada medico, los que ya contienen entrenamientos asignados y los que están sin asignar
+ */
 public class SuscribersFragment extends Fragment {
 
     public static Fragment fg;
@@ -80,8 +85,6 @@ public class SuscribersFragment extends Fragment {
             }
         });
 
-
-
         JSONObject json = new JSONObject();
 
         jsonPut(json,"name", "Juan Domingo");
@@ -99,6 +102,16 @@ public class SuscribersFragment extends Fragment {
                    }else{
                        list1.setVisibility(View.GONE);
                    }
+
+                   root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.button_option_press));
+
+                   Handler handler = new Handler();
+                   handler.postDelayed(new Runnable() {
+                       public void run() {
+                           root.findViewById(R.id.llayout1).setBackground(getResources().getDrawable(R.drawable.background_model_training));
+                       }
+                   }, 170);
+
                }
            }
         );
@@ -119,6 +132,15 @@ public class SuscribersFragment extends Fragment {
                    }else{
                        list2.setVisibility(View.GONE);
                    }
+
+                   root.findViewById(R.id.llayout2).setBackground(getResources().getDrawable(R.drawable.button_option_press));
+
+                   Handler handler = new Handler();
+                   handler.postDelayed(new Runnable() {
+                       public void run() {
+                           root.findViewById(R.id.llayout2).setBackground(getResources().getDrawable(R.drawable.background_model_training));
+                       }
+                   }, 170);
                }
            }
         );
@@ -138,6 +160,15 @@ public class SuscribersFragment extends Fragment {
                    }else{
                        list3.setVisibility(View.GONE);
                    }
+
+                   root.findViewById(R.id.llayout3).setBackground(getResources().getDrawable(R.drawable.button_option_press));
+
+                   Handler handler = new Handler();
+                   handler.postDelayed(new Runnable() {
+                       public void run() {
+                           root.findViewById(R.id.llayout3).setBackground(getResources().getDrawable(R.drawable.background_model_training));
+                       }
+                   }, 170);
                }
            }
         );
@@ -329,7 +360,7 @@ public class SuscribersFragment extends Fragment {
     private Button createButton(View root, int text , Fragment fragment, String id, int pos){
         Button bt = new Button(root.getContext());
         bt.setText(text);
-        bt.setBackground(getResources().getDrawable(R.drawable.background_model_training));
+        bt.setBackground(getResources().getDrawable(R.drawable.button_state));
         bt.setTextColor(getResources().getColor(android.R.color.white));
         bt.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -521,5 +552,4 @@ public class SuscribersFragment extends Fragment {
             }
         });
     }
-
 }

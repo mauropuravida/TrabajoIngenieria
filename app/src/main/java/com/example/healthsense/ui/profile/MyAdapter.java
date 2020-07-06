@@ -13,6 +13,9 @@ import com.example.healthsense.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Clase extraida de internet que permite la construcción de spinners personalizados.
+ */
 public class MyAdapter extends ArrayAdapter<StateV0> {
     private Context mContext;
     private ArrayList<StateV0> listState;

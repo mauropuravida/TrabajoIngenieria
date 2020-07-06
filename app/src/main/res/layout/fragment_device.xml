@@ -22,9 +22,9 @@
             android:id="@+id/btnStartConnection"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="28dp"
-            android:background="@drawable/background_model_training"
+            android:background="@drawable/button_state"
             android:text="@string/connect"
             android:textColor="@color/GrayText" />
 
@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/background_model_training"
+                android:background="@drawable/button_state"
                 android:text="@string/on_off"
                 android:textColor="@color/GrayText" />
 
@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/background_model_training"
+                android:background="@drawable/button_state"
                 android:text="@string/discover"
                 android:textColor="@color/GrayText" />
 

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.example.healthsense.R;
 import com.example.healthsense.ui.login.LoginActivity;
 
@@ -16,11 +15,14 @@ import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
 public class Logout extends Fragment {
 
+    /*
+    Se borran los datos guardados de user y pass del usuario, en el caso que estuviera recordado
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
         SharedPreferences preferencesEditor = root.getContext().getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         preferencesEditor.edit().putString("User","").apply();
