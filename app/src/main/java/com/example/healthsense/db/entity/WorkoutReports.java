@@ -36,6 +36,9 @@ public class WorkoutReports {
     @ColumnInfo(name = "sent")
     private boolean sent;
 
+    @ColumnInfo(name="idBackend")
+    int idBackend;
+
 
     public WorkoutReports(int workout_id, @NotNull String execution_date) {
         this.workout_id = workout_id;
@@ -73,5 +76,13 @@ public class WorkoutReports {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public int getIdBackend() {
+        return idBackend;
+    }
+
+    public void setIdBackend(int idBackend) {
+        this.idBackend = idBackend;
     }
 }

@@ -41,6 +41,8 @@ public class WorkoutsReportsRepository {
 
     public WorkoutReports getWorkoutReports(int id){ return workoutsReportDAO.getWorkoutReport(id);}
 
+    public WorkoutReports getWorkoutReportsBackend(int id_backend){ return workoutsReportDAO.getWorkoutReportBackend(id_backend);}
+
     public List<WorkoutReports> getWorkoutsReports() {
         return workoutsReportDAO.getWorkoutsReports();
     }

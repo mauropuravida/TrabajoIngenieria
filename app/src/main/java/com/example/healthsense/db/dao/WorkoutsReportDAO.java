@@ -54,4 +54,7 @@ public interface WorkoutsReportDAO {
 
     @Query("SELECT * FROM Workout_Reports WHERE id_wr = :id")
     WorkoutReports getWorkoutReport(int id);
+
+    @Query("SELECT * FROM Workout_Reports WHERE idBackend = :id_backend")
+    WorkoutReports getWorkoutReportBackend(int id_backend);
 }
