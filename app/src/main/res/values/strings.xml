@@ -50,6 +50,7 @@
     <string name="e4000">Please check your connection</string>
     <string name="credential_type">Credent. Type</string>
     <string name="e200">operation successfully</string>
+    <string name="diseases">Diseases</string>
 
     <string name="close_session">Log out</string>
 
