@@ -13,14 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
@@ -116,18 +113,6 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-       /* passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString(), act);
-                    System.out.println("ENTRO EN EL PASSWORD");
-                }
-                return false;
-            }
-        });*/
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +145,9 @@ public class LoginActivity extends AppCompatActivity {
         //loginAcepted();
     }
 
+    /*
+    Si el usuario está "recordado" verifica que sean validos los datos
+     */
     private void isLoged() {
         SharedPreferences preferencesEditor = getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE);
         String user = preferencesEditor.getString("User", "");
@@ -290,11 +278,17 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    /*
+    no hacer nada si se apreta boton de backpressed
+     */
     @Override
     public void onBackPressed(){
         //no hacer nada si se está en login.
     }
 
+    /*
+    Texto de codigos para respuestas http
+     */
     public static String error(Context v,int code){
         switch(code) {
             case 200:

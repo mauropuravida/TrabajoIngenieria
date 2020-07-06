@@ -24,6 +24,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/llayout1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_model_training"
@@ -61,6 +62,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -98,6 +100,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llayout3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"

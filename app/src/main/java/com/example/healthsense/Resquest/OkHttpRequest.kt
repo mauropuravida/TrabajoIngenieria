@@ -1,11 +1,13 @@
 package com.example.healthsense.Resquest
 
-import android.util.Log
 import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
 
 
+/*
+Clase que contiene la implementación base de las consultas con la biblioteca Okhttp para consultas enviando datos al backend
+ */
 class OkHttpRequest(client: OkHttpClient) {
 
     internal var client = OkHttpClient()

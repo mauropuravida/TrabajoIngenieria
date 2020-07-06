@@ -1,5 +1,7 @@
 package com.example.healthsense.ui.profile;
 
+/*
+Clase que se encarga de crear una estructura para el manejo de datos dentro de los spinners personalizados */
 public class StateV0 {
     private String title;
     private boolean selected;

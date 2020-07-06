@@ -6,13 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.example.healthsense.R;
-
 import java.util.ArrayList;
 
-import java.util.ArrayList;
 
+/*
+Clase que contiene la lista de dispositivos encontrados
+ */
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
     private LayoutInflater mLayoutInflater;

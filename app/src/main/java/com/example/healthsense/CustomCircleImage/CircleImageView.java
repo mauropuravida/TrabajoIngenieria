@@ -32,6 +32,11 @@ import androidx.annotation.RequiresApi;
 
 import com.example.healthsense.R;
 
+/*
+Clase agregada de internet, se utilizó para poder incorporar imagenes con forma circular en los perfiles y logeo.
+
+ */
+
 @SuppressLint("AppCompatCustomView")
 @SuppressWarnings("UnusedDeclaration")
 public class CircleImageView extends ImageView {

@@ -34,6 +34,10 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+/*
+Clase que se encarga de consultar los datos de perfil de el usuario o medico, dependiendo el tipo que sea el pefil.
+Tambien se ocupa de enviar la información modificada al endpoint de backend
+ */
 public class ProfileFragment extends Fragment {
 
     private Context cont;

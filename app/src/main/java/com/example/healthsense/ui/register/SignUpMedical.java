@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -20,7 +19,6 @@ import com.example.healthsense.MainActivity;
 import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.data.PikerDate;
-import com.example.healthsense.db.AppDatabase;
 import com.example.healthsense.db.Repository.MedicalPersonnelRepository;
 import com.example.healthsense.db.Repository.UserRepository;
 import com.example.healthsense.db.entity.MedicalPersonnel;
@@ -41,6 +39,9 @@ import okhttp3.Response;
 
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
+/*
+inicializa el fragmento que se ocupa de la pantalla de registro de un medico, se realizan varias consultas al back para completar los spinner
+ */
 public class SignUpMedical extends AppCompatActivity {
 
     private Context cont;

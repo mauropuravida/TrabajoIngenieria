@@ -18,10 +18,8 @@ import com.example.healthsense.R;
 import com.example.healthsense.Resquest.OkHttpRequest;
 import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.Repository.DeviceUsersRepository;
-import com.example.healthsense.db.Repository.MedicalPersonnelRepository;
 import com.example.healthsense.db.Repository.UserRepository;
 import com.example.healthsense.db.entity.DeviceUsers;
-import com.example.healthsense.db.entity.MedicalPersonnel;
 import com.example.healthsense.db.entity.Users;
 import com.example.healthsense.ui.login.LoginActivity;
 import org.json.JSONArray;
@@ -35,6 +33,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import static com.example.healthsense.MainActivity.PREFS_FILENAME;
 
+/*
+Inicializa la activity que se ocupa de el layout de registro para un usuario, se realiza la consulta al backend para rellenar los tipos de documentos
+ */
 public class SignUpUser extends AppCompatActivity {
 
     private Context cont;

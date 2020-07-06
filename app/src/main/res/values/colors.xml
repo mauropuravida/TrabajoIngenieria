@@ -14,6 +14,8 @@
     <color name="White">#ffffff</color>
     <color name="YellowText">#ffd900</color>
     <color name="LightGreen">#95db9e</color>
+    <color name="DarkGreen">#52A412</color>
     <color name="RedTarget">#D05F52</color>
+    <color name="RedDarkTarget">#B41B0E</color>
     <color name="TextGray">#48494B</color>
 </resources>

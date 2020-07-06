@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import com.example.healthsense.R;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

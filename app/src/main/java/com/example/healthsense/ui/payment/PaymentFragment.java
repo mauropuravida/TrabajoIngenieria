@@ -9,6 +9,9 @@ import com.example.healthsense.R;
 
 public class PaymentFragment extends Fragment {
 
+    /*
+    TODO en esta clase se espera la implementación para que el medico pueda colocar los datos bancarios para recibir su pago mensual
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

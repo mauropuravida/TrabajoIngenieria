@@ -4,35 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import com.example.healthsense.data.PikerDate;
 import com.example.healthsense.db.AppDatabase;
-import com.example.healthsense.db.Repository.DeviceUsersRepository;
-import com.example.healthsense.db.Repository.DocumentTypeRepository;
-import com.example.healthsense.db.Repository.UserRepository;
-import com.example.healthsense.db.entity.DeviceUsers;
-import com.example.healthsense.db.entity.DocumentType;
 import com.google.android.material.navigation.NavigationView;
-
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_profile, R.id.nav_my_trainings,
+                R.id.nav_profile, R.id.nav_my_trainings,
                 R.id.nav_training_history, R.id.nav_my_suscribers, R.id.nav_my_suscriptions, R.id.nav_payment_methods,
                 R.id.nav_device, R.id.nav_change_pass, R.id.nav_close_session)
                 .setDrawerLayout(drawer)
@@ -70,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        //seteo de datos para ver en la pantalla de menú lateral y en el toats de bienvenida
         email = getIntent().getExtras().getString("user");
         user = preferencesEditor.getString(email, "");
-        System.out.println(email);
         String msg = new StringBuilder().append(getString(R.string.welcome)).append(" ").append(user).toString();
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
@@ -91,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    Se setean los menu custom para cada uno de los perfiles usuario/medico
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
