@@ -14,6 +14,6 @@ import java.util.List;
 @Dao
 public interface WorkoutDoneDAO {
 
-    @Query("SELECT * FROM Workouts INNER JOIN Workout_Reports ON Workouts.id = Workout_Reports.workout_id WHERE Workouts.done = 1")
-    List<WorkoutDone> getAllWorkoutsDone();
+    @Query("SELECT * FROM Workouts INNER JOIN Workout_Reports ON Workouts.id_backend = Workout_Reports.workout_id WHERE Workouts.device_user_id = :id")
+    List<WorkoutDone> getAllWorkoutsDone(int id);
 }
