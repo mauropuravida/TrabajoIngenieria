@@ -22,13 +22,12 @@ public class WorkoutsReportsRepository {
     }
 
     public void insert(WorkoutReports workoutReports) {
-        new InsertUserAsyncTask(workoutsReportDAO).execute(workoutReports);
+       new InsertUserAsyncTask(workoutsReportDAO).execute(workoutReports);
     }
 
     public void update(WorkoutReports workoutReports) {
         new UpdateUserAsyncTask(workoutsReportDAO).execute(workoutReports);
     }
-
 
     public void delete(WorkoutReports workoutReports) {
         new DeleteUsersyncTask(workoutsReportDAO).execute(workoutReports);
@@ -37,6 +36,10 @@ public class WorkoutsReportsRepository {
 
     public List<WorkoutReports> getWorkoutsReportsId(int id) {
         return workoutsReportDAO.getWorkoutsId(id);
+    }
+
+    public int size(){
+        return workoutsReportDAO.getSize();
     }
 
     public WorkoutReports getWorkoutReports(int id){ return workoutsReportDAO.getWorkoutReport(id);}

@@ -68,6 +68,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     private TextView emptyView;
 
     private boolean first = true;
+    int id;
 
     private ProgressDialog mProgressDialog;
 
@@ -133,15 +134,16 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
     /**
      * Cargo en la vista los reportes de los workourts realizados, o un cartel vacio de no haber ninguno.
+     *
      * @param workouts = lista con la union de los reportes y la informacion de los entrenamientos
      **/
     @Override
     public void setWorkoutReportsFromDB(List<WorkoutDone> workouts) {
         mProgressDialog.dismiss();
         first = false;
-        if (workouts == null) {
+        if (workouts == null){
             setEmpty();
-        } else {
+        }else {
             if (!workouts.isEmpty()) {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);
@@ -154,7 +156,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     }
 
     /**
-     *En caso de no haber reportes se muestra un cartel advirtiendo esto mismo
+     * En caso de no haber reportes se muestra un cartel advirtiendo esto mismo
      **/
     public void setEmpty() {
         workoutsCompleted.setText("0");
@@ -165,46 +167,58 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     /**
      * Metodo run() que luego de obtener la lista de entrenamientos desde el backend, agrega a los que no se
      * encuentren en la base de datos local. Por ultimo, ejecuta el metodo getBackendResponse(...) para obtener los reportes
+     *
      * @return Runnable
      */
     private Runnable getWorkouts() {
         return new Runnable() {
             @Override
             public void run() {
-                String path = "workoutReport/";
+                String path = "workoutReport/workout_id&";
 
                 DeviceUsersRepository deviceUsersRepository = new DeviceUsersRepository(getActivity().getApplication());
                 UserRepository userRepository = new UserRepository(getActivity().getApplication());
-                int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                id = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
 
                 WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
 
+                int count = 0;
+
                 for (JSONObject workout : workouts) {
+                    count++;
+                    boolean last = count == workouts.size();
                     try {
 
                         int workout_id = workout.getInt("id");
                         if (!workoutsRepository.contains(workout_id)) {
                             int rating = 0;
+                            double price = 0.0;
                             try {
                                 rating = workout.getInt("rating");
+                                price = workout.getDouble("price");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            Workouts workout_to_insert = new Workouts(null, device_user_id_room, workout.getString("name"),
-                                    workout.getString("creation_date"), workout.getInt("difficulty"), workout.getDouble("price"),
+                            Workouts workout_to_insert = new Workouts(null, id, workout.getString("name"),
+                                    workout.getString("creation_date"), workout.getInt("difficulty"), price,
                                     workout.getInt("done"), rating);
                             workout_to_insert.setId_backend(workout_id);
                             workoutsRepository.insert(workout_to_insert);
 
                             Log.d(TAG, "run: workout inserted! " + workout_id);
+
                         }
+
+                        getBackendResponse(path, workout_id, reports, getReports(), true, last);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
                 }
 
-                getBackendResponse(path, reports, getReports(), true);
+                if (count == 0)
+                    setWorkoutReportsFromDB(null);
             }
         };
 
@@ -214,6 +228,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
      * Metodo run() que luego de obtener la lista de reportes desde el backend, agrega a los que no se
      * encuentren en la base de datos local. Por ultimo, ejecuta un nuevo TaskGetWorkoutReports para mostrar
      * los reportes en la vista
+     *
      * @return Runnable
      */
     private Runnable getReports() {
@@ -221,42 +236,28 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
             @Override
             public void run() {
                 WorkoutsRepository workoutsRepository = new WorkoutsRepository(getActivity().getApplication());
-
                 WorkoutsReportsRepository workoutsReportsRepository = new WorkoutsReportsRepository(getActivity().getApplication());
-
 
                 for (JSONObject report : reports) {
                     try {
-                        int workout_id_backend = report.getInt("workout_id");
+                        int workout_id = report.getInt("workout_id");
+                        String date = PikerDate.Companion.toDateFormatView(report.getString("execution_date"));
+                        Log.d(TAG, "run: obtengo report");
 
-                        Workouts workout = workoutsRepository.getWorkoutFromIdBackend(workout_id_backend);
-                        if (workout != null) {
-                            int workout_id = workout.getId();
-
-                            Log.d(TAG, "run: obtengo report");
-                            WorkoutReports wr = new WorkoutReports(workout_id,
-                                    PikerDate.Companion.toDateFormatView(report.getString("execution_date")));
+                        //si no existe en la base de datos local, lo agrego
+                        if (!workoutsReportsRepository.contains(workout_id, date)) {
+                            WorkoutReports wr = new WorkoutReports(workout_id, date);
                             wr.setSent(true);
-                            //si no existe en la base de datos local, lo agrego
-
-                            if (!workoutsReportsRepository.contains(wr.getWorkout_id(), wr.getExecution_date())) {
-                                workoutsReportsRepository.insert(wr);
-                                Log.d(TAG, "run: report inserted! " + wr.getId_wr());
-                            }
-
-
-                            //y actualizo el workout
-                            if (workout.getDone() == 0) {
-                                workoutsRepository.updateDone(1, report.getInt("workout_id"), workout.getRating());
-                            }
+                            workoutsReportsRepository.insert(wr);
+                            Log.d(TAG, "run: report inserted! " + wr.getId_wr());
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    new TaskGetWorkoutReports(TrainingHistoryFragment.this).execute();
                 }
+                new TaskGetWorkoutReports(TrainingHistoryFragment.this).execute();
             }
         };
     }
@@ -271,7 +272,6 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                 new Runnable() {
                     @Override
                     public void run() {
-
                         JSONObject ob = new JSONObject();
                         try {
                             ob.put("x-access-token", MainActivity.TOKEN);
@@ -284,8 +284,8 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                         workouts = new ArrayList<>();
                         reports = new ArrayList<>();
 
-                        String path = "workout/device_user_id&0"; // obtengo workouts del usuario ingresado
-                        getBackendResponse(path, workouts, getWorkouts(), false);
+                        String path = "workout/device_user_id&"; // obtengo workouts del usuario ingresado
+                        getBackendResponse(path, 0, workouts, getWorkouts(), false, true);
 
                     }
                 }
@@ -297,14 +297,15 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
     /**
      * Metodo que realiza un GET de la url solicitada para almacenar los resultados en listObj y luego ejecuta
      * el runnable func.
-     * @param path = path para completar la url
+     *
+     * @param path    = path para completar la url
      * @param listObj = lista de JSONObjects obtenido del GET
-     * @param func = metodo a ejecutar al obtener respuesta, siguiente paso
-     * @param report = variable booleana que advierte si se estan obteniendo los entrenamientos o reportes
+     * @param func    = metodo a ejecutar al obtener respuesta, siguiente paso
+     * @param report  = variable booleana que advierte si se estan obteniendo los entrenamientos o reportes
      */
-    private void getBackendResponse(String path, List<JSONObject> listObj, Runnable func, boolean report) {
+    private void getBackendResponse(String path, int id, List<JSONObject> listObj, Runnable func, boolean report, boolean last) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
-        String url = MainActivity.PATH + path;
+        String url = MainActivity.PATH + path + id;
 
         request.GET(url, token, new Callback() {
             @Override
@@ -325,40 +326,27 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
                             responseData = response.body().string();
                             JSONArray json = new JSONArray(responseData);
 
-                            if (readData(report, json)) {
-                                Log.d(TAG, "onResponse: no data on phone");
-                                for (int i = 0; i < json.length(); i++) {
-                                    listObj.add(json.getJSONObject(i));
-                                }
-                                func.run();
-                            } else if (!report) {
-                                Log.d(TAG, "onResponse: workouts on the local db, searching reports");
-                                String new_path = "workoutReport/";
-                                getBackendResponse(new_path, reports, getReports(), true);
-                            } else {
-                                setWorkoutReportsFromDB(null);
+                            for (int i = 0; i < json.length(); i++) {
+                                listObj.add(json.getJSONObject(i));
                             }
 
-                        }
+                            if (last)
+                                func.run();
 
+                        }
                     } catch (JSONException | IOException e) {
                         e.printStackTrace();
                     }
             }
 
-            private boolean readData(boolean report, JSONArray json) {
-                if (report) {
-                    if (json.length() == AppDatabase.getAppDatabase(getContext()).workoutsReportDAO().getSize()) {
-                        new TaskGetWorkoutReports(TrainingHistoryFragment.this).execute();
-                        return false;
-                    }
-                } else {
-                    if (json.length() == AppDatabase.getAppDatabase(getContext()).workoutsDAO().getSize()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+//            private boolean readData(boolean report, JSONArray json) {
+//                if (!report) {
+//                    if (json.length() == AppDatabase.getAppDatabase(getContext()).workoutsDAO().getSize()) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            }
         });
     }
 
@@ -379,7 +367,7 @@ public class TrainingHistoryFragment extends Fragment implements AppDatabaseList
 
         @Override
         protected List<WorkoutDone> doInBackground(Void... voids) {
-            return AppDatabase.getAppDatabase(getContext()).workoutDoneDAO().getAllWorkoutsDone();
+            return AppDatabase.getAppDatabase(getContext()).workoutDoneDAO().getAllWorkoutsDone(id);
         }
 
         @Override
