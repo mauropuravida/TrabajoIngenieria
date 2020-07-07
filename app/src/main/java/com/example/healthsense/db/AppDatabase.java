@@ -55,7 +55,7 @@ import com.example.healthsense.db.entity.Workouts;
         Languages.class, MedicalLanguages.class, MedicalPersonnel.class, MedicalSpecialities.class,
         Patients.class, PhoneNumbers.class, States.class, UserDiseases.class, Users.class, WorkoutExercises.class,
         WorkoutReports.class, Workouts.class, Medic.class
-}, version = 11, exportSchema = false)
+}, version = 12, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "com.example.healthsense";

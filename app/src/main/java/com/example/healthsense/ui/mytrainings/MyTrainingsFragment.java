@@ -88,6 +88,7 @@ public class MyTrainingsFragment extends Fragment {
         workoutsExercisesRepository = new WorkoutsExercisesRepository(getActivity().getApplication());
 
         exercises_room = exercisesRepository.getAll();
+        Bundle datosRecuperados = getArguments();
 
 
         //Listener para cada uno de los workouts.
@@ -101,8 +102,11 @@ public class MyTrainingsFragment extends Fragment {
                 Fragment fragment;
                 if(fragment_previous.equals("M"))
                     datosAEnviar.putString("Fragment", "M");
-                else
+                else {
                     datosAEnviar.putString("Fragment", "S");
+                    datosAEnviar.putDouble("price",datosRecuperados.getDouble("price"));
+                    datosAEnviar.putInt("device_user_id",datosRecuperados.getInt("device_users_id"));
+                }
                 fragment = new TrainingInformation();
                 fragment.setArguments(datosAEnviar);
                 getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack(null).commit();
@@ -120,11 +124,11 @@ public class MyTrainingsFragment extends Fragment {
         mProgressDialog.setMessage(getResources().getString(R.string.please_wait));
         mProgressDialog.setCancelable(false);
 
-        Bundle datosRecuperados = getArguments();
         mProgressDialog.show();
         if (datosRecuperados != null && datosRecuperados.getString("Fragment").equals("S")) {
             fragment_previous = "S";
-            getData(datosRecuperados.getInt("device_user_id"));
+            System.out.println("DEVICE " + datosRecuperados.getInt("device_users_id"));
+            getData(datosRecuperados.getInt("device_users_id"));
         } else {
             fragment_previous = "M";
             if (networkInfo != null && networkInfo.isConnected()) {
@@ -134,7 +138,6 @@ public class MyTrainingsFragment extends Fragment {
                 // No hay conexión a Internet en este momento levantar datos de Room (SERVERLESS)
             }
         }
-
 
         return root;
     }
@@ -157,12 +160,15 @@ public class MyTrainingsFragment extends Fragment {
             if (calls.get(j) == 1)
                 return;
         }
+        System.out.println("FINISH CALLS");
 
         depureExercises();
         // Si finalizaron todas las llamadas del backend y es la primera vez que entro al fragment
         // Agrego a la base de datos local los workouts y exercises que no esten.
         if (getActivity() != null) {
             try {
+                System.out.println("ROOM");
+
                 addWorkoutsRoom();
                 addExercisesRoom(exercises_room);
                 addWorkoutsExercisesRoom();
@@ -170,6 +176,7 @@ public class MyTrainingsFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        System.out.println("CREAR EXERCICES");
 
 
         createExercises(rootGeneral, listenerGeneral);
@@ -198,6 +205,7 @@ public class MyTrainingsFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            System.out.println(contador);
         }
     }
 
@@ -235,7 +243,6 @@ public class MyTrainingsFragment extends Fragment {
                 int i = 0;
                 for (JSONObject o : workouts) {
                     try {
-                        System.out.println("WORKOUT " + o.get("id"));
                         i++;
                         getBackendResponse(path, o.getInt("id"), null, workoutExercises, null, null, getExercisesWorkout(i));
                     } catch (JSONException e) {
@@ -426,6 +433,7 @@ public class MyTrainingsFragment extends Fragment {
     private Call getBackendResponse(String path, int id, ArrayList<JSONObject> listObj, HashMap<Integer, ArrayList<Integer>> hashObj, View root, View.OnClickListener mListener, Runnable func) {
         OkHttpRequest request = new OkHttpRequest(new OkHttpClient());
         String url = MainActivity.PATH + path + id;
+        System.out.println(url);
 
         int numCall = addCall();
         return request.GET(url, token, new Callback() {
@@ -455,13 +463,14 @@ public class MyTrainingsFragment extends Fragment {
                         for (int i = 0; i < json.length(); i++) {
                             if (hashObj == null) {
                                 if ((int) json.getJSONObject(i).get("done") == 0) {
+                                    System.out.println("WORKOUT " + json.getJSONObject(i).getInt("id"));
                                     listObj.add(json.getJSONObject(i));
                                 }
                             } else {
                                 String time = json.getJSONObject(i).get("time").toString();
                                 int id = json.getJSONObject(i).getInt("exercise_id");
                                 times.put(id, time);
-                                System.out.println("Value " + id);
+                                System.out.println("Exercices id " + id);
                                 values.add(id);
                             }
                         }
@@ -536,12 +545,18 @@ public class MyTrainingsFragment extends Fragment {
                     break;
                 }
             }
+            System.out.println("NO ESTA EN ROOM? " + in_room + " Workout ID " + workout_id);
             // Se crea y agrega a la base de datos local si es que no existe aun.
             if (!in_room) {
-                int device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
-                while (device_user_id_room == 0) {
-                    device_user_id_room = device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                Integer device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                int cant = 0;
+                while (device_user_id_room == 0 && cant <3) {
+                    System.out.println("LOOP 23");
+                    device_user_id_room = deviceUsersRepository.getDeviceUserId(userRepository.getId(MainActivity.email));
+                    cant++;
                 }
+                if (device_user_id_room == 0)
+                    device_user_id_room = null;
                 int price = 0;
                 try {
                     price = workouts.get(i).getInt("price");
@@ -572,23 +587,29 @@ public class MyTrainingsFragment extends Fragment {
     private void addExercisesRoom(List<Exercises> exercises_room) throws JSONException {
         ExercisesRepository exercisesRepository = new ExercisesRepository(getActivity().getApplication());
         boolean in_room;
+        System.out.println(exercises.size());
+
         for (int i = 0; i < exercises.size(); i++) {
+            System.out.println("LOOP 1");
             int exercises_id = 0;
             try {
-                while (exercises_id == 0)
+                while (exercises_id == 0) {
                     exercises_id = exercises.get(i).getInt("id");
+                    System.out.println("LOOP 2");
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             in_room = false;
             for (int j = 0; j < exercises_room.size(); j++) {
-                // System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
+                 System.out.println("EXERCICE ID ROOM: " + exercises_room.get(j).getId_backend() + "Y EL ID DEL BACK: " + exercises_id);
                 if (exercises_room.get(j).getId_backend() == exercises_id) {
                     in_room = true;
                     break;
                 }
             }
-            //   System.out.println("EXERCICE EN ROOM?: " + in_room);
+               System.out.println("EXERCICE EN ROOM?: " + in_room);
             if (!in_room) {
                 Exercises exercises_to_insert = null;
                 try {
@@ -609,6 +630,8 @@ public class MyTrainingsFragment extends Fragment {
     private void addWorkoutsExercisesRoom() {
         Map<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>(workoutExercises);
         //workoutsExercisesRepository.deleteAll();
+        System.out.println("LOOP 31");
+
         boolean in_room;
         for (Integer key : map.keySet()) {
             List<Integer> v = map.get(key);
@@ -618,13 +641,15 @@ public class MyTrainingsFragment extends Fragment {
                 while (exercises_id_room == 0)
                     exercises_id_room = exercisesRepository.getExercisesIdBackend(v.get(i));
                 in_room = workoutsExercisesRepository.existExercisesWorkout(workout_id_room, exercises_id_room);
-                // System.out.println("ESTA EN ROOM? : WorkoutID " + workout_id_room + "  ExerciseID" + exercises_id_room + " " + in_room);
+                 System.out.println("ESTA EN ROOM? : WorkoutID " + workout_id_room + "  ExerciseID" + exercises_id_room + " " + in_room);
                 if (!in_room) {
-                    //System.out.println("ENTRO A INSERTAR EL WORKOUT: " + workout_id_room + exercises_id_room + "CON UN TIEMPO: " + times.get(key));
+                    System.out.println("ENTRO A INSERTAR EL WORKOUT: " + workout_id_room + exercises_id_room + "CON UN TIEMPO: " + times.get(key));
                     WorkoutExercises to_insert = new WorkoutExercises(workout_id_room, exercises_id_room, times.get(key));
                     workoutsExercisesRepository.insert(to_insert);
                 }
             }
+            System.out.println("FINISHHHH");
+
         }
     }
 

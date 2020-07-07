@@ -287,11 +287,12 @@ public class SuscribersFragment extends Fragment {
         llR.addView(bton);
         llR.setPadding(0,30,30,30);
 
-        if (viewVisibility == View.GONE) { // cambiar fragment
+        if (viewVisibility == View.GONE) { // TODO falta enviar el precioo!!!
 
             Bundle datosAEnviar = new Bundle();
             datosAEnviar.putString("Fragment", "S");
-            datosAEnviar.putInt("device_user_id",device_user_id);
+            datosAEnviar.putInt("device_users_id",device_user_id);
+            datosAEnviar.putDouble("price",0.0);
             System.out.println("DEVICE USER " + device_user_id);
             Fragment fragment = new MyTrainingsFragment();
             fragment.setArguments(datosAEnviar);

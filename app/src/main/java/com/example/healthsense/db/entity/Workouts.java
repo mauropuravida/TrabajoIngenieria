@@ -29,11 +29,10 @@ public class Workouts {
     @ColumnInfo(name = "medical_personnel_id")
     private Integer medical_personnel_id;
 
-    @NotNull
     @ForeignKey(entity = DeviceUsers.class, parentColumns = "id", childColumns = "device_user_id",
             onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
     @ColumnInfo(name = "device_user_id")
-    private int device_user_id;
+    private Integer device_user_id;
 
     @NotNull
     @ColumnInfo(name = "name")
@@ -61,7 +60,7 @@ public class Workouts {
     @ColumnInfo(name="id_backend")
     int id_backend;
 
-    public Workouts(Integer medical_personnel_id, int device_user_id, @NotNull String name, @NotNull String creation_date, int difficulty, double price, int done, int rating) {
+    public Workouts(Integer medical_personnel_id, Integer device_user_id, @NotNull String name, @NotNull String creation_date, int difficulty, double price, int done, int rating) {
         this.medical_personnel_id = medical_personnel_id;
         this.device_user_id = device_user_id;
         this.name = name;
@@ -76,7 +75,7 @@ public class Workouts {
         return medical_personnel_id;
     }
 
-    public int getDevice_user_id() {
+    public Integer getDevice_user_id() {
         return device_user_id;
     }
 
@@ -114,11 +113,11 @@ public class Workouts {
         this.id = id;
     }
 
-    public void setMedical_personnel_id(int medical_personnel_id) {
+    public void setMedical_personnel_id(Integer medical_personnel_id) {
         this.medical_personnel_id = medical_personnel_id;
     }
 
-    public void setDevice_user_id(int device_user_id) {
+    public void setDevice_user_id(Integer device_user_id) {
         this.device_user_id = device_user_id;
     }
 

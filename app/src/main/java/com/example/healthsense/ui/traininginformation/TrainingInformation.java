@@ -88,7 +88,7 @@ public class TrainingInformation extends Fragment {
     private Map<String, Long> offsets;
     private Map<String, Boolean> first_time;
     private String fragment;
-
+    private  Bundle datosRecuperados;
 
     int rating = 0;
 
@@ -125,7 +125,7 @@ public class TrainingInformation extends Fragment {
 
 
         //Obtengo datos enviados desde otro fragment. M = MyTrainingsFragment - H = HistoryTrainingFragment. - S = SubscribersFragment
-        Bundle datosRecuperados = getArguments();
+        datosRecuperados = getArguments();
         if (datosRecuperados != null) {
             fragment = datosRecuperados.getString("Fragment");
             if (fragment.equals("M") || fragment.equals("S")) {
@@ -487,10 +487,25 @@ public class TrainingInformation extends Fragment {
             Space s4 = new Space(root.getContext());
             s4.setMinimumWidth(dpToPx(30, root.getContext()));
 
+            Bundle datosAEnviar = new Bundle();
             bt5.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    datosAEnviar.putString("name", (String) jsonGet(json, "name") );
+                    datosAEnviar.putString("difficulty", (String) jsonGet(json, "difficulty"));
+                    datosAEnviar.putString("url", (String) jsonGet(json, "URL"));
+                    datosAEnviar.putString("instructions", (String) jsonGet(json, "instructions"));
+                    datosAEnviar.putInt("exercises_id", Integer.valueOf(tag));
+                    System.out.println("EXERCISES ID " + Integer.valueOf(tag));
+                    datosAEnviar.putInt("workout_id", work_id);
+                    datosAEnviar.putInt("device_user_id", datosRecuperados.getInt("device_user_id"));
+                    datosAEnviar.putDouble("price",datosRecuperados.getDouble("price"));
+                    System.out.println("DEVICE USERS ID: " + datosRecuperados.getInt("device_user_id"));
+                    Fragment fragment;
+                    EditFragment.fg = fg;
+                    fragment = new EditFragment();
+                    fragment.setArguments(datosAEnviar);
+                    getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack(null).commit();
                 }
             });
 
@@ -512,7 +527,7 @@ public class TrainingInformation extends Fragment {
         es.setPadding(0,0,0,0);
         ll3.addView(es);
         ll3.addView(ll1);
-        if (fragment.equals("M"))
+        if (fragment.equals("M") || fragment.equals("S"))
             ll3.addView(ypv);
         ll3.addView(t1);
         ll3.addView(sc1);
@@ -566,7 +581,7 @@ public class TrainingInformation extends Fragment {
             System.out.println(exercisesList.get(i));
             JSONObject json = new JSONObject();
             jsonPut(json, "name", workout.getName());
-            int exercise_id = exercisesList.get(i).getId();
+            int exercise_id = exercisesList.get(i).getId_backend();
             // String time = workoutsExercisesRepository.getTime(workout_id, exercise_id ); // obtener de workoutsExercises
             jsonPut(json, "time", "Video");
             jsonPut(json, "difficulty", workout.getDifficulty());
@@ -576,7 +591,7 @@ public class TrainingInformation extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    createNewExercise(root, json, "" + exercise_id);
+                    createNewExercise(root, json,  String.valueOf(exercise_id));
                 }
             });
         }

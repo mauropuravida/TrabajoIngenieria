@@ -526,7 +526,6 @@ public class CreateTraining extends Fragment {
                     Log.d(TAG, "onResponse: " + response.code());
             }
         });
-
     }
 
     /**
