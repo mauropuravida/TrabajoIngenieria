@@ -1,6 +1,5 @@
 package com.example.healthsense.db.entity;
 
-
 import androidx.room.Embedded;
 
 /**
