@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -44,6 +45,8 @@ import com.example.healthsense.db.entity.Exercises;
 import com.example.healthsense.db.entity.WorkoutExercises;
 import com.example.healthsense.db.entity.WorkoutReports;
 import com.example.healthsense.db.entity.Workouts;
+import com.example.healthsense.ui.device.DeviceFragment;
+import com.example.healthsense.ui.device.Grafica;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
@@ -53,6 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -385,28 +389,29 @@ public class TrainingInformation extends Fragment {
 
             // Logica boton Comenzar entrenamiento (START)
             bt1.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           if (!trainingWithoutConnection()) {
-                                               bt1.setEnabled(false);
-                                               Toast.makeText(root.getContext(), root.getResources().getString(R.string.cant_train), Toast.LENGTH_LONG).show();
-                                           } else {
-                                               startChronometer(chronometer);
-                                               bt1.setEnabled(false);
-                                               bt3.setEnabled(true);
-                                               bt4.setEnabled(false);
-                                               //comenzar cuenta regresiva.
-                                           }
+               @Override
+               public void onClick(View v) {
+                   if (!trainingWithoutConnection()) {
+                       bt1.setEnabled(false);
+                       Toast.makeText(root.getContext(), root.getResources().getString(R.string.cant_train), Toast.LENGTH_LONG).show();
+                   } else {
+                       startChronometer(chronometer);
+                       bt1.setEnabled(false);
+                       bt3.setEnabled(true);
+                       bt4.setEnabled(false);
+                       //comenzar cuenta regresiva.
+                   }
                    /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                        createNewForm(root);
                        //bt1.setVisibility(View.GONE);
                        ll3.addView(ll4,0);
                    }
                    Toast.makeText( root.getContext(), root.getResources().getString(R.string.exercise_add_info), Toast.LENGTH_SHORT).show();*/
-
-                                       }
-                                   }
-            );
+                   String play="play";
+                   byte[] bytes = play.getBytes(Charset.defaultCharset());
+                   DeviceFragment.mBluetoothConnection.write(bytes);
+               }
+            });
 
             bt3.setBackground(root.getResources().getDrawable(R.drawable.button_state_red));
             bt3.setText(root.getResources().getString(R.string.stop));
@@ -430,6 +435,10 @@ public class TrainingInformation extends Fragment {
                 ll3.addView(ll4,0);
                 }
                 Toast.makeText( root.getContext(), root.getResources().getString(R.string.exercise_add_info), Toast.LENGTH_SHORT).show();*/
+
+                    String mensaje="Stop";
+                    byte [] bytes = mensaje.getBytes(Charset.defaultCharset());
+                    DeviceFragment.mBluetoothConnection.write(bytes);
                 }
             });
 
@@ -449,6 +458,12 @@ public class TrainingInformation extends Fragment {
                     bt3.setEnabled(false);
                     addToDatabase();
                     ll3.setVisibility(View.GONE);
+
+
+
+                    Grafica.arrayPulso= DeviceFragment.arrayJson;
+                    //startActivity(new Intent(getContext(), Grafica.class));
+                    getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new Grafica()).addToBackStack(null).commit();
                 /*if ( ((Button) ll3.findViewWithTag("bt2") == null)){
                 createNewForm(root);
                 //bt1.setVisibility(View.GONE);

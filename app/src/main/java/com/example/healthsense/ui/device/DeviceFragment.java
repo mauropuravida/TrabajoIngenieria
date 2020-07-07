@@ -42,16 +42,18 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
     TextView incomingMessage;
     StringBuilder messages;
     Button btnStartConnection;
-    BluetoothConnectionService mBluetoothConnection;
+    public static BluetoothConnectionService mBluetoothConnection;
     private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
     BluetoothDevice mBTDevice;
     private View root;
-    public ArrayList<JSONObject> arrayJson=new ArrayList<JSONObject>();
+    public static ArrayList<JSONObject> arrayJson;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         root = inflater.inflate(R.layout.fragment_device, container, false);
+
+        arrayJson = new ArrayList<JSONObject>();
 
         btnONOFF = (Button) root.findViewById(R.id.btnONOFF);
         lvNewDevices=(ListView) root.findViewById(R.id.lvNewDevices);
@@ -206,7 +208,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
         }
     };
 
-
+    //crea un broadcastReceiver donde capta el mensaje entrante y visualiza si es un json,un stop, o un pin de salida
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -214,8 +216,9 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
             if(text.contains("Pulso")){
                 try {
                     JSONObject jsonCreado=new JSONObject(text);
-                    messages.append("pulso:"+jsonCreado.getInt("Pulso") + "\n");
+                    //messages.append("pulso:"+jsonCreado.getInt("Pulso") + "\n");
                     arrayJson.add(jsonCreado);
+                    Log.d("PULSO ",jsonCreado.getInt("Pulso")+"");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }}
@@ -225,8 +228,11 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
                 startActivity(new Intent(root.getContext(), Grafica.class));
             }
             else{
-                messages.append(text + "\n");
-                incomingMessage.setText(messages);}
+                //messages.append(text + "\n");
+                //incomingMessage.setText(messages);
+                Log.d("PIN ",text);
+            }
+
         }
     };
 
