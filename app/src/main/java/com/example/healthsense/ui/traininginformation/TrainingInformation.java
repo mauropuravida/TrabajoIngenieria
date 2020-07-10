@@ -459,7 +459,7 @@ public class TrainingInformation extends Fragment {
                     addToDatabase();
                     ll3.setVisibility(View.GONE);
 
-
+                    Grafica.fg = fg;
 
                     Grafica.arrayPulso= DeviceFragment.arrayJson;
                     //startActivity(new Intent(getContext(), Grafica.class));

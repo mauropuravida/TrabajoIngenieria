@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import com.example.healthsense.R;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -30,11 +31,24 @@ public class Grafica extends Fragment {
     private LineChart lineChart;
     private LineDataSet lineDataSet;
     public static ArrayList<JSONObject> arrayPulso=new ArrayList<JSONObject>();
+    public static Fragment fg;
 
      public View onCreateView(@NonNull LayoutInflater inflater,
                       ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.grafica, container, false);
+
+
+
+
+         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+             @Override
+             public void handleOnBackPressed() {
+
+                 getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fg).addToBackStack(null).commit();
+             }
+         };
+         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
             //grafica
             lineChart = root.findViewById(R.id.lineChart);

@@ -95,6 +95,8 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
             public void onClick(View view) {
                 Log.d(TAG, "btnDescubrir:mirar distintos dispositivos");
 
+                nBTDevices = new ArrayList<>();
+
                 if (nBluetoothAdapter.isDiscovering()) {
                     nBluetoothAdapter.cancelDiscovery();
                     Log.d(TAG, "btnDescubrir: cancelar descubrimiento");
@@ -141,6 +143,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
         }
     };
 
+    //crea un brodcastReceiver donde cambia de de estado la visivilidad de un dispositivo bluetooth
     private final BroadcastReceiver nBroadcastReceiver2 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -168,7 +171,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
             }
         }
     };
-
+    // crea un broadcastReceiver donde toma los dispositivos detectados
     private final BroadcastReceiver nBroadcastReceiver3 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -184,6 +187,7 @@ public class DeviceFragment extends Fragment implements AdapterView.OnItemClickL
         }
     };
 
+    //crea un broadcastReceiver donde se crea la pariedad(vinculacion con el dispositivio)
     private BroadcastReceiver nBroadcastReceiver4 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
